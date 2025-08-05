@@ -1,7 +1,7 @@
 import {Spinner} from '@/shared/components/ui/spinner';
 import {Table} from '@/shared/components/ui/table';
 
-import {useClients} from '../api/get-clients';
+import {useClients} from '../api/get-users.ts';
 import {Link} from '@/shared/components/ui/link';
 import {paths} from '@/config/paths';
 
@@ -25,10 +25,17 @@ export const ClientsList = () => {
       data={clients}
       columns={[
         {
+          title: 'Id',
+          field: 'id',
+          Cell({entry: {id}}) {
+            return <Link to={paths.app.user.getHref(id)}>{id}</Link>;
+          },
+        },
+        {
           title: 'Email',
           field: 'email',
           Cell({entry: {email}}) {
-            return <Link to={paths.app.user.getHref(email)}>{email}</Link>;
+            return <span>{email}</span>;
           },
         },
         {

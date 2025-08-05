@@ -1,6 +1,6 @@
 import {QueryClient} from '@tanstack/react-query';
 
-import {getClientsQueryOptions} from '@/features/users/api/get-clients';
+import {getClientsQueryOptions} from '@/features/users/api/get-users.ts';
 import {ClientsList} from '@/features/users/components/clients-list';
 import {ContentLayout} from '@/shared/components/layouts';
 import {Authorization, ROLES} from '@/shared/lib/auth/authorization';

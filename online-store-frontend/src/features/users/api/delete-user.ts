@@ -3,15 +3,11 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 
-import {getClientsQueryOptions} from './get-clients';
+import {getClientsQueryOptions} from './get-users.ts';
+import {DeleteUserRequest} from "./api.types.ts";
 
-export type DeleteUserDTO = {
-  userEmail: string;
-  userRole: 'CLIENT' | 'EMPLOYEE';
-};
-
-export const deleteUser = ({userEmail, userRole}: DeleteUserDTO) => {
-  return userRole == 'CLIENT' ? api.delete(`/clients/${userEmail}`) : api.delete(`/employees/${userEmail}`);
+export const deleteUser = ({userEmail}: DeleteUserRequest) => {
+  return api.delete(`/users/${userEmail}`)
 };
 
 type UseDeleteUserOptions = {

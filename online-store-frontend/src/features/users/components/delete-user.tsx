@@ -27,8 +27,6 @@ export const DeleteUser = ({userEmail}: DeleteUserProps) => {
 
   if (user.data == null) return null;
 
-  const userEntity = user.data;
-
   return (
     <ConfirmationDialog
       icon="danger"
@@ -40,7 +38,7 @@ export const DeleteUser = ({userEmail}: DeleteUserProps) => {
           isLoading={deleteUserMutation.isPending}
           type="button"
           variant="destructive"
-          onClick={() => deleteUserMutation.mutate({userEmail: userEmail, userRole: userEntity.role})}
+          onClick={() => deleteUserMutation.mutate({userEmail: userEmail})}
         >
           Delete User
         </Button>

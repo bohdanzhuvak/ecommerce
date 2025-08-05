@@ -1,0 +1,8 @@
+{
+  "token": "hashtoken",
+  "user": {
+    "email": "admin@gmail.com",
+    "name": "string",
+    "role": "EMPLOYEE"
+  }
+}

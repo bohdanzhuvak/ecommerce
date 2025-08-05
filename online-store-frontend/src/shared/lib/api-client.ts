@@ -12,3 +12,10 @@ api.interceptors.response.use(
   (response) => response.data,
   (error) => handleResponseError(error),
 );
+//dev interceptor for mock data
+api.interceptors.request.use(config=> {
+  if (config.url && !config.url.endsWith('.json')){
+    config.url += '.json'
+  }
+  return config;
+})

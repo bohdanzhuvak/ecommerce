@@ -2,16 +2,16 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 
 import {api} from '@/shared/lib/api-client';
 import {QueryConfig} from '@/shared/lib/react-query';
-import {Client} from '@/shared/types/api';
+import {User} from "./api.types.ts";
 
-export const getClients = (): Promise<Client[]> => {
-  return api.get(`/clients`);
+export const getUsers = (): Promise<User[]> => {
+  return api.get(`/users`);
 };
 
 export const getClientsQueryOptions = () => {
   return queryOptions({
     queryKey: ['clients'],
-    queryFn: getClients,
+    queryFn: getUsers,
   });
 };
 
