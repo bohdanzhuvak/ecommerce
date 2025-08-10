@@ -4,7 +4,6 @@ import io.github.bohdanzhuvak.onlinestore.user.dto.cart.AddToCartRequest;
 import io.github.bohdanzhuvak.onlinestore.user.dto.cart.CartResponse;
 import io.github.bohdanzhuvak.onlinestore.user.dto.cart.UpdateCartItemRequest;
 import io.github.bohdanzhuvak.onlinestore.user.service.CartService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

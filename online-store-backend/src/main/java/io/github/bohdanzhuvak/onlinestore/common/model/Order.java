@@ -2,6 +2,7 @@ package io.github.bohdanzhuvak.onlinestore.common.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -10,18 +11,24 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "orders") // "order" зарезервировано в SQL
+@Builder
+@Table(name = "orders")
 public class Order {
   @Id
   @GeneratedValue
@@ -35,8 +42,17 @@ public class Order {
 
   private BigDecimal totalPrice;
 
+  @CreatedDate
   private LocalDateTime createdAt;
 
   @Enumerated(EnumType.STRING)
   private OrderStatus status;
+
+  public void addItem(OrderItem item) {
+    if (items == null) {
+      items = new ArrayList<>();
+    }
+    items.add(item);
+    item.setOrder(this);
+  }
 }
