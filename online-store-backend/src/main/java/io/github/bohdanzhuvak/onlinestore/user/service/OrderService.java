@@ -27,8 +27,8 @@ public class OrderService {
   private final OrderMapper orderMapper;
   private final UserRepository userRepository;
 
-  public List<OrderResponse> getOrders() {
-    List<Order> orders = orderRepository.findAll();
+  public List<OrderResponse> getOrdersByUser(Long userId) {
+    List<Order> orders = orderRepository.findAllByUser_Id(userId);
     return orderMapper.toResponse(orders);
   }
 

@@ -2,6 +2,8 @@ package io.github.bohdanzhuvak.onlinestore.user.controller;
 
 import io.github.bohdanzhuvak.onlinestore.user.dto.order.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.user.service.OrderService;
+import io.github.bohdanzhuvak.onlinestore.common.auth.security.CurrentUser;
+import io.github.bohdanzhuvak.onlinestore.common.auth.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,16 +20,14 @@ import java.util.List;
 public class OrderController {
   private final OrderService orderService;
 
-  private final Long mockUserId = 0L; // Mock user ID for demonstration purposes
-
   @GetMapping
-  public List<OrderResponse> getOrders() {
-    return orderService.getOrders();
+  public List<OrderResponse> getOrders(@CurrentUser UserPrincipal user) {
+    return orderService.getOrdersByUser(user.getId());
   }
 
   @PostMapping
-  public OrderResponse createOrderFromCart() {
-    return orderService.createOrder(mockUserId);
+  public OrderResponse createOrderFromCart(@CurrentUser UserPrincipal user) {
+    return orderService.createOrder(user.getId());
   }
 
   @PutMapping("{id}/cancel")
