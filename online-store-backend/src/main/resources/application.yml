@@ -13,3 +13,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+security:
+  jwt:
+    access:
+      secret: ${JWT_ACCESS_SECRET:change-me-access-32-bytes-minimum-change-me}
+      ttl-ms: ${JWT_ACCESS_TTL_MS:900000} # 15 minutes
+    refresh:
+      secret: ${JWT_REFRESH_SECRET:change-me-refresh-32-bytes-minimum-change}
+      ttl-ms: ${JWT_REFRESH_TTL_MS:604800000} # 7 days
