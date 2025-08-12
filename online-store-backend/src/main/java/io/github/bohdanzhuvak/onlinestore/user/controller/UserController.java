@@ -1,29 +1,36 @@
 package io.github.bohdanzhuvak.onlinestore.user.controller;
 
-import io.github.bohdanzhuvak.onlinestore.user.dto.user.UserResponse;
 import io.github.bohdanzhuvak.onlinestore.common.auth.security.CurrentUser;
 import io.github.bohdanzhuvak.onlinestore.common.auth.security.UserPrincipal;
-import io.github.bohdanzhuvak.onlinestore.common.repository.UserRepository;
+import io.github.bohdanzhuvak.onlinestore.user.dto.user.UpdateUserRequest;
+import io.github.bohdanzhuvak.onlinestore.user.dto.user.UserResponse;
+import io.github.bohdanzhuvak.onlinestore.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/users/me")
 @RequiredArgsConstructor
 public class UserController {
-  private final UserRepository userRepository;
+  private final UserService userService;
 
-  @GetMapping("/me")
+  @GetMapping
   public UserResponse getCurrentUser(@CurrentUser UserPrincipal user) {
-    var entity = userRepository.findById(user.getId()).orElseThrow();
-    return UserResponse.builder()
-        .id(entity.getId())
-        .username(entity.getUsername())
-        .email(entity.getEmail())
-        .role(entity.getRole().name())
-        .build();
+    return userService.getUser(user.getId());
+  }
+
+  @PutMapping
+  public UserResponse updateCurrentUser(@CurrentUser UserPrincipal user, @RequestBody UpdateUserRequest updateUserRequest) {
+    return userService.updateUser(user.getId(), updateUserRequest);
+  }
+
+  @DeleteMapping
+  public void deleteCurrentUser(@CurrentUser UserPrincipal user) {
+    userService.deleteUser(user.getId());
   }
 }
