@@ -1,10 +1,9 @@
 package io.github.bohdanzhuvak.onlinestore.admin.mapper;
 
+import io.github.bohdanzhuvak.onlinestore.admin.dto.category.CategoryResponse;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.category.CreateCategoryRequest;
 import io.github.bohdanzhuvak.onlinestore.common.model.Category;
-import io.github.bohdanzhuvak.onlinestore.admin.dto.category.CategoryResponse;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
