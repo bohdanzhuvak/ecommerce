@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.admin.service;
 
+import io.github.bohdanzhuvak.onlinestore.admin.dto.product.CreateProductRequest;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.product.ProductResponse;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.product.UpdateProductRequest;
 import io.github.bohdanzhuvak.onlinestore.admin.mapper.AdminProductMapper;
@@ -14,6 +15,12 @@ import org.springframework.stereotype.Service;
 public class AdminProductService {
   private final ProductRepository productRepository;
   private final AdminProductMapper adminProductMapper;
+
+  public ProductResponse addProduct(CreateProductRequest productRequest) {
+    Product product = adminProductMapper.createProduct(productRequest);
+    product = productRepository.save(product);
+    return adminProductMapper.toResponse(product);
+  }
 
   public ProductResponse updateProduct(Long id, UpdateProductRequest product) {
     Product existingProduct = productRepository.findById(id).orElseThrow(()-> new NotFoundException("Product not found with id: " + id));

@@ -1,7 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.admin.controller;
 
 import io.github.bohdanzhuvak.onlinestore.admin.dto.order.OrderResponse;
-import lombok.NoArgsConstructor;
+import io.github.bohdanzhuvak.onlinestore.admin.service.AdminOrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/admin/orders")
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class AdminOrderController {
+  private final AdminOrderService adminOrderService;
 
   @GetMapping
   public Page<OrderResponse> getOrders(Pageable pageable) {
-    throw new UnsupportedOperationException();
+    return adminOrderService.getOrders(pageable);
   }
 }

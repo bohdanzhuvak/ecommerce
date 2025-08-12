@@ -3,8 +3,9 @@ package io.github.bohdanzhuvak.onlinestore.admin.controller;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.category.CategoryResponse;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.category.CreateCategoryRequest;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.category.UpdateCategoryRequest;
+import io.github.bohdanzhuvak.onlinestore.admin.service.AdminCategoryService;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,21 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/admin/categories")
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class AdminCategoryController {
+  private final AdminCategoryService adminCategoryService;
 
   @PostMapping
   public CategoryResponse addCategory(@RequestBody @Valid CreateCategoryRequest request) {
-    throw new UnsupportedOperationException();
+    return adminCategoryService.addCategory(request);
   }
 
   @PutMapping("/{id}")
-  public CategoryResponse updateCategory(@PathVariable String id, @RequestBody @Valid UpdateCategoryRequest request) {
-    throw new UnsupportedOperationException();
+  public CategoryResponse updateCategory(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request) {
+    return adminCategoryService.updateCategory(id, request);
   }
 
   @DeleteMapping("/{id}")
-  public void deleteCategory(@PathVariable String id) {
-    throw new UnsupportedOperationException();
+  public void deleteCategory(@PathVariable Long id) {
+    adminCategoryService.deleteCategory(id);
   }
 }
