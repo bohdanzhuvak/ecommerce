@@ -10,6 +10,8 @@ import io.github.bohdanzhuvak.onlinestore.common.model.User;
 import io.github.bohdanzhuvak.onlinestore.common.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,7 +46,10 @@ public class AuthController {
     response.setToken(accessToken);
     response.setRole(user.getRole());
     refreshTokenService.store(refreshToken, user.getEmail(), refreshTtlMillis);
-    return ResponseEntity.ok().header("X-Refresh-Token", refreshToken).body(response);
+    ResponseCookie cookie = buildRefreshCookie(refreshToken);
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(response);
   }
 
   @PostMapping("/register")
@@ -61,12 +66,15 @@ public class AuthController {
     response.setToken(accessToken);
     response.setRole(user.getRole());
     refreshTokenService.store(refreshToken, user.getEmail(), refreshTtlMillis);
-    return ResponseEntity.ok().header("X-Refresh-Token", refreshToken).body(response);
+    ResponseCookie cookie = buildRefreshCookie(refreshToken);
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(response);
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<AuthResponse> refresh(@RequestHeader("X-Refresh-Token") String refreshToken) {
-    if (!jwtService.isRefreshTokenValid(refreshToken)) {
+  public ResponseEntity<AuthResponse> refresh(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+    if (refreshToken == null || !jwtService.isRefreshTokenValid(refreshToken)) {
       return ResponseEntity.status(401).build();
     }
     String email = refreshTokenService.getEmailByToken(refreshToken);
@@ -81,10 +89,21 @@ public class AuthController {
     AuthResponse response = new AuthResponse();
     response.setToken(newAccess);
     response.setRole(user.getRole());
-    return ResponseEntity.ok().header("X-Refresh-Token", newRefresh).body(response);
+    ResponseCookie cookie = buildRefreshCookie(newRefresh);
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(response);
   }
 
-  
+  private ResponseCookie buildRefreshCookie(String refreshToken) {
+    return ResponseCookie.from("refreshToken", refreshToken)
+        .httpOnly(true)
+        .secure(false)
+        .sameSite("Lax")
+        .path("/api/v1/auth")
+        .maxAge(refreshTtlMillis / 1000)
+        .build();
+  }
 }
 
 

@@ -1,22 +1,22 @@
 package io.github.bohdanzhuvak.onlinestore.common.auth;
 
-import io.github.bohdanzhuvak.onlinestore.common.dto.LoginRequest;
-import io.github.bohdanzhuvak.onlinestore.common.dto.RegisterRequest;
 import io.github.bohdanzhuvak.onlinestore.common.model.Role;
 import io.github.bohdanzhuvak.onlinestore.common.model.User;
 import io.github.bohdanzhuvak.onlinestore.common.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -70,7 +70,7 @@ class AuthIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
-        .andExpect(header().exists("X-Refresh-Token"));
+        .andExpect(header().exists(HttpHeaders.SET_COOKIE));
   }
 
   @Test
@@ -80,7 +80,34 @@ class AuthIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
-        .andExpect(header().exists("X-Refresh-Token"));
+        .andExpect(header().exists("Set-Cookie"));
+  }
+
+  @Test
+  void refreshWithCookieWorks() throws Exception {
+    // login to get cookie
+    String loginBody = "{\"email\":\"user@example.com\",\"password\":\"password\"}";
+    var mvcResult = mockMvc.perform(post("/api/v1/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(loginBody))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    // Extract refresh cookie from response
+    jakarta.servlet.http.Cookie[] cookies = mvcResult.getResponse().getCookies();
+    Cookie refreshCookie = null;
+    for (Cookie c : cookies) {
+      if ("refreshToken".equals(c.getName())) {
+        refreshCookie = c;
+        break;
+      }
+    }
+
+    org.junit.jupiter.api.Assertions.assertNotNull(refreshCookie, "refreshToken cookie should be present");
+
+    mockMvc.perform(post("/api/v1/auth/refresh").cookie(refreshCookie))
+        .andExpect(status().isOk())
+        .andExpect(header().exists("Set-Cookie"));
   }
 }
 
