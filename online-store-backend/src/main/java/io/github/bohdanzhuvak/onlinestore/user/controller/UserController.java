@@ -5,6 +5,7 @@ import io.github.bohdanzhuvak.onlinestore.common.auth.security.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.user.dto.user.UpdateUserRequest;
 import io.github.bohdanzhuvak.onlinestore.user.dto.user.UserResponse;
 import io.github.bohdanzhuvak.onlinestore.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class UserController {
   }
 
   @PutMapping
-  public UserResponse updateCurrentUser(@CurrentUser UserPrincipal user, @RequestBody UpdateUserRequest updateUserRequest) {
+  public UserResponse updateCurrentUser(@CurrentUser UserPrincipal user, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
     return userService.updateUser(user.getId(), updateUserRequest);
   }
 

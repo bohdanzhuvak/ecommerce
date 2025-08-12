@@ -3,6 +3,7 @@ package io.github.bohdanzhuvak.onlinestore.admin.controller;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.user.UpdateUserRequest;
 import io.github.bohdanzhuvak.onlinestore.admin.dto.user.UserResponse;
 import io.github.bohdanzhuvak.onlinestore.admin.service.AdminUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +27,7 @@ public class AdminUserController {
   }
 
   @PutMapping("/{id}")
-  public UserResponse updateUser(@PathVariable Long id, UpdateUserRequest updateUserRequest) {
+  public UserResponse updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
     return adminUserService.updateUser(id, updateUserRequest);
   }
 

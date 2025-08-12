@@ -1,11 +1,12 @@
 package io.github.bohdanzhuvak.onlinestore.user.controller;
 
+import io.github.bohdanzhuvak.onlinestore.common.auth.security.CurrentUser;
+import io.github.bohdanzhuvak.onlinestore.common.auth.security.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.user.dto.cart.AddToCartRequest;
 import io.github.bohdanzhuvak.onlinestore.user.dto.cart.CartResponse;
 import io.github.bohdanzhuvak.onlinestore.user.dto.cart.UpdateCartItemRequest;
 import io.github.bohdanzhuvak.onlinestore.user.service.CartService;
-import io.github.bohdanzhuvak.onlinestore.common.auth.security.CurrentUser;
-import io.github.bohdanzhuvak.onlinestore.common.auth.security.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +28,12 @@ public class CartController {
   }
 
   @PostMapping("/add")
-  public CartResponse addToCart(@CurrentUser UserPrincipal user, @RequestBody AddToCartRequest request) {
+  public CartResponse addToCart(@CurrentUser UserPrincipal user, @Valid @RequestBody AddToCartRequest request) {
     return cartService.addToCart(user.getId(), request);
   }
 
   @PutMapping("/update")
-  public CartResponse updateCart(@CurrentUser UserPrincipal user, @RequestBody UpdateCartItemRequest request) {
+  public CartResponse updateCart(@CurrentUser UserPrincipal user, @Valid @RequestBody UpdateCartItemRequest request) {
     return cartService.updateCart(user.getId(), request);
   }
 
