@@ -40,6 +40,22 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ErrorBoundary: AppRootErrorBoundary,
       children: [
         {
+          path: paths.app.catalog.path,
+          lazy: async () => {
+            const {CatalogRoute, catalogLoader} = await import('./routes/app/catalog');
+            return {Component: CatalogRoute, loader: catalogLoader(queryClient)};
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.product.path,
+          lazy: async () => {
+            const {ProductDetailsRoute, productLoader} = await import('./routes/app/product');
+            return {Component: ProductDetailsRoute, loader: productLoader(queryClient)};
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
           path: paths.app.cart.path,
           lazy: async () => {
             const {CartRoute, cartLoader} = await import(
