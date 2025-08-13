@@ -60,5 +60,19 @@ export const paths = {
       path: 'orders/moderation',
       getHref: () => '/app/orders/moderation',
     },
+    admin: {
+      products: {
+        path: 'admin/products',
+        getHref: () => '/app/admin/products',
+      },
+      categories: {
+        path: 'admin/categories',
+        getHref: () => '/app/admin/categories',
+      },
+      orders: {
+        path: 'admin/orders',
+        getHref: () => '/app/admin/orders',
+      },
+    },
   },
 } as const;

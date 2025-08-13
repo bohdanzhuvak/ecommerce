@@ -21,7 +21,7 @@ public class AdminProductController {
   private final AdminProductService adminProductService;
 
   @PostMapping
-  public ProductResponse addProduct(@Valid CreateProductRequest request) {
+  public ProductResponse addProduct(@Valid @RequestBody CreateProductRequest request) {
     return adminProductService.addProduct(request);
   }
 

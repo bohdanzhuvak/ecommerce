@@ -3,7 +3,7 @@ import {useMemo} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router';
 
 import {paths} from '@/config/paths';
-import {ProtectedRoute} from '@/shared/lib/auth/protected-route';
+import {AdminRoute, ProtectedRoute, UserRoute} from '@/shared/lib/auth/protected-route';
 
 import {AppRoot, AppRootErrorBoundary} from './routes/app/root';
 
@@ -43,7 +43,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.catalog.path,
           lazy: async () => {
             const {CatalogRoute, catalogLoader} = await import('./routes/app/catalog');
-            return {Component: CatalogRoute, loader: catalogLoader(queryClient)};
+            return {Component: () => (<UserRoute><CatalogRoute/></UserRoute>), loader: catalogLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
@@ -51,33 +51,23 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.product.path,
           lazy: async () => {
             const {ProductDetailsRoute, productLoader} = await import('./routes/app/product');
-            return {Component: ProductDetailsRoute, loader: productLoader(queryClient)};
+            return {Component: () => (<UserRoute><ProductDetailsRoute/></UserRoute>), loader: productLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
           path: paths.app.cart.path,
           lazy: async () => {
-            const {CartRoute, cartLoader} = await import(
-              './routes/app/cart/cart'
-              );
-            return {
-              Component: CartRoute,
-              loader: cartLoader(queryClient),
-            };
+            const {CartRoute, cartLoader} = await import('./routes/app/cart/cart');
+            return {Component: () => (<UserRoute><CartRoute/></UserRoute>), loader: cartLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
           path: paths.app.orders.path,
           lazy: async () => {
-            const {OrdersRoute, ordersLoader} = await import(
-              './routes/app/orders/orders'
-              );
-            return {
-              Component: OrdersRoute,
-              loader: ordersLoader(queryClient),
-            };
+            const {OrdersRoute, ordersLoader} = await import('./routes/app/orders/orders');
+            return {Component: () => (<UserRoute><OrdersRoute/></UserRoute>), loader: ordersLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
@@ -85,7 +75,31 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.ordersModeration.path,
           lazy: async () => {
             const {ModerationOrdersRoute} = await import('./routes/app/orders/moderation');
-            return {Component: ModerationOrdersRoute};
+            return {Component: () => (<AdminRoute><ModerationOrdersRoute/></AdminRoute>)};
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.admin.orders.path,
+          lazy: async () => {
+            const {AdminOrdersRoute, adminOrdersLoader} = await import('./routes/app/admin/orders');
+            return {Component: () => (<AdminRoute><AdminOrdersRoute/></AdminRoute>), loader: adminOrdersLoader(queryClient)};
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.admin.products.path,
+          lazy: async () => {
+            const {AdminProductsRoute, adminProductsLoader} = await import('./routes/app/admin/products');
+            return {Component: () => (<AdminRoute><AdminProductsRoute/></AdminRoute>), loader: adminProductsLoader(queryClient)};
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.admin.categories.path,
+          lazy: async () => {
+            const {AdminCategoriesRoute, adminCategoriesLoader} = await import('./routes/app/admin/categories');
+            return {Component: () => (<AdminRoute><AdminCategoriesRoute/></AdminRoute>), loader: adminCategoriesLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
