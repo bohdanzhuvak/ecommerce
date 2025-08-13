@@ -5,14 +5,10 @@ import {ConfirmationDialog} from '@/shared/components/ui/dialog';
 import {useNotifications} from '@/shared/components/ui/notifications';
 import {useClearCart} from "@/features/cart/api/clear-cart";
 
-type ClearCartProps = {
-  clientEmail: string;
-};
 
-export const ClearCart = ({clientEmail}: ClearCartProps) => {
+export const ClearCart = () => {
   const {addNotification} = useNotifications();
   const clearCartMutation = useClearCart({
-    clientEmail,
     mutationConfig: {
       onSuccess: () => {
         addNotification({
@@ -43,7 +39,7 @@ export const ClearCart = ({clientEmail}: ClearCartProps) => {
           isLoading={clearCartMutation.isPending}
           type="button"
           variant="destructive"
-          onClick={() => clearCartMutation.mutate({clientEmail: clientEmail})}
+          onClick={() => clearCartMutation.mutate(undefined)}
         >
           Clear cart
         </Button>

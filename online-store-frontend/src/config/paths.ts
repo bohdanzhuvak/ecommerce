@@ -28,10 +28,7 @@ export const paths = {
       path: '',
       getHref: () => '/app',
     },
-    book: {
-      path: 'books/:bookName',
-      getHref: (bookName: string) => `/app/books/${bookName}`,
-    },
+    // No book-specific route currently
     cart: {
       path: ':clientEmail/cart',
       getHref: (clientEmail: string) => `/app/${clientEmail}/cart`,

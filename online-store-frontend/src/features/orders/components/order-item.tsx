@@ -1,9 +1,6 @@
 import React from 'react';
 import {OrderDTO} from '../api/get-orders';
-import {useConfirmOrder} from '../api/confirm-order';
-import {Button} from '@/shared/components/ui/button';
-import {useNotifications} from '@/shared/components/ui/notifications';
-import {Authorization, ROLES} from '@/shared/lib/auth/authorization';
+//
 
 interface OrderItemProps {
   order: OrderDTO;
@@ -21,7 +18,8 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
+      case 'created':
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'confirmed':
@@ -39,48 +37,28 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
     }
   };
 
-  const {addNotification} = useNotifications();
-  const confirmOrderMutation = useConfirmOrder({
-    mutationConfig: {
-      onSuccess: () => {
-        addNotification({
-          type: 'success',
-          title: 'Order confirmed',
-          message: 'Order has been successfully confirmed.'
-        });
-      },
-      onError: (error) => {
-        addNotification({
-          type: 'error',
-          title: 'Failed to confirm order',
-          message: error.message,
-        });
-      }
-    }
-  });
+  // No confirm action on backend; keep simple presentation
 
   return (
     <div className="border rounded-lg p-6 bg-white shadow-sm">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold">Order #{order.id}</h3>
-          <span className="font-medium"> by:</span> {order.clientEmail}
-          <p className="text-sm text-gray-600">{formatDate(order.orderDate)}</p>
+          <p className="text-sm text-gray-600">{formatDate(order.createdAt)}</p>
         </div>
         <div className="text-right">
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.employeeEmail ? 'confirmed' : 'pending')}`}>
-            {order.employeeEmail ? 'confirmed' : 'pending'}
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+            {order.status}
           </span>
-          <p className="text-lg font-bold text-blue-600 mt-1">${order.price.toFixed(2)}</p>
+          <p className="text-lg font-bold text-blue-600 mt-1">${order.totalPrice.toFixed(2)}</p>
         </div>
       </div>
 
       <div className="space-y-3">
-        {order.bookItems.map((item) => (
-          <div key={item.bookName} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+        {order.items.map((item) => (
+          <div key={`${item.productId}-${item.productName}`} className="flex justify-between items-center p-3 bg-gray-50 rounded">
             <div className="flex-1">
-              <h4 className="font-medium">{item.bookName}</h4>
+              <h4 className="font-medium">{item.productName}</h4>
             </div>
             <div className="text-right">
               <p className="font-medium">Quantity: {item.quantity}</p>
@@ -88,27 +66,6 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           </div>
         ))}
       </div>
-
-      {order.employeeEmail && (
-        <div className="mt-4 pt-4 border-t">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Confirmed by:</span> {order.employeeEmail}
-          </p>
-        </div>
-      )}
-      {!order.employeeEmail && (
-        <Authorization allowedRoles={[ROLES.EMPLOYEE]}>
-          <div className="mt-4 pt-4 border-t flex justify-end">
-            <Button
-              isLoading={confirmOrderMutation.isPending}
-              onClick={() => confirmOrderMutation.mutate(order.id)}
-              variant="default"
-            >
-              {confirmOrderMutation.isPending ? 'Confirming...' : 'Confirm Order'}
-            </Button>
-          </div>
-        </Authorization>
-      )}
     </div>
   );
 };

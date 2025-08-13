@@ -16,40 +16,41 @@ export const ClientsList = () => {
     );
   }
 
-  const clients = clientsQuery.data;
+  const clients = clientsQuery.data?.content;
 
   if (!clients) return null;
 
   return (
     <Table
-      data={clients}
+      // Table requires BaseEntity, but admin users don't match; cast for display-only usage
+      data={clients as unknown as any[]}
       columns={[
         {
           title: 'Id',
           field: 'id',
-          Cell({entry: {id}}) {
-            return <Link to={paths.app.user.getHref(id)}>{id}</Link>;
+          Cell({entry: {id}}: any) {
+            return <Link to={paths.app.user.getHref(String(id))}>{id}</Link>;
           },
         },
         {
           title: 'Email',
           field: 'email',
-          Cell({entry: {email}}) {
+          Cell({entry: {email}}: any) {
             return <span>{email}</span>;
           },
         },
         {
-          title: 'Name',
-          field: 'name',
-          Cell({entry: {name}}) {
-            return <span>{name}</span>;
+          title: 'Username',
+          field: 'username',
+          Cell({entry: {username}}: any) {
+            return <span>{username}</span>;
           },
         },
         {
-          title: 'Balance',
-          field: 'balance',
-          Cell({entry: {balance}}) {
-            return <span>{balance}</span>;
+          title: 'Role',
+          field: 'role',
+          Cell({entry: {role}}: any) {
+            return <span>{role}</span>;
           },
         }
       ]}

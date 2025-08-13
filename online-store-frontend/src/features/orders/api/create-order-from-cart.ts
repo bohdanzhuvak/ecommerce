@@ -3,29 +3,23 @@ import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 import {OrderDTO} from './get-orders';
 
-export interface CreateOrderFromCartRequest {
-  clientEmail: string;
-}
-
-export const createOrderFromCart = ({clientEmail}: CreateOrderFromCartRequest): Promise<OrderDTO> => {
-  return api.post(`/orders/from-cart/${clientEmail}`);
+export const createOrderFromCart = (): Promise<OrderDTO> => {
+  return api.post(`/orders`);
 };
 
 type UseCreateOrderFromCartOptions = {
-  clientEmail: string;
-  mutationConfig?: MutationConfig<(employeeEmail?: string) => Promise<OrderDTO>>;
+  mutationConfig?: MutationConfig<() => Promise<OrderDTO>>;
 };
 
-export const useCreateOrderFromCart = ({clientEmail, mutationConfig}: UseCreateOrderFromCartOptions) => {
+export const useCreateOrderFromCart = ({mutationConfig}: UseCreateOrderFromCartOptions = {}) => {
   const queryClient = useQueryClient();
   const {onSuccess, ...restConfig} = mutationConfig || {};
 
   return useMutation({
-    mutationFn: () => createOrderFromCart({clientEmail}),
+    mutationFn: () => createOrderFromCart(),
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({queryKey: ['orders', clientEmail]});
-      queryClient.invalidateQueries({queryKey: ['cart', clientEmail]});
-      queryClient.invalidateQueries({queryKey: ['authenticated-user']});
+      queryClient.invalidateQueries({queryKey: ['orders']});
+      queryClient.invalidateQueries({queryKey: ['cart']});
       onSuccess?.(...args);
     },
     ...restConfig,

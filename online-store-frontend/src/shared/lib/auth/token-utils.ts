@@ -21,12 +21,13 @@ export const addAuthToken = async (config: InternalAxiosRequestConfig) => {
     try {
       token = await refreshTokenFn();
     } catch {
-      await apiWithCredentials.post('/auth/logout');
+      // Backend has no logout endpoint; clear local token and notify.
       useNotifications.getState().addNotification({
         type: 'error',
         title: 'Session expired',
         message: 'Your session has expired. Please log in to continue.',
       });
+      TokenManagementEntity.clear();
       return;
     }
     config.headers.Authorization = `Bearer ${token}`;

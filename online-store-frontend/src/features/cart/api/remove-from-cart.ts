@@ -3,19 +3,15 @@ import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 import {CartDTO} from './get-cart';
 
-export const removeFromCart = ({clientEmail, bookName}: {
-  clientEmail: string;
-  bookName: string
-}): Promise<CartDTO> => {
-  return api.delete(`/cart/${clientEmail}/remove/${bookName}`);
+export const removeFromCart = ({productId}: { productId: number }): Promise<CartDTO> => {
+  return api.put(`/cart/update`, {productId: productId, quantity: 0});
 };
 
 type UseRemoveFromCartOptions = {
-  clientEmail: string;
   mutationConfig?: MutationConfig<typeof removeFromCart>;
 };
 
-export const useRemoveFromCart = ({clientEmail, mutationConfig}: UseRemoveFromCartOptions) => {
+export const useRemoveFromCart = ({mutationConfig}: UseRemoveFromCartOptions) => {
   const queryClient = useQueryClient();
 
   const {onSuccess, ...restConfig} = mutationConfig || {};
@@ -23,7 +19,7 @@ export const useRemoveFromCart = ({clientEmail, mutationConfig}: UseRemoveFromCa
   return useMutation({
     mutationFn: removeFromCart,
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({queryKey: ['cart', clientEmail]});
+      queryClient.invalidateQueries({queryKey: ['cart']});
       onSuccess?.(...args);
     },
     ...restConfig

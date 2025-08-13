@@ -9,18 +9,16 @@ export type Meta = {
   totalPages: number;
 };
 
-export interface User extends BaseEntity {
+export type User = {
+  id: number;
+  username: string;
   email: string;
-  name: string;
-  role: 'EMPLOYEE' | 'CLIENT';
-  balance?: number;
-  phone?: string;
-  birthDate?: string;
-}
+  role: typeof ROLES[keyof typeof ROLES];
+};
 
 export type AuthResponse = {
   token: string;
-  user: User;
+  role: typeof ROLES[keyof typeof ROLES];
 };
 
 export interface Comment extends BaseEntity {
@@ -31,3 +29,8 @@ export interface Comment extends BaseEntity {
 export interface JwtRefreshResponse {
   token: string;
 }
+
+export const ROLES = {
+  ADMIN: 'ADMIN',
+  USER: 'USER',
+} as const;

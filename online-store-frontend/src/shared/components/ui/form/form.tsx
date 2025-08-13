@@ -14,13 +14,13 @@ import {
   UseFormProps,
   UseFormReturn,
 } from 'react-hook-form';
-import {z, ZodType} from 'zod';
+import {ZodType} from 'zod';
 
 import {cn} from '@/shared/utils/cn';
 
 import {Label} from './label';
 import {Error as ErrorComponent} from '@/shared/components/ui/form/error';
-import {ZodTypeDef} from "zod/v3/types";
+type ZodTypeDef = any;
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -173,12 +173,12 @@ const FormMessage = React.forwardRef<
 FormMessage.displayName = 'FormMessage';
 
 type FormProps<TSchema extends ZodType<any, ZodTypeDef, any>> = {
-  onSubmit: SubmitHandler<z.output<TSchema>>;
+  onSubmit: SubmitHandler<any>;
   schema: TSchema;
   className?: string;
-  children: (methods: UseFormReturn<z.output<TSchema>>) => React.ReactNode;
-  options?: Omit<UseFormProps<z.output<TSchema>>, 'resolver'> & {
-    defaultValues?: z.input<TSchema>;
+  children: (methods: UseFormReturn<any>) => React.ReactNode;
+  options?: Omit<UseFormProps<any>, 'resolver'> & {
+    defaultValues?: any;
   };
   id?: string;
   error?: string;
@@ -194,7 +194,7 @@ const Form = <TSchema extends ZodType<any, ZodTypeDef, any>>({
                                                                schema,
                                                                error,
                                                              }: FormProps<TSchema>) => {
-  const form = useForm<z.output<TSchema>>({
+  const form = useForm<any>({
     ...options,
     resolver: zodResolver(schema),
   });

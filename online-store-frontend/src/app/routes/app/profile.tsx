@@ -1,7 +1,7 @@
 import {UpdateProfile} from '@/features/users/components/update-profile';
 import {ContentLayout} from '@/shared/components/layouts';
 import {useUser} from '@/shared/lib/auth/auth';
-import {Authorization, ROLES} from "@/shared/lib/auth/authorization";
+//
 import {DeleteUser} from "@/features/users/components/delete-user";
 
 type EntryProps = {
@@ -40,18 +40,7 @@ export const ProfileRoute = () => {
         <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
           <dl className="sm:divide-y sm:divide-gray-200">
             <Entry label="Email" value={user.data.email}/>
-            <Entry label="Name" value={user.data.name}/>
-            <Authorization allowedRoles={[ROLES.EMPLOYEE]}>
-              <Entry label="Role" value={user.data.role}/>
-              <Entry label="Birth date" value={user.data.birthDate ?? "N/A"}/>
-              <Entry label="Phone number" value={user.data.phone ?? "N/A"}/>
-            </Authorization>
-            <Authorization allowedRoles={[ROLES.CLIENT]}>
-              <Entry
-                label="Balance"
-                value={user.data.balance != null ? user.data.balance.toString() : "N/A"}
-              />
-            </Authorization>
+            <Entry label="Username" value={user.data.username}/>
             <DeleteUser userEmail={user.data.email}/>
           </dl>
         </div>

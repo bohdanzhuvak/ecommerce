@@ -11,7 +11,7 @@ export const SearchBar = ({
                           }: SearchProps) => {
   const [keyword, setKeyword] = React.useState('');
 
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;

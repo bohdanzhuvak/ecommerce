@@ -2,40 +2,39 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 import {api} from '@/shared/lib/api-client';
 import {QueryConfig} from '@/shared/lib/react-query';
 
-export interface OrderBookItemDTO {
-  bookName: string;
+export interface OrderItemDTO {
+  productId: number;
+  productName: string;
   quantity: number;
+  pricePerUnit: number;
 }
 
 export interface OrderDTO {
   id: number;
-  clientEmail: string;
-  employeeEmail?: string;
-  orderDate: string;
-  price: number;
-  bookItems: OrderBookItemDTO[];
+  createdAt: string;
+  totalPrice: number;
+  status: string;
+  items: OrderItemDTO[];
 }
 
-export const getOrders = ({clientEmail}: { clientEmail: string }): Promise<OrderDTO[]> => {
-  return api.get(`/orders/client/${clientEmail}`);
+export const getOrders = (): Promise<OrderDTO[]> => {
+  return api.get(`/orders`);
 };
 
-export const getOrdersQueryOptions = (clientEmail: string) => {
+export const getOrdersQueryOptions = () => {
   return queryOptions({
-    queryKey: ['orders', clientEmail],
-    queryFn: () => getOrders({clientEmail}),
-    enabled: !!clientEmail,
+    queryKey: ['orders'],
+    queryFn: () => getOrders(),
   });
 };
 
 type UseOrdersOptions = {
-  clientEmail: string;
   queryConfig?: QueryConfig<typeof getOrdersQueryOptions>;
 };
 
-export const useOrders = ({clientEmail, queryConfig}: UseOrdersOptions) => {
+export const useOrders = ({queryConfig}: UseOrdersOptions) => {
   return useQuery({
-    ...getOrdersQueryOptions(clientEmail),
+    ...getOrdersQueryOptions(),
     ...queryConfig,
   });
 };

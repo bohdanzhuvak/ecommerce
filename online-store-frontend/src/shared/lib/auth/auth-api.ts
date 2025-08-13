@@ -3,11 +3,12 @@ import {LoginInput, RegisterInput} from '@/shared/lib/auth/types';
 import {AuthResponse, User} from '@/shared/types/api';
 
 export const getUser = (): Promise<User> => {
-  return api.get('/auth/me');
+  return api.get('/users/me');
 };
 
-export const logout = (): Promise<void> => {
-  return api.post('/auth/logout');
+// Backend does not expose a logout endpoint. We just clear local auth state.
+export const logout = async (): Promise<void> => {
+  return Promise.resolve();
 };
 
 export const loginWithUsernameAndPassword = (

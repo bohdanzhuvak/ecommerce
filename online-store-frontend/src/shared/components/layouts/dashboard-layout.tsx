@@ -1,4 +1,4 @@
-import {Book, Home, Package, PanelLeft, User2, Users} from 'lucide-react';
+import {Home, Package, PanelLeft, ShoppingCart, User2, Users} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
 import {NavLink, useNavigate, useNavigation} from 'react-router';
 
@@ -7,7 +7,7 @@ import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Drawer, DrawerContent, DrawerTrigger,} from '@/shared/components/ui/drawer';
 import {useLogout, useUser} from '@/shared/lib/auth/auth';
-import {Authorization, ROLES, useAuthorization} from '@/shared/lib/auth/authorization';
+import {Authorization, useAuthorization} from '@/shared/lib/auth/authorization';
 import {cn} from '@/shared/utils/cn';
 
 import {
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import {Link} from '../ui/link';
+import {ROLES} from "@/shared/types/api.ts";
 
 type SideNavigationItem = {
   name: string;
@@ -81,22 +82,20 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
   const userEmail = useUser().data?.email ?? '';
   const navigation = [
     {name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: Home},
-    {name: 'Books', to: paths.app.books.getHref(), icon: Book},
     {name: 'Orders', to: paths.app.ordersModeration.getHref(), icon: Package},
     {name: 'Users', to: paths.app.users.getHref(), icon: Users},
   ].filter(Boolean) as SideNavigationItem[];
 
   const customerNavigation = [
-    {name: 'Books', to: paths.app.books.getHref(), icon: Book},
-    {name: 'Cart', to: paths.app.cart.getHref(userEmail), icon: Book},
-    {name: 'Your Orders', to: paths.app.orders.getHref(userEmail), icon: Users},
+    {name: 'Cart', to: paths.app.cart.getHref(userEmail), icon: ShoppingCart},
+    {name: 'Your Orders', to: paths.app.orders.getHref(userEmail), icon: Package},
   ].filter(Boolean) as SideNavigationItem[];
 
-  const isEmployee = checkAccess({allowedRoles: [ROLES.EMPLOYEE]});
+  const isEmployee = checkAccess({allowedRoles: [ROLES.ADMIN]});
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <Authorization allowedRoles={[ROLES.EMPLOYEE]}>
+      <Authorization allowedRoles={[ROLES.ADMIN]}>
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-black sm:flex">
           <nav className="flex flex-col items-center gap-4 px-2 py-4">
             <div className="flex h-16 shrink-0 items-center px-4">

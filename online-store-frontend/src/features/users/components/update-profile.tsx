@@ -7,7 +7,6 @@ import {useNotifications} from '@/shared/components/ui/notifications';
 import {useLogout, useUser} from '@/shared/lib/auth/auth';
 
 import {UpdateProfileInput, updateProfileInputSchema, useUpdateProfile,} from '../api/update-profile';
-import {Authorization} from "@/shared/lib/auth/authorization";
 
 export const UpdateProfile = () => {
   const user = useUser();
@@ -68,18 +67,12 @@ export const UpdateProfile = () => {
         id="update-profile"
         onSubmit={(values) => {
           const data: UpdateProfileInput = {...values};
-          if (!data.password) {
-            delete data.password;
-          }
           updateProfileMutation.mutate({data});
         }}
         options={{
           defaultValues: {
             email: user.data?.email ?? '',
-            name: user.data?.name ?? '',
-            phone: user.data?.phone ?? '',
-            birthDate: user.data?.birthDate ? new Date(user.data.birthDate).toISOString().split('T')[0] : '',
-            password: '',
+            username: user.data?.username ?? '',
           },
         }}
         schema={updateProfileInputSchema}
@@ -95,31 +88,10 @@ export const UpdateProfile = () => {
               registration={register('email')}
             />
             <Input
-              label="Name"
-              error={formState.errors['name']}
-              registration={register('name')}
+              label="Username"
+              error={formState.errors['username']}
+              registration={register('username')}
             />
-            <Input
-              label="New Password"
-              type="password"
-              error={formState.errors['password']}
-              registration={register('password')}
-              autoComplete="new-password"
-              placeholder="Leave blank to keep current password"
-            />
-            <Authorization allowedRoles={['EMPLOYEE']}>
-              <Input
-                label="Phone"
-                error={formState.errors['phone']}
-                registration={register('phone')}
-              />
-              <Input
-                label="Birth Date"
-                type="date"
-                error={formState.errors['birthDate']}
-                registration={register('birthDate')}
-              />
-            </Authorization>
           </>
         )}
       </Form>

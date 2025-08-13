@@ -3,43 +3,35 @@ import {api} from '@/shared/lib/api-client';
 import {QueryConfig} from '@/shared/lib/react-query';
 
 export interface CartItemDTO {
-  id: number;
-  book: {
-    name: string;
-    author: string;
-    price: number;
-    ageGroup: string;
-    language: string;
-  };
+  productId: number;
+  productName: string;
   quantity: number;
+  price: number;
 }
 
 export interface CartDTO {
-  id: number;
-  clientEmail: string;
   items: CartItemDTO[];
+  totalPrice: number;
 }
 
-export const getCart = ({clientEmail}: { clientEmail: string }): Promise<CartDTO> => {
-  return api.get(`/cart/${clientEmail}`);
+export const getCart = (): Promise<CartDTO> => {
+  return api.get(`/cart`);
 };
 
-export const getCartQueryOptions = (clientEmail: string) => {
+export const getCartQueryOptions = () => {
   return queryOptions({
-    queryKey: ['cart', clientEmail],
-    queryFn: () => getCart({clientEmail: clientEmail}),
-    enabled: !!clientEmail,
+    queryKey: ['cart'],
+    queryFn: () => getCart(),
   });
 };
 
 type UseCartOptions = {
-  clientEmail: string;
   queryConfig?: QueryConfig<typeof getCartQueryOptions>;
 };
 
-export const useCart = ({clientEmail, queryConfig}: UseCartOptions) => {
+export const useCart = ({queryConfig}: UseCartOptions) => {
   return useQuery({
-    ...getCartQueryOptions(clientEmail),
+    ...getCartQueryOptions(),
     ...queryConfig,
   });
 };

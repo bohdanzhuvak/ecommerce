@@ -3,7 +3,8 @@ import {QueryClient} from '@tanstack/react-query';
 import {getClientsQueryOptions} from '@/features/users/api/get-users.ts';
 import {ClientsList} from '@/features/users/components/clients-list';
 import {ContentLayout} from '@/shared/components/layouts';
-import {Authorization, ROLES} from '@/shared/lib/auth/authorization';
+import {Authorization} from '@/shared/lib/auth/authorization';
+import {ROLES} from "@/shared/types/api.ts";
 
 export const usersLoader = (queryClient: QueryClient) => async () => {
   const query = getClientsQueryOptions();
@@ -19,7 +20,7 @@ export const UsersRoute = () => {
     <ContentLayout title="Clients">
       <Authorization
         forbiddenFallback={<div>Only employees can view this.</div>}
-        allowedRoles={[ROLES.EMPLOYEE]}
+        allowedRoles={[ROLES.ADMIN]}
       >
         <ClientsList/>
       </Authorization>

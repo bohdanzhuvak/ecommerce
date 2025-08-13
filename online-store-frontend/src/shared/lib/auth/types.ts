@@ -6,6 +6,7 @@ export const loginInputSchema = z.object({
 });
 
 export const registerInputSchema = z.object({
+  username: z.string().min(2, 'Required'),
   email: z.string().email().min(5, 'Required'),
   password: z.string().min(5, 'Required'),
 });

@@ -1,29 +1,8 @@
 import * as React from 'react';
-
-import {Comment, User} from '@/shared/types/api';
-
 import {useUser} from './auth';
-
-export enum ROLES {
-  EMPLOYEE = 'EMPLOYEE',
-  CLIENT = 'CLIENT',
-}
+import {ROLES} from "@/shared/types/api.ts";
 
 type RoleTypes = keyof typeof ROLES;
-
-export const POLICIES = {
-  'comment:delete': (user: User, comment: Comment) => {
-    if (user.role === 'EMPLOYEE') {
-      return true;
-    }
-
-    if (user.role === 'CLIENT' && comment.author?.id === user.id) {
-      return true;
-    }
-
-    return false;
-  },
-};
 
 export const useAuthorization = () => {
   const user = useUser();

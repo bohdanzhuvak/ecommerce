@@ -4,14 +4,12 @@ import {useAddToCart} from '../api/add-to-cart';
 import {useNotifications} from "@/shared/components/ui/notifications";
 
 interface AddToCartButtonProps {
-  bookName: string;
-  clientEmail: string;
+  productId: number;
   className?: string;
 }
 
 export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
-                                                                  bookName,
-                                                                  clientEmail,
+                                                                  productId,
                                                                   className
                                                                 }) => {
   const {addNotification} = useNotifications();
@@ -31,17 +29,16 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         });
       }
     },
-    clientEmail: clientEmail,
   });
 
   return (
     <Button
       size="sm"
-      onClick={() => addToCartMutation.mutate({clientEmail, data: {bookName, quantity: 1}})}
+      onClick={() => addToCartMutation.mutate({data: {productId: productId, quantity: 1}})}
       isLoading={addToCartMutation.isPending}
       className={className}
     >
       Add to Cart
     </Button>
   );
-}; 
+};

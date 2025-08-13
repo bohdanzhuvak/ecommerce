@@ -4,27 +4,26 @@ import {MutationConfig} from '@/shared/lib/react-query';
 import {CartDTO} from './get-cart';
 
 export interface AddToCartRequest {
-  bookName: string;
+  productId: number;
   quantity: number;
 }
 
-export const addToCart = ({clientEmail, data}: { clientEmail: string; data: AddToCartRequest }): Promise<CartDTO> => {
-  return api.post(`/cart/${clientEmail}/add`, data);
+export const addToCart = ({data}: { data: AddToCartRequest }): Promise<CartDTO> => {
+  return api.post(`/cart/add`, data);
 };
 
 type UseAddToCartOptions = {
-  clientEmail: string;
   mutationConfig?: MutationConfig<typeof addToCart>;
 };
 
-export const useAddToCart = ({clientEmail, mutationConfig}: UseAddToCartOptions) => {
+export const useAddToCart = ({mutationConfig}: UseAddToCartOptions) => {
   const queryClient = useQueryClient();
   const {onSuccess, ...restConfig} = mutationConfig || {};
 
   return useMutation({
-    mutationFn: ({data}: { data: AddToCartRequest }) => addToCart({clientEmail: clientEmail, data}),
+    mutationFn: ({data}: { data: AddToCartRequest }) => addToCart({data}),
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({queryKey: ['cart', clientEmail]});
+      queryClient.invalidateQueries({queryKey: ['cart']});
       onSuccess?.(...args);
     },
     ...restConfig,

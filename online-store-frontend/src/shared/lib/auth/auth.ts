@@ -18,12 +18,12 @@ const authConfig = {
   loginFn: async (data: LoginInput) => {
     const response = await loginWithUsernameAndPassword(data);
     TokenManagementEntity.patcher(response.token);
-    return response.user;
+    return null;
   },
   registerFn: async (data: RegisterInput) => {
     const response = await registerWithUsernameAndPassword(data);
     TokenManagementEntity.patcher(response.token);
-    return response.user;
+    return null;
   },
   logoutFn: async () => {
     await logout();

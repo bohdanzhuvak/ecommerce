@@ -3,23 +3,22 @@ import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 import {CartDTO} from './get-cart';
 
-export const clearCart = ({clientEmail}: { clientEmail: string }): Promise<CartDTO> => {
-  return api.delete(`/cart/${clientEmail}/clear`);
+export const clearCart = (): Promise<CartDTO> => {
+  return api.delete(`/cart/clear`);
 };
 
 type UseClearCartOptions = {
-  clientEmail: string;
   mutationConfig?: MutationConfig<typeof clearCart>;
 };
 
-export const useClearCart = ({clientEmail, mutationConfig}: UseClearCartOptions) => {
+export const useClearCart = ({mutationConfig}: UseClearCartOptions) => {
   const queryClient = useQueryClient();
   const {onSuccess, ...restConfig} = mutationConfig || {};
 
   return useMutation({
-    mutationFn: () => clearCart({clientEmail: clientEmail}),
+    mutationFn: () => clearCart(),
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({queryKey: ['cart', clientEmail]});
+      queryClient.invalidateQueries({queryKey: ['cart']});
       onSuccess?.(...args);
     },
     ...restConfig,

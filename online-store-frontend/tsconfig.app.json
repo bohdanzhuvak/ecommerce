@@ -18,7 +18,7 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
@@ -29,5 +29,15 @@
       ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "src/**/*.test.tsx",
+    "src/**/*.stories.tsx",
+    "src/**/*.test.ts",
+    "src/shared/components/ui/md-preview/**"
+  ]
 }

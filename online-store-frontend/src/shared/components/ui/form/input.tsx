@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {type UseFormRegisterReturn} from 'react-hook-form';
+import {type UseFormRegisterReturn, type FieldError, type Merge, type FieldErrorsImpl} from 'react-hook-form';
 
 import {cn} from '@/shared/utils/cn';
 
@@ -9,6 +9,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
   FieldWrapperPassThroughProps & {
   className?: string;
   registration: Partial<UseFormRegisterReturn>;
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

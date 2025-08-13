@@ -4,20 +4,16 @@ import {useCreateOrderFromCart} from '../api/create-order-from-cart';
 import {useNotifications} from '@/shared/components/ui/notifications';
 
 interface CreateOrderButtonProps {
-  clientEmail: string;
-  employeeEmail?: string;
   className?: string;
   disabled?: boolean;
 }
 
 export const CreateOrderButton: React.FC<CreateOrderButtonProps> = ({
-                                                                      clientEmail,
-                                                                      className,
-                                                                      disabled = false
-                                                                    }) => {
+  className,
+  disabled = false
+}) => {
   const {addNotification} = useNotifications();
   const createOrderMutation = useCreateOrderFromCart({
-    clientEmail,
     mutationConfig: {
       onSuccess: () => {
         addNotification({
@@ -31,7 +27,7 @@ export const CreateOrderButton: React.FC<CreateOrderButtonProps> = ({
 
   return (
     <Button
-      onClick={() => createOrderMutation.mutate(clientEmail)}
+      onClick={() => createOrderMutation.mutate(undefined)}
       isLoading={createOrderMutation.isPending}
       disabled={disabled || createOrderMutation.isPending}
       className={className}
