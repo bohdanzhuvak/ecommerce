@@ -4,15 +4,14 @@ import {z} from 'zod';
 import {api} from '@/shared/lib/api-client';
 import {useUser} from '@/shared/lib/auth/auth';
 import {MutationConfig} from '@/shared/lib/react-query';
+import {UpdateProfileRequest} from '../api.types';
 
 export const updateProfileInputSchema = z.object({
   email: z.string().email('Invalid email').min(1, 'Required'),
   username: z.string().min(1, 'Required'),
 });
 
-export type UpdateProfileInput = z.infer<typeof updateProfileInputSchema>;
-
-export const updateProfile = ({data}: { data: UpdateProfileInput }) => {
+export const updateProfile = ({data}: { data: UpdateProfileRequest }) => {
   return api.put(`/users/me`, data);
 };
 

@@ -1,14 +1,9 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
-import {CartDTO} from './get-cart';
+import {Cart, AddToCartRequest} from '../api.types';
 
-export interface AddToCartRequest {
-  productId: number;
-  quantity: number;
-}
-
-export const addToCart = ({data}: { data: AddToCartRequest }): Promise<CartDTO> => {
+export const addToCart = ({data}: { data: AddToCartRequest }): Promise<Cart> => {
   return api.post(`/cart/add`, data);
 };
 

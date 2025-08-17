@@ -1,20 +1,9 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {api} from '@/shared/lib/api-client';
 import {QueryConfig} from '@/shared/lib/react-query';
+import {Cart} from '../api.types';
 
-export interface CartItemDTO {
-  productId: number;
-  productName: string;
-  quantity: number;
-  price: number;
-}
-
-export interface CartDTO {
-  items: CartItemDTO[];
-  totalPrice: number;
-}
-
-export const getCart = (): Promise<CartDTO> => {
+export const getCart = (): Promise<Cart> => {
   return api.get(`/cart`);
 };
 

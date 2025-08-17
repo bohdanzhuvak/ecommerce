@@ -1,26 +1,10 @@
 import {api} from '@/shared/lib/api-client';
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {QueryConfig} from '@/shared/lib/react-query';
+import {Product} from '../api.types';
+import {Page} from '@/shared/types/api';
 
-export interface ProductDTO {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  categoryName: string;
-  imageUrls: string[];
-}
-
-export interface Page<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
-export const getProducts = (page = 0, size = 12): Promise<Page<ProductDTO>> => {
+export const getProducts = (page = 0, size = 12): Promise<Page<Product>> => {
   return api.get(`/products`, {params: {page, size}});
 };
 

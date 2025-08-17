@@ -2,8 +2,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import {Button} from '@/shared/components/ui/button';
 import {createProduct} from '@/features/admin/products/api/products';
-
-type ProductForm = { name: string; description?: string; price: number; stock: number; categoryId: number; imageUrls?: string };
+import {ProductForm} from '../api.types';
 
 export const AdminProductCreate: React.FC = () => {
   const {register, handleSubmit, reset} = useForm<ProductForm>();

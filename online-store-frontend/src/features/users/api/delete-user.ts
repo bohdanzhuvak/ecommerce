@@ -4,7 +4,7 @@ import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 
 import {getClientsQueryOptions} from './get-users.ts';
-import {DeleteUserRequest} from "./api.types.ts";
+import {DeleteUserRequest} from "../api.types";
 
 export const deleteUser = ({userEmail}: DeleteUserRequest) => {
   return api.delete(`/users/${userEmail}`)

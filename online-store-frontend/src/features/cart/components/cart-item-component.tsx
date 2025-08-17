@@ -1,12 +1,12 @@
 import React from 'react';
-import {CartItemDTO} from '../api/get-cart';
+import {CartItem} from '../api.types';
 import {RemoveFromCart} from "@/features/cart/components/remove-from-cart";
 
 interface CartItemProps {
-  item: CartItemDTO;
+  item: CartItem;
 }
 
-export const CartItem: React.FC<CartItemProps> = ({item}) => {
+export const CartItemComponent: React.FC<CartItemProps> = ({item}) => {
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg">
       <div className="flex-1">

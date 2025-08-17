@@ -5,10 +5,7 @@ import {Button} from '@/shared/components/ui/button';
 import {Form, Input} from '@/shared/components/ui/form';
 import {useRegister} from '@/shared/lib/auth/auth';
 import {registerInputSchema} from '@/shared/lib/auth/types';
-
-type RegisterFormProps = {
-  onSuccess: () => void;
-};
+import {RegisterFormProps} from '../api.types';
 
 export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
   const registering = useRegister({onSuccess});

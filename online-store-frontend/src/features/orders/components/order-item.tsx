@@ -1,9 +1,8 @@
 import React from 'react';
-import {OrderDTO} from '../api/get-orders';
-//
+import {Order} from '../api.types';
 
 interface OrderItemProps {
-  order: OrderDTO;
+  order: Order;
 }
 
 export const OrderItem: React.FC<OrderItemProps> = ({order}) => {

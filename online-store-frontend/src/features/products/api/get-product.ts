@@ -1,9 +1,9 @@
 import {api} from '@/shared/lib/api-client';
 import {queryOptions, useQuery} from '@tanstack/react-query';
-import type {ProductDTO} from './list-products';
+import type {Product} from '../api.types';
 import {QueryConfig} from '@/shared/lib/react-query';
 
-export const getProduct = (id: number | string): Promise<ProductDTO> => {
+export const getProduct = (id: number | string): Promise<Product> => {
   return api.get(`/products/${id}`);
 };
 

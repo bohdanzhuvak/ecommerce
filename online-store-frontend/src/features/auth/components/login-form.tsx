@@ -6,10 +6,7 @@ import {Form, Input} from '@/shared/components/ui/form';
 import {useLogin} from '@/shared/lib/auth/auth';
 import {loginInputSchema} from '@/shared/lib/auth/types';
 import {useState} from 'react';
-
-type LoginFormProps = {
-  onSuccess: () => void;
-};
+import {LoginFormProps} from '../api.types';
 
 export const LoginForm = ({onSuccess}: LoginFormProps) => {
   const [error, setError] = useState<string | undefined>(undefined);

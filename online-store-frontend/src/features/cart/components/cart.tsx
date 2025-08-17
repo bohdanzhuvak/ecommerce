@@ -1,5 +1,5 @@
 import React from 'react';
-import {CartItem} from './cart-item';
+import {CartItemComponent} from './cart-item-component.tsx';
 import {useCart} from '../api/get-cart';
 import {ClearCart} from "@/features/cart/components/clear-cart";
 import {CreateOrderButton} from "@/features/orders/components/create-order-button";
@@ -39,7 +39,7 @@ export const Cart: React.FC = () => {
 
         <div className="space-y-4 mb-6">
           {cart.items.map((item) => (
-            <CartItem
+            <CartItemComponent
               key={item.productId}
               item={item}
             />

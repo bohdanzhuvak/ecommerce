@@ -6,7 +6,7 @@ import {Form, FormDrawer, Input} from '@/shared/components/ui/form';
 import {useNotifications} from '@/shared/components/ui/notifications';
 import {useLogout, useUser} from '@/shared/lib/auth/auth';
 
-import {UpdateProfileInput, updateProfileInputSchema, useUpdateProfile,} from '../api/update-profile';
+import {updateProfileInputSchema, useUpdateProfile} from '../api/update-profile';
 
 export const UpdateProfile = () => {
   const user = useUser();
@@ -66,7 +66,7 @@ export const UpdateProfile = () => {
       <Form
         id="update-profile"
         onSubmit={(values) => {
-          const data: UpdateProfileInput = {...values};
+          const data = {...values};
           updateProfileMutation.mutate({data});
         }}
         options={{

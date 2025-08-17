@@ -2,8 +2,7 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import {Button} from '@/shared/components/ui/button';
 import {createCategory} from '@/features/admin/categories/api/categories';
-
-type CategoryForm = { name: string };
+import {CategoryForm} from '../api.types';
 
 export const AdminCategoryCreate: React.FC = () => {
   const {register, handleSubmit, reset} = useForm<CategoryForm>();

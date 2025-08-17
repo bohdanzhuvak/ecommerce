@@ -2,12 +2,13 @@ export interface BaseEntity {
   id: string;
   createdAt: number;
 }
-
-export type Meta = {
-  page: number;
-  total: number;
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
   totalPages: number;
-};
+  size: number;
+  number: number;
+}
 
 export type User = {
   id: number;
@@ -20,11 +21,6 @@ export type AuthResponse = {
   token: string;
   role: typeof ROLES[keyof typeof ROLES];
 };
-
-export interface Comment extends BaseEntity {
-  body: string;
-  author: User;
-}
 
 export interface JwtRefreshResponse {
   token: string;
