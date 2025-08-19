@@ -1,5 +1,5 @@
 import React from 'react';
-import {useProducts} from '@/features/products/api/list-products';
+import {useProducts} from '@/features/products/api/get-products.ts';
 import {ImageCard, ImageGalleryContainer} from '@/shared/components/ui/image-gallery/gallery';
 import {Button} from '@/shared/components/ui/button/button';
 import {Link} from '@/shared/components/ui/link';
@@ -8,7 +8,7 @@ import {Spinner} from '@/shared/components/ui/spinner';
 import {AddToCartButton} from '@/features/cart/components/add-to-cart-button';
 
 export const Catalog: React.FC = () => {
-  const {data, isLoading} = useProducts(0, 12);
+  const {data, isLoading} = useProducts({page: 0, size: 12, sort: "asc"});
 
   if (isLoading) {
     return (

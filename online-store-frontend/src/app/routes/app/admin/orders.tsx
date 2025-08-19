@@ -1,7 +1,7 @@
 import {QueryClient} from '@tanstack/react-query';
 import {ContentLayout} from '@/shared/components/layouts';
-import {AdminOrders} from '@/features/admin/orders/components';
-import {getAdminOrdersQueryOptions} from '@/features/admin/orders/api/get-orders';
+import {AdminOrdersList} from '@/features/admin/orders/components';
+import {getAdminOrdersQueryOptions} from '@/features/admin/orders/api/get-admin-orders.ts';
 
 export const adminOrdersLoader = (queryClient: QueryClient) => async () => {
   const q = getAdminOrdersQueryOptions();
@@ -12,7 +12,7 @@ export const AdminOrdersRoute = () => {
   return (
     <ContentLayout title="Admin Orders">
       <div className="mt-8">
-        <AdminOrders/>
+        <AdminOrdersList/>
       </div>
     </ContentLayout>
   );

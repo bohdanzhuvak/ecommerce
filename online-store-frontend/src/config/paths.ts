@@ -17,62 +17,62 @@ export const paths = {
   },
   app: {
     root: {
-      path: '/app',
-      getHref: () => '/app',
+      path: '/',
+      getHref: () => '/',
     },
-    dashboard: {
-      path: 'dashboard',
-      getHref: () => '/app/dashboard',
-    },
-    books: {
-      path: '',
-      getHref: () => '/app',
-    },
-    catalog: {
+    products: {
       path: 'products',
-      getHref: () => '/app/products',
+      getHref: () => '/products',
     },
     product: {
       path: 'products/:id',
-      getHref: (id: number | string) => `/app/products/${id}`,
+      getHref: (id: number | string) => `/products/${id}`,
     },
     cart: {
-      path: ':clientEmail/cart',
-      getHref: (clientEmail: string) => `/app/${clientEmail}/cart`,
+      path: 'cart',
+      getHref: () => `/cart`,
     },
     orders: {
-      path: ':clientEmail/orders',
-      getHref: (clientEmail: string) => `/app/${clientEmail}/orders`,
-    },
-    users: {
-      path: 'users',
-      getHref: () => '/app/users',
+      path: 'orders',
+      getHref: () => `/orders`,
     },
     user: {
       path: 'users/:userId',
-      getHref: (id: string) => `/app/users/${id}`,
+      getHref: (id: string) => `/users/${id}`,
     },
     profile: {
       path: 'profile',
-      getHref: () => '/app/profile',
+      getHref: () => '/profile',
+    }
+  },
+  admin: {
+    root: {
+      path: '/admin',
+      getHref: () => '/admin',
     },
-    ordersModeration: {
-      path: 'orders/moderation',
-      getHref: () => '/app/orders/moderation',
+    products: {
+      path: 'products',
+      getHref: () => '/admin/products',
     },
-    admin: {
-      products: {
-        path: 'admin/products',
-        getHref: () => '/app/admin/products',
-      },
-      categories: {
-        path: 'admin/categories',
-        getHref: () => '/app/admin/categories',
-      },
-      orders: {
-        path: 'admin/orders',
-        getHref: () => '/app/admin/orders',
-      },
+    categories: {
+      path: 'categories',
+      getHref: () => '/admin/categories',
     },
+    orders: {
+      path: 'orders',
+      getHref: () => '/admin/orders',
+    },
+    users: {
+      path: 'users',
+      getHref: () => '/admin/users',
+    },
+    dashboard: {
+      path: 'dashboard',
+      getHref: () => '/admin/dashboard',
+    },
+    profile: {
+      path: 'profile',
+      getHref: () => '/admin/profile',
+    }
   },
 } as const;

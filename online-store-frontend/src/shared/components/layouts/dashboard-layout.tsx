@@ -81,17 +81,17 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const userEmail = useUser().data?.email ?? '';
   const navigation = [
-    {name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: Home},
-    {name: 'Admin Orders', to: paths.app.admin.orders.getHref(), icon: Package},
-    {name: 'Admin Products', to: paths.app.admin.products.getHref(), icon: Package},
-    {name: 'Admin Categories', to: paths.app.admin.categories.getHref(), icon: Package},
-    {name: 'Users', to: paths.app.users.getHref(), icon: Users},
+    {name: 'Dashboard', to: paths.admin.dashboard.getHref(), icon: Home},
+    {name: 'Admin Orders', to: paths.admin.orders.getHref(), icon: Package},
+    {name: 'Admin Products', to: paths.admin.products.getHref(), icon: Package},
+    {name: 'Admin Categories', to: paths.admin.categories.getHref(), icon: Package},
+    {name: 'Users', to: paths.admin.users.getHref(), icon: Users},
   ].filter(Boolean) as SideNavigationItem[];
 
   const customerNavigation = [
-    {name: 'Catalog', to: paths.app.catalog.getHref(), icon: Package},
-    {name: 'Cart', to: paths.app.cart.getHref(userEmail), icon: ShoppingCart},
-    {name: 'Your Orders', to: paths.app.orders.getHref(userEmail), icon: Package},
+    {name: 'Catalog', to: paths.app.products.getHref(), icon: Package},
+    {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
+    {name: 'Your Orders', to: paths.app.orders.getHref(), icon: Package},
   ].filter(Boolean) as SideNavigationItem[];
 
   const isEmployee = checkAccess({allowedRoles: [ROLES.ADMIN]});
@@ -177,7 +177,6 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
             </DrawerContent>
           </Drawer>
 
-          {/* Добавляем навбар в хедер для десктопов (обычные пользователи) */}
           {!isEmployee && (
             <nav className="hidden sm:flex items-center gap-4">
               {customerNavigation.map((item) => (
@@ -213,7 +212,7 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => navigate(paths.app.profile.getHref())}
+                onClick={() => navigate(isEmployee ? paths.admin.profile.getHref() : paths.app.profile.getHref())}
                 className={cn('block px-4 py-2 text-sm text-gray-700')}
               >
                 Your Profile

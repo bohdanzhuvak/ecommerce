@@ -34,16 +34,18 @@ export const createAppRouter = (queryClient: QueryClient) =>
       path: paths.app.root.path,
       element: (
         <ProtectedRoute>
-          <AppRoot/>
+          <UserRoute>
+            <AppRoot/>
+          </UserRoute>
         </ProtectedRoute>
       ),
       ErrorBoundary: AppRootErrorBoundary,
       children: [
         {
-          path: paths.app.catalog.path,
+          path: paths.app.products.path,
           lazy: async () => {
             const {CatalogRoute, catalogLoader} = await import('./routes/app/catalog');
-            return {Component: () => (<UserRoute><CatalogRoute/></UserRoute>), loader: catalogLoader(queryClient)};
+            return {Component: () => (<CatalogRoute/>), loader: catalogLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
@@ -51,7 +53,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.product.path,
           lazy: async () => {
             const {ProductDetailsRoute, productLoader} = await import('./routes/app/product');
-            return {Component: () => (<UserRoute><ProductDetailsRoute/></UserRoute>), loader: productLoader(queryClient)};
+            return {Component: () => (<ProductDetailsRoute/>), loader: productLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
@@ -59,7 +61,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.cart.path,
           lazy: async () => {
             const {CartRoute, cartLoader} = await import('./routes/app/cart/cart');
-            return {Component: () => (<UserRoute><CartRoute/></UserRoute>), loader: cartLoader(queryClient)};
+            return {Component: () => (<CartRoute/>), loader: cartLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
@@ -67,44 +69,41 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.orders.path,
           lazy: async () => {
             const {OrdersRoute, ordersLoader} = await import('./routes/app/orders/orders');
-            return {Component: () => (<UserRoute><OrdersRoute/></UserRoute>), loader: ordersLoader(queryClient)};
+            return {Component: () => (<OrdersRoute/>), loader: ordersLoader(queryClient)};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: paths.app.ordersModeration.path,
+          path: paths.app.profile.path,
           lazy: async () => {
-            const {ModerationOrdersRoute} = await import('./routes/app/orders/moderation');
-            return {Component: () => (<AdminRoute><ModerationOrdersRoute/></AdminRoute>)};
+            const {ProfileRoute} = await import('./routes/app/profile');
+            return {Component: ProfileRoute};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
+      ],
+    },
+    {
+      path: paths.admin.root.path,
+      element: (
+        <ProtectedRoute>
+          <AdminRoute>
+            <AppRoot/>
+          </AdminRoute>
+        </ProtectedRoute>
+      ),
+      ErrorBoundary: AppRootErrorBoundary,
+      children: [
         {
-          path: paths.app.admin.orders.path,
+          path: paths.admin.dashboard.path,
           lazy: async () => {
-            const {AdminOrdersRoute, adminOrdersLoader} = await import('./routes/app/admin/orders');
-            return {Component: () => (<AdminRoute><AdminOrdersRoute/></AdminRoute>), loader: adminOrdersLoader(queryClient)};
+            const {DashboardRoute} = await import('./routes/app/dashboard');
+            return {Component: DashboardRoute};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: paths.app.admin.products.path,
-          lazy: async () => {
-            const {AdminProductsRoute, adminProductsLoader} = await import('./routes/app/admin/products');
-            return {Component: () => (<AdminRoute><AdminProductsRoute/></AdminRoute>), loader: adminProductsLoader(queryClient)};
-          },
-          ErrorBoundary: AppRootErrorBoundary,
-        },
-        {
-          path: paths.app.admin.categories.path,
-          lazy: async () => {
-            const {AdminCategoriesRoute, adminCategoriesLoader} = await import('./routes/app/admin/categories');
-            return {Component: () => (<AdminRoute><AdminCategoriesRoute/></AdminRoute>), loader: adminCategoriesLoader(queryClient)};
-          },
-          ErrorBoundary: AppRootErrorBoundary,
-        },
-        {
-          path: paths.app.users.path,
+          path: paths.admin.users.path,
           lazy: async () => {
             const {UsersRoute, usersLoader} = await import(
               './routes/app/users'
@@ -117,22 +116,47 @@ export const createAppRouter = (queryClient: QueryClient) =>
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: paths.app.profile.path,
+          path: paths.admin.orders.path,
+          lazy: async () => {
+            const {AdminOrdersRoute, adminOrdersLoader} = await import('./routes/app/admin/orders');
+            return {
+              Component: () => (<AdminOrdersRoute/>),
+              loader: adminOrdersLoader(queryClient)
+            };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.admin.products.path,
+          lazy: async () => {
+            const {AdminProductsRoute, adminProductsLoader} = await import('./routes/app/admin/products');
+            return {
+              Component: () => (<AdminProductsRoute/>),
+              loader: adminProductsLoader(queryClient)
+            };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.admin.categories.path,
+          lazy: async () => {
+            const {AdminCategoriesRoute, adminCategoriesLoader} = await import('./routes/app/admin/categories');
+            return {
+              Component: () => (<AdminCategoriesRoute/>),
+              loader: adminCategoriesLoader(queryClient)
+            };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.admin.profile.path,
           lazy: async () => {
             const {ProfileRoute} = await import('./routes/app/profile');
             return {Component: ProfileRoute};
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
-        {
-          path: paths.app.dashboard.path,
-          lazy: async () => {
-            const {DashboardRoute} = await import('./routes/app/dashboard');
-            return {Component: DashboardRoute};
-          },
-          ErrorBoundary: AppRootErrorBoundary,
-        },
-      ],
+      ]
     },
     {
       path: '*',

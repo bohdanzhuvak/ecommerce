@@ -13,10 +13,15 @@ export const getProductQueryOptions = (id: number | string) =>
     queryFn: () => getProduct(id),
   });
 
-export const useProduct = (
-  id: number | string,
-  opts?: QueryConfig<typeof getProductQueryOptions>,
-) =>
+type UseProductOptions = {
+  id: number | string;
+  opts?: QueryConfig<typeof getProductQueryOptions>;
+}
+
+export const useProduct = ({
+                             id,
+                             opts
+                           }: UseProductOptions) =>
   useQuery({
     ...getProductQueryOptions(id),
     ...opts,

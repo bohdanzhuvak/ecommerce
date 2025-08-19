@@ -1,12 +1,12 @@
 import React from 'react';
-import {useQuery} from '@tanstack/react-query';
-import {getAdminOrdersQueryOptions} from '@/features/admin/orders/api/get-orders';
+import {useAdminOrders} from '@/features/admin/orders/api/get-admin-orders.ts';
 import {Spinner} from '@/shared/components/ui/spinner';
 
-export const AdminOrders: React.FC = () => {
-  const {data, isLoading} = useQuery(getAdminOrdersQueryOptions());
-  if (isLoading) return <div className="flex h-48 w-full items-center justify-center"><Spinner size="lg"/></div>;
-  const orders = data?.content ?? [];
+export const AdminOrdersList: React.FC = () => {
+  const ordersQuery = useAdminOrders({})
+  if (ordersQuery.isLoading) return <div className="flex h-48 w-full items-center justify-center"><Spinner size="lg"/>
+  </div>;
+  const orders = ordersQuery.data?.content ?? [];
   return (
     <div className="space-y-4">
       {orders.map(o => (

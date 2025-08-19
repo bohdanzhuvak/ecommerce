@@ -7,7 +7,7 @@ import {AddToCartButton} from '@/features/cart/components/add-to-cart-button';
 export const ProductDetails: React.FC = () => {
   const params = useParams();
   const id = params.id as string;
-  const {data, isLoading} = useProduct(id);
+  const {data, isLoading} = useProduct({id});
 
   if (isLoading) {
     return (

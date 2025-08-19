@@ -1,3 +1,3 @@
-export {AdminOrders} from './orders';
+export {AdminOrdersList} from './orders-list.tsx';
 
 
