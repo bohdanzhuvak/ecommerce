@@ -1,35 +1,102 @@
 import React from 'react';
-import {useForm} from 'react-hook-form';
 import {Button} from '@/shared/components/ui/button';
-import {createProduct} from '@/features/admin/products/api/products';
-import {ProductForm} from '../api.types';
+import {useCreateProduct} from '@/features/admin/products/api/create-product.ts';
+import {CreateProductRequest, ProductForm, createProductFormSchema} from '../api.types';
+import {useNotifications} from "@/shared/components/ui/notifications";
+import {Authorization} from "@/shared/lib/auth/authorization.tsx";
+import {ROLES} from "@/shared/types/api.ts";
+import {Form, FormDrawer, Input, Textarea} from "@/shared/components/ui/form";
+import {Plus} from "lucide-react";
 
-export const AdminProductCreate: React.FC = () => {
-  const {register, handleSubmit, reset} = useForm<ProductForm>();
-  const [isLoading, setLoading] = React.useState(false);
-  const onSubmit = async (values: ProductForm) => {
-    setLoading(true);
-    try {
-      const payload = {
-        ...values,
-        imageUrls: values.imageUrls ? values.imageUrls.split(',').map(s => s.trim()) : [],
-      };
-      await createProduct(payload);
-      reset();
-    } finally {
-      setLoading(false);
+export const CreateProduct: React.FC = () => {
+  const {addNotification} = useNotifications();
+  const createProductMutation = useCreateProduct({
+    mutationConfig: {
+      onSuccess: () => {
+        addNotification({
+          type: 'success',
+          title: 'Product created successfully',
+        });
+      }
     }
-  };
+  });
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      <input className="border p-2 w-full" placeholder="Name" {...register('name', {required: true})}/>
-      <textarea className="border p-2 w-full" placeholder="Description" {...register('description')}/>
-      <input className="border p-2 w-full" type="number" step="0.01" placeholder="Price" {...register('price', {valueAsNumber: true})}/>
-      <input className="border p-2 w-full" type="number" placeholder="Stock" {...register('stock', {valueAsNumber: true})}/>
-      <input className="border p-2 w-full" type="number" placeholder="Category ID" {...register('categoryId', {valueAsNumber: true})}/>
-      <input className="border p-2 w-full" placeholder="Image URLs (comma separated)" {...register('imageUrls')}/>
-      <Button type="submit" isLoading={isLoading}>Create Product</Button>
-    </form>
+    <Authorization allowedRoles={[ROLES.ADMIN]}>
+      <FormDrawer isDone={createProductMutation.isSuccess}
+                  triggerButton={
+                    <Button size="sm" icon={<Plus className="size-4"/>}>
+                      Create Product
+                    </Button>
+                  }
+                  submitButton={
+                    <Button
+                      form="create-product"
+                      type="submit"
+                      size="sm"
+                      isLoading={createProductMutation.isPending}
+                    >
+                      Submit
+                    </Button>
+                  }
+                  title="CreateProduct">
+        <Form
+          id="create-product"
+          onSubmit={(values: ProductForm) => {
+            const payload: CreateProductRequest = {
+              ...values,
+              imageUrls: values.imageUrls ? values.imageUrls.split(',').map(s => s.trim()) : [],
+            };
+            createProductMutation.mutate(payload);
+          }}
+          schema={createProductFormSchema}
+        >
+          {({ register, formState }) => (
+            <>
+              <Input
+                label="Name"
+                error={formState.errors['name']}
+                registration={register('name')}
+              />
+
+              <Textarea
+                label="Description"
+                error={formState.errors['description']}
+                registration={register('description')}
+              />
+
+              <Input
+                label="Price"
+                type="number"
+                step="0.01"
+                error={formState.errors['price']}
+                registration={register('price', { valueAsNumber: true })}
+              />
+
+              <Input
+                label="Stock"
+                type="number"
+                error={formState.errors['stock']}
+                registration={register('stock', { valueAsNumber: true })}
+              />
+
+              <Input
+                label="Category ID"
+                type="number"
+                error={formState.errors['categoryId']}
+                registration={register('categoryId', { valueAsNumber: true })}
+              />
+
+              <Input
+                label="Image URLs (comma separated)"
+                error={formState.errors['imageUrls']}
+                registration={register('imageUrls')}
+              />
+            </>
+          )}
+        </Form>
+
+      </FormDrawer>
+    </Authorization>
   );
 };
 

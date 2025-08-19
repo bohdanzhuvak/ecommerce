@@ -1,3 +1,3 @@
-export {AdminProductCreate} from './create-product';
+export {CreateProduct} from './create-product';
 
 

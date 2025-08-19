@@ -11,7 +11,7 @@ type UseCreateOrderFromCartOptions = {
   mutationConfig?: MutationConfig<() => Promise<Order>>;
 };
 
-export const useCreateOrderFromCart = ({mutationConfig}: UseCreateOrderFromCartOptions = {}) => {
+export const useCreateOrderFromCart = ({mutationConfig}: UseCreateOrderFromCartOptions) => {
   const queryClient = useQueryClient();
   const {onSuccess, ...restConfig} = mutationConfig || {};
 

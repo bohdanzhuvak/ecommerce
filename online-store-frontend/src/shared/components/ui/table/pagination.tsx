@@ -130,10 +130,14 @@ export type TablePaginationProps = {
 };
 
 export const TablePagination = ({
-                                  totalPages,
-                                  currentPage,
-                                  rootUrl,
-                                }: TablePaginationProps) => {
+  totalPages,
+  currentPage,
+  rootUrl,
+}: TablePaginationProps) => {
+  if (totalPages <= 1) {
+    return null;
+  }
+
   const createHref = (page: number) => `${rootUrl}?page=${page}`;
 
   return (
@@ -144,7 +148,7 @@ export const TablePagination = ({
             <PaginationPrevious href={createHref(currentPage - 1)}/>
           </PaginationItem>
         )}
-        {currentPage > 2 && (
+        {currentPage > 3 && (
           <PaginationItem>
             <PaginationEllipsis/>
           </PaginationItem>
@@ -161,21 +165,21 @@ export const TablePagination = ({
             {currentPage}
           </PaginationLink>
         </PaginationItem>
-        {totalPages > currentPage && (
+        {currentPage < totalPages && (
           <PaginationItem>
             <PaginationLink href={createHref(currentPage + 1)}>
               {currentPage + 1}
             </PaginationLink>
           </PaginationItem>
         )}
-        {totalPages > currentPage + 1 && (
+        {currentPage < totalPages - 2 && (
           <PaginationItem>
             <PaginationEllipsis/>
           </PaginationItem>
         )}
         {currentPage < totalPages && (
           <PaginationItem>
-            <PaginationNext href={createHref(totalPages)}/>
+            <PaginationNext href={createHref(currentPage + 1)}/>
           </PaginationItem>
         )}
       </PaginationContent>

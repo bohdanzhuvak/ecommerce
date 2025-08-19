@@ -1,7 +1,5 @@
 import {ArchiveX} from 'lucide-react';
 import * as React from 'react';
-
-import {BaseEntity} from '@/shared/types/api';
 import {cn} from '@/shared/utils/cn';
 
 import {TablePagination, TablePaginationProps} from './pagination';
@@ -123,23 +121,23 @@ export {
   TableCaption,
 };
 
-type TableColumn<Entry> = {
+type TableColumn<Entry extends { id: string | number }> = {
   title: string;
   field: keyof Entry;
   Cell?({entry}: { entry: Entry }): React.ReactElement;
 };
 
-export type TableProps<Entry> = {
+export type TableProps<Entry extends { id: string | number }> = {
   data: Entry[];
   columns: TableColumn<Entry>[];
   pagination?: TablePaginationProps;
 };
 
-export const Table = <Entry extends BaseEntity>({
-                                                  data,
-                                                  columns,
-                                                  pagination,
-                                                }: TableProps<Entry>) => {
+export const Table = <Entry extends { id: string | number }>({
+                                                               data,
+                                                               columns,
+                                                               pagination,
+                                                             }: TableProps<Entry>) => {
   if (!data?.length) {
     return (
       <div className="flex h-80 flex-col items-center justify-center bg-white text-gray-500">

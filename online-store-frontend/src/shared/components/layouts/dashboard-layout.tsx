@@ -82,9 +82,9 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
   const userEmail = useUser().data?.email ?? '';
   const navigation = [
     {name: 'Dashboard', to: paths.admin.dashboard.getHref(), icon: Home},
-    {name: 'Admin Orders', to: paths.admin.orders.getHref(), icon: Package},
-    {name: 'Admin Products', to: paths.admin.products.getHref(), icon: Package},
-    {name: 'Admin Categories', to: paths.admin.categories.getHref(), icon: Package},
+    {name: 'Orders', to: paths.admin.orders.getHref(), icon: Package},
+    {name: 'Products', to: paths.admin.products.getHref(), icon: Package},
+    {name: 'Categories', to: paths.admin.categories.getHref(), icon: Package},
     {name: 'Users', to: paths.admin.users.getHref(), icon: Users},
   ].filter(Boolean) as SideNavigationItem[];
 
