@@ -6,6 +6,7 @@ import io.github.bohdanzhuvak.onlinestore.admin.dto.product.UpdateProductRequest
 import io.github.bohdanzhuvak.onlinestore.admin.mapper.AdminProductMapper;
 import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
 import io.github.bohdanzhuvak.onlinestore.common.model.Product;
+import io.github.bohdanzhuvak.onlinestore.common.model.ProductImage;
 import io.github.bohdanzhuvak.onlinestore.common.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ public class AdminProductService {
 
   public ProductResponse addProduct(CreateProductRequest productRequest) {
     Product product = adminProductMapper.createProduct(productRequest);
+    Product finalProduct = product;
+    product.setImages(productRequest.getImageUrls().stream()
+        .map(url -> new ProductImage(null, url, finalProduct))
+        .toList());
     product = productRepository.save(product);
     return adminProductMapper.toResponse(product);
   }
