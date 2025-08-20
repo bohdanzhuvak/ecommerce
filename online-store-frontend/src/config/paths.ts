@@ -8,7 +8,7 @@ export const paths = {
     getHref: () => '/',
   },
   product: {
-    path: '/products/:id',
+    path: 'products/:id',
     getHref: (id: number | string) => `/products/${id}`,
   },
   auth: {
@@ -29,20 +29,20 @@ export const paths = {
       getHref: () => '/',
     },
     cart: {
-      path: 'cart',
+      path: '/cart',
       getHref: () => `/cart`,
     },
     orders: {
-      path: 'orders',
+      path: '/orders',
       getHref: () => `/orders`,
     },
     user: {
-      path: 'users/:userId',
+      path: '/users/:userId',
       getHref: (id: string) => `/users/${id}`,
     },
     profile: {
-      path: 'profile',
-      getHref: () => '/profile',
+      path: '/profile',
+      getHref: () => `/profile`,
     }
   },
   admin: {
@@ -67,8 +67,8 @@ export const paths = {
       getHref: () => '/admin/users',
     },
     dashboard: {
-      path: 'dashboard',
-      getHref: () => '/admin/dashboard',
+      path: '',
+      getHref: () => '/admin',
     },
     profile: {
       path: 'profile',

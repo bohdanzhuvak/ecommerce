@@ -11,5 +11,3 @@ export const AdminCategoriesRoute = () => {
     </ContentLayout>
   );
 };
-
-

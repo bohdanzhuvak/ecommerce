@@ -5,7 +5,6 @@ import {getOrdersQueryOptions} from '@/features/orders/api/get-orders';
 import {useUser} from '@/shared/lib/auth/auth';
 import {Orders} from '@/features/orders/components/orders';
 import {ErrorBoundary} from 'react-error-boundary';
-//
 
 export const ordersLoader =
   (queryClient: QueryClient) =>

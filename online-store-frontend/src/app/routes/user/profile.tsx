@@ -1,7 +1,6 @@
 import {UpdateProfile} from '@/features/users/components/update-profile';
 import {ContentLayout} from '@/shared/components/layouts';
 import {useUser} from '@/shared/lib/auth/auth';
-//
 import {DeleteUser} from "@/features/users/components/delete-user";
 
 type EntryProps = {

@@ -1,4 +1,4 @@
-import {Home, Package, PanelLeft, ShoppingCart, User2, Users} from 'lucide-react';
+import {Home, Package, PanelLeft, Users, User2} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
 import {NavLink, useNavigate, useNavigation} from 'react-router';
 
@@ -7,7 +7,6 @@ import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Drawer, DrawerContent, DrawerTrigger,} from '@/shared/components/ui/drawer';
 import {useLogout, useUser} from '@/shared/lib/auth/auth';
-import {Authorization, useAuthorization} from '@/shared/lib/auth/authorization';
 import {cn} from '@/shared/utils/cn';
 
 import {
@@ -18,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import {Link} from '../ui/link';
-import {ROLES} from "@/shared/types/api.ts";
 
 type SideNavigationItem = {
   name: string;
@@ -28,16 +26,15 @@ type SideNavigationItem = {
 
 const Logo = () => {
   return (
-    <Link className="flex items-center text-white" to={paths.home.getHref()}>
+    <Link className="flex items-center text-white" to={paths.products.getHref()}>
       <img className="h-8 w-auto" src={logo} alt="Workflow"/>
-      <span className="text-sm font-semibold text-white">Nico AI</span>
+      <span className="text-sm font-semibold text-white">Admin Panel</span>
     </Link>
   );
 };
 
 const Progress = () => {
   const {state, location} = useNavigation();
-
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -69,71 +66,65 @@ const Progress = () => {
 
   return (
     <div
-      className="fixed left-0 top-0 h-1 bg-blue-500 transition-all duration-200 ease-in-out"
+      className="fixed left-0 top-0 h-1 bg-blue-500 transition-all duration-200 ease-out"
       style={{width: `${progress}%`}}
     ></div>
   );
 };
 
-export function DashboardLayout({children}: { children: React.ReactNode }) {
+export function AdminLayout({children}: { children: React.ReactNode }) {
   const logout = useLogout();
-  const {checkAccess} = useAuthorization();
   const navigate = useNavigate();
   const userEmail = useUser().data?.email ?? '';
+
   const navigation = [
-    {name: 'Dashboard', to: paths.admin.dashboard.getHref(), icon: Home},
+    {name: 'Dashboard', to: paths.admin.root.getHref(), icon: Home},
     {name: 'Orders', to: paths.admin.orders.getHref(), icon: Package},
     {name: 'Products', to: paths.admin.products.getHref(), icon: Package},
     {name: 'Categories', to: paths.admin.categories.getHref(), icon: Package},
     {name: 'Users', to: paths.admin.users.getHref(), icon: Users},
-  ].filter(Boolean) as SideNavigationItem[];
-
-  const customerNavigation = [
-    {name: 'Catalog', to: paths.products.getHref(), icon: Package},
-    {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
-    {name: 'Your Orders', to: paths.app.orders.getHref(), icon: Package},
-  ].filter(Boolean) as SideNavigationItem[];
-
-  const isEmployee = checkAccess({allowedRoles: [ROLES.ADMIN]});
+  ];
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <Authorization allowedRoles={[ROLES.ADMIN]}>
-        <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-black sm:flex">
-          <nav className="flex flex-col items-center gap-4 px-2 py-4">
-            <div className="flex h-16 shrink-0 items-center px-4">
-              <Logo/>
-            </div>
-            {navigation.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.to}
-                end={item.name !== 'Discussions'}
-                className={({isActive}) =>
-                  cn(
-                    'text-gray-300 hover:bg-gray-700 hover:text-white',
-                    'group flex flex-1 w-full items-center rounded-md p-2 text-base font-medium',
-                    isActive && 'bg-gray-900 text-white',
-                  )
-                }
-              >
-                <item.icon
-                  className={cn(
-                    'text-gray-400 group-hover:text-gray-300',
-                    'mr-4 size-6 shrink-0',
-                  )}
-                  aria-hidden="true"
-                />
-                {item.name}
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
-      </Authorization>
-      <div className={cn("flex flex-col sm:gap-4 sm:py-4", isEmployee && "sm:pl-60")}>
-        <header
-          className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:justify-end sm:border-0 sm:bg-transparent sm:px-6">
+      {/* Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-black sm:flex">
+        <nav className="flex flex-col items-center gap-4 px-2 py-4">
+          <div className="flex h-16 shrink-0 items-center px-4">
+            <Logo/>
+          </div>
+          {navigation.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.to}
+              end
+              className={({isActive}) =>
+                cn(
+                  'text-gray-300 hover:bg-gray-700 hover:text-white',
+                  'group flex flex-1 w-full items-center rounded-md p-2 text-base font-medium',
+                  isActive && 'bg-gray-900 text-white',
+                )
+              }
+            >
+              <item.icon
+                className={cn(
+                  'text-gray-400 group-hover:text-gray-300',
+                  'mr-4 size-6 shrink-0',
+                )}
+                aria-hidden="true"
+              />
+              {item.name}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:justify-end sm:border-0 sm:bg-transparent sm:px-6">
           <Progress/>
+          
+          {/* Mobile menu */}
           <Drawer>
             <DrawerTrigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">
@@ -149,8 +140,7 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
                 <div className="flex h-16 shrink-0 items-center px-4">
                   <Logo/>
                 </div>
-                {/* Обновляем мобильное меню в зависимости от роли */}
-                {(isEmployee ? navigation : customerNavigation).map((item) => (
+                {navigation.map((item) => (
                   <NavLink
                     key={item.name}
                     to={item.to}
@@ -177,28 +167,7 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
             </DrawerContent>
           </Drawer>
 
-          {!isEmployee && (
-            <nav className="hidden sm:flex items-center gap-4">
-              {customerNavigation.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.to}
-                  end
-                  className={({isActive}) =>
-                    cn(
-                      isActive
-                        ? 'text-white bg-gray-800'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700',
-                      'px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                    )
-                  }
-                >
-                  {item.name}
-                </NavLink>
-              ))}
-            </nav>
-          )}
-
+          {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -212,10 +181,10 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => navigate(isEmployee ? paths.admin.profile.getHref() : paths.app.profile.getHref())}
+                onClick={() => navigate(paths.admin.profile.getHref())}
                 className={cn('block px-4 py-2 text-sm text-gray-700')}
               >
-                Your Profile
+                Admin Profile
               </DropdownMenuItem>
               <DropdownMenuSeparator/>
               <DropdownMenuItem
@@ -227,6 +196,7 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
+        
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           {children}
         </main>
