@@ -1,14 +1,12 @@
 import { EventEmitter } from './event-emitter';
 import { TokenManager } from './token-manager';
 import { UserManager } from './user-manager';
-import { RouteGuard } from './route-guard';
 import { AuthState, User, AuthEvents } from '../types';
 
 export class AuthManager extends EventEmitter {
   private static instance: AuthManager;
   private tokenManager: TokenManager;
   private userManager: UserManager;
-  private routeGuard: RouteGuard;
   private _state: AuthState = {
     isAuthenticated: false,
     user: null,
@@ -20,7 +18,6 @@ export class AuthManager extends EventEmitter {
     super();
     this.tokenManager = new TokenManager();
     this.userManager = new UserManager();
-    this.routeGuard = new RouteGuard();
     
     this.setupEventListeners();
   }
@@ -84,8 +81,8 @@ export class AuthManager extends EventEmitter {
       this._state.error = null;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const { token, user } = await this.userManager.login(credentials);
-      this.tokenManager.setToken(token);
+      const { token, refreshToken, user, expiresAt, refreshExpiresAt } = await this.userManager.login(credentials);
+      this.tokenManager.setToken(token, refreshToken, expiresAt, refreshExpiresAt);
       
       this._state.user = user;
       this._state.isAuthenticated = true;
@@ -112,8 +109,8 @@ export class AuthManager extends EventEmitter {
       this._state.error = null;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const { token, user } = await this.userManager.register(credentials);
-      this.tokenManager.setToken(token);
+      const { token, refreshToken, user, expiresAt, refreshExpiresAt } = await this.userManager.register(credentials);
+      this.tokenManager.setToken(token, refreshToken, expiresAt, refreshExpiresAt);
       
       this._state.user = user;
       this._state.isAuthenticated = true;
@@ -164,7 +161,25 @@ export class AuthManager extends EventEmitter {
   }
 
   public getRedirectPath(originalPath: string): string {
-    return this.routeGuard.getRedirectPath(originalPath, this._state.user);
+    // Simple redirect logic
+    if (!this._state.isAuthenticated) {
+      return `/auth/login?redirectTo=${encodeURIComponent(originalPath)}`;
+    }
+
+    if (this._state.user?.role === 'ADMIN' && originalPath.startsWith('/admin')) {
+      return originalPath;
+    }
+
+    if (this._state.user?.role === 'USER' && !originalPath.startsWith('/admin')) {
+      return originalPath;
+    }
+
+    // Redirect based on role
+    if (this._state.user?.role === 'ADMIN') {
+      return '/admin';
+    } else {
+      return '/';
+    }
   }
 
   private handleTokenExpired(): void {

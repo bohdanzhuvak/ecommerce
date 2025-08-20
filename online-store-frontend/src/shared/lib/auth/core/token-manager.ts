@@ -1,13 +1,16 @@
 import { EventEmitter } from './event-emitter';
-import { api } from '@/shared/lib/api-client';
+import { env } from '@/config/env';
 
 export interface TokenData {
   token: string;
+  refreshToken: string;
   expiresAt: number;
+  refreshExpiresAt: number;
 }
 
 export class TokenManager extends EventEmitter {
   private static readonly TOKEN_KEY = 'auth_token';
+  private static readonly REFRESH_TOKEN_KEY = 'auth_refresh_token';
   private static readonly REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutes before expiry
   private refreshPromise: Promise<string> | null = null;
 
@@ -32,15 +35,25 @@ export class TokenManager extends EventEmitter {
     return tokenData.token;
   }
 
-  public setToken(token: string): void {
-    const expiresAt = this.calculateExpiryTime(token);
-    const tokenData: TokenData = { token, expiresAt };
+  public getRefreshToken(): string | null {
+    const tokenData = this.getTokenFromStorage();
+    return tokenData?.refreshToken || null;
+  }
+
+  public setToken(token: string, refreshToken: string, expiresAt: number, refreshExpiresAt: number): void {
+    const tokenData: TokenData = {
+      token,
+      refreshToken,
+      expiresAt,
+      refreshExpiresAt
+    };
     this.saveTokenToStorage(tokenData);
     this.emit('tokenSet', token);
   }
 
   public clearToken(): void {
     localStorage.removeItem(TokenManager.TOKEN_KEY);
+    localStorage.removeItem(TokenManager.REFRESH_TOKEN_KEY);
     this.emit('tokenCleared');
   }
 
@@ -60,14 +73,35 @@ export class TokenManager extends EventEmitter {
 
   private async performTokenRefresh(): Promise<string> {
     try {
-      const response = await api.post('/auth/refresh');
-      // Handle both direct response and wrapped response
-      const newToken = response.token || response.data?.token || response;
-      
-      this.setToken(newToken);
-      this.emit('tokenRefreshed', newToken);
-      
-      return newToken;
+      const refreshToken = this.getRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+
+      const response = await fetch(`${env.API_URL}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include', // Include cookies
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to refresh token');
+      }
+
+      const data = await response.json();
+
+      // Update tokens
+      this.setToken(
+        data.token,
+        data.refreshToken,
+        data.tokenInfo.expiresAt,
+        data.tokenInfo.refreshExpiresAt
+      );
+
+      this.emit('tokenRefreshed', data.token);
+      return data.token;
     } catch (error) {
       this.clearToken();
       this.emit('tokenExpired');
@@ -101,16 +135,6 @@ export class TokenManager extends EventEmitter {
 
   private shouldRefreshToken(tokenData: TokenData): boolean {
     return Date.now() >= (tokenData.expiresAt - TokenManager.REFRESH_THRESHOLD);
-  }
-
-  private calculateExpiryTime(token: string): number {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp * 1000; // Convert to milliseconds
-    } catch {
-      // If we can't decode the token, assume it expires in 1 hour
-      return Date.now() + 60 * 60 * 1000;
-    }
   }
 
   public destroy(): void {

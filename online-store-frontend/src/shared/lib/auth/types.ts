@@ -28,6 +28,20 @@ export interface User {
   role: string;
 }
 
+export interface AuthResponse {
+  token: string;
+  refreshToken: string;
+  role: string;
+  user: User;
+  tokenInfo: TokenInfo;
+}
+
+export interface TokenInfo {
+  expiresAt: number;
+  refreshExpiresAt: number;
+  tokenType: string;
+}
+
 export const AuthEvents = {
   STATE_CHANGED: 'stateChanged',
   LOGIN_SUCCESS: 'loginSuccess',

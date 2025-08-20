@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { SimpleAuthManager } from '../simple-auth-manager';
+import { AuthManager } from '@/shared/lib/auth';
 import { AuthContextValue, AuthState, LoginInput, RegisterInput } from '../types';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [authManager] = useState(() => SimpleAuthManager.getInstance());
+  const [authManager] = useState(() => AuthManager.getInstance());
   const [state, setState] = useState<AuthState>({
     isAuthenticated: false,
     user: null,

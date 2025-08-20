@@ -1,6 +1,6 @@
 import { EventEmitter } from './event-emitter';
-import { api } from '@/shared/lib/api-client';
-import { User, AuthResponse } from '@/shared/types/api';
+import { User, AuthResponse } from '../types';
+import { env } from '@/config/env';
 
 export interface LoginCredentials {
   email: string;
@@ -22,47 +22,84 @@ export class UserManager extends EventEmitter {
     super();
   }
 
-  public async login(credentials: LoginCredentials): Promise<{ token: string; user: User }> {
+  public async login(credentials: LoginCredentials): Promise<{ token: string; refreshToken: string; user: User; expiresAt: number; refreshExpiresAt: number }> {
     try {
-      const response: AuthResponse = await api.post('/auth/login', credentials, { 
-        withCredentials: true 
+      const response = await fetch(`${env.API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(credentials),
       });
-      
-      // For now, we'll create a mock user since AuthResponse doesn't include user data
-      // In a real app, the backend should return user data with the token
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+
+      const data: AuthResponse = await response.json();
+
+      // Create user from response
       const user: User = {
-        id: 1, // This should come from backend
-        username: credentials.email.split('@')[0], // Temporary
-        email: credentials.email,
-        role: response.role
+        id: data.user.id,
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role
       };
-      
+
       this.cacheUser(user);
       this.emit('userLoaded', user);
-      return { token: response.token, user };
+
+      return {
+        token: data.token,
+        refreshToken: data.refreshToken,
+        user,
+        expiresAt: data.tokenInfo.expiresAt,
+        refreshExpiresAt: data.tokenInfo.refreshExpiresAt
+      };
     } catch (error) {
       this.emit('userError', this.extractErrorMessage(error));
       throw error;
     }
   }
 
-  public async register(credentials: RegisterCredentials): Promise<{ token: string; user: User }> {
+  public async register(credentials: RegisterCredentials): Promise<{ token: string; refreshToken: string; user: User; expiresAt: number; refreshExpiresAt: number }> {
     try {
-      const response: AuthResponse = await api.post('/auth/register', credentials, { 
-        withCredentials: true 
+      const response = await fetch(`${env.API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(credentials),
       });
-      
-      // Create user from credentials and response
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+
+      const data: AuthResponse = await response.json();
+
+      // Create user from response
       const user: User = {
-        id: 1, // This should come from backend
-        username: credentials.name,
-        email: credentials.email,
-        role: response.role
+        id: data.user.id,
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role
       };
-      
+
       this.cacheUser(user);
       this.emit('userLoaded', user);
-      return { token: response.token, user };
+
+      return {
+        token: data.token,
+        refreshToken: data.refreshToken,
+        user,
+        expiresAt: data.tokenInfo.expiresAt,
+        refreshExpiresAt: data.tokenInfo.refreshExpiresAt
+      };
     } catch (error) {
       this.emit('userError', this.extractErrorMessage(error));
       throw error;
@@ -81,7 +118,7 @@ export class UserManager extends EventEmitter {
         this.cacheUser(user);
         this.emit('userLoaded', user);
       }
-      
+
       return user;
     } catch (error) {
       this.emit('userError', this.extractErrorMessage(error));
@@ -91,11 +128,14 @@ export class UserManager extends EventEmitter {
 
   public async logout(): Promise<void> {
     try {
-      // Try to call logout endpoint if it exists
-      await api.post('/auth/logout');
+      // Call logout endpoint
+      await fetch(`${env.API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
     } catch (error) {
-      // Backend might not have logout endpoint, which is fine
-      console.warn('Logout endpoint not available:', error);
+      // Continue with logout even if API call fails
+      console.warn('Logout API call failed:', error);
     } finally {
       this.clearUserCache();
       this.emit('userLoggedOut');
@@ -107,17 +147,17 @@ export class UserManager extends EventEmitter {
     this.cacheExpiry = 0;
   }
 
-  private async loadUserFromToken(token: string): Promise<User> {
-    // Set token in headers temporarily for this request
-    const response = await api.get('/users/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return response as unknown as User;
-  }
-
   private async fetchUserFromAPI(): Promise<User> {
-    const response = await api.get('/users/me');
-    return response as unknown as User;
+    const response = await fetch(`${env.API_URL}/auth/me`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
+    }
+
+    const data = await response.json();
+    return data as User;
   }
 
   private cacheUser(user: User): void {

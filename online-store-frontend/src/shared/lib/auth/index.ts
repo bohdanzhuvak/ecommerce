@@ -1,8 +1,8 @@
-// Simple auth manager (working version)
-export * from './simple-auth-manager';
-
-// Core classes (for future use) - temporarily disabled
-// export * from './core/event-emitter';
+// Core classes
+export * from './core/event-emitter';
+export * from './core/token-manager';
+export * from './core/user-manager';
+export * from './core/auth-manager';
 
 // React components
 export * from './components/protected-route';
