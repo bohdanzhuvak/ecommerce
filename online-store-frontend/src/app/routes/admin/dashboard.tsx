@@ -1,15 +1,15 @@
 import {ContentLayout} from '@/shared/components/layouts';
-import {useUser} from '@/shared/lib/auth/auth';
+import {useAuth} from "@/shared/lib/auth";
 
 export const DashboardRoute = () => {
-  const user = useUser();
+  const user = useAuth().state.user;
   return (
     <ContentLayout title="Dashboard">
       <h1 className="text-xl">
-        Welcome, <b>{user.data?.email || 'User'}</b>
+        Welcome, <b>{user?.email || 'User'}</b>
       </h1>
       <h4 className="my-3">
-        Your role is: <b>{user.data?.role || 'Unknown'}</b>
+        Your role is: <b>{user?.role || 'Unknown'}</b>
       </h4>
     </ContentLayout>
   );

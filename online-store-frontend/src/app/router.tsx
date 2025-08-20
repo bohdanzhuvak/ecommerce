@@ -3,22 +3,22 @@ import {useMemo} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router';
 
 import {paths} from '@/config/paths';
-import {AdminRoute, UserRoute} from '@/shared/lib/auth/protected-route';
-import {PublicRoute} from '@/shared/lib/auth';
+import {AdminRoute, AuthenticatedRoute, AuthRoute, LandingRoute, UserRoute} from '@/shared/lib/auth';
 
 import {PublicRoot, PublicRootErrorBoundary} from './routes/public/root';
 import {UserRoot, UserRootErrorBoundary} from './routes/user/root';
 import {AdminRoot, AdminRootErrorBoundary} from './routes/admin/root';
+import {AuthRoot} from "@/app/routes/auth/root.tsx";
 
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
-    // Public routes
+    // Public routes (landing page, catalog)
     {
       path: paths.products.path,
       element: (
-        <PublicRoute>
+        <LandingRoute>
           <PublicRoot/>
-        </PublicRoute>
+        </LandingRoute>
       ),
       ErrorBoundary: PublicRootErrorBoundary,
       children: [
@@ -39,29 +39,49 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ],
     },
 
-    // Auth routes
+    // Auth routes (login/register)
     {
       path: paths.auth.register.path,
-      lazy: async () => {
-        const {RegisterRoute} = await import('./routes/auth/register');
-        return {Component: RegisterRoute};
-      },
+      element: (
+        <AuthRoute>
+          <AuthRoot/>
+        </AuthRoute>
+      ),
+      children: [
+        {
+          index: true,
+          lazy: async () => {
+            const {RegisterRoute} = await import('./routes/auth/register');
+            return {Component: RegisterRoute};
+          },
+        },
+      ],
     },
     {
       path: paths.auth.login.path,
-      lazy: async () => {
-        const {LoginRoute} = await import('./routes/auth/login');
-        return {Component: LoginRoute};
-      },
+      element: (
+        <AuthRoute>
+          <AuthRoot/>
+        </AuthRoute>
+      ),
+      children: [
+        {
+          index: true,
+          lazy: async () => {
+            const {LoginRoute} = await import('./routes/auth/login');
+            return {Component: LoginRoute};
+          },
+        },
+      ],
     },
 
-    // User routes
+    // User routes (cart, orders, profile)
     {
       path: paths.app.cart.path,
       element: (
-          <UserRoute>
-            <UserRoot/>
-          </UserRoute>
+        <UserRoute>
+          <UserRoot/>
+        </UserRoute>
       ),
       ErrorBoundary: UserRootErrorBoundary,
       children: [
@@ -77,9 +97,9 @@ export const createAppRouter = (queryClient: QueryClient) =>
     {
       path: paths.app.orders.path,
       element: (
-          <UserRoute>
-            <UserRoot/>
-          </UserRoute>
+        <UserRoute>
+          <UserRoot/>
+        </UserRoute>
       ),
       ErrorBoundary: UserRootErrorBoundary,
       children: [
@@ -95,9 +115,9 @@ export const createAppRouter = (queryClient: QueryClient) =>
     {
       path: paths.app.profile.path,
       element: (
-          <UserRoute>
-            <UserRoot/>
-          </UserRoute>
+        <UserRoute>
+          <UserRoot/>
+        </UserRoute>
       ),
       ErrorBoundary: UserRootErrorBoundary,
       children: [
@@ -115,9 +135,9 @@ export const createAppRouter = (queryClient: QueryClient) =>
     {
       path: paths.admin.root.path,
       element: (
-          <AdminRoute>
-            <AdminRoot/>
-          </AdminRoute>
+        <AdminRoute>
+          <AdminRoot/>
+        </AdminRoute>
       ),
       ErrorBoundary: AdminRootErrorBoundary,
       children: [
@@ -170,10 +190,20 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         {
           path: paths.admin.profile.path,
-          lazy: async () => {
-            const {ProfileRoute} = await import('./routes/user/profile');
-            return {Component: ProfileRoute};
-          },
+          element: (
+            <AuthenticatedRoute>
+              <UserRoot/>
+            </AuthenticatedRoute>
+          ),
+          children: [
+            {
+              index: true,
+              lazy: async () => {
+                const {ProfileRoute} = await import('./routes/user/profile');
+                return {Component: ProfileRoute};
+              },
+            },
+          ],
         },
       ]
     },

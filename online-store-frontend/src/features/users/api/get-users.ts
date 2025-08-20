@@ -2,7 +2,7 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 
 import {api} from '@/shared/lib/api-client';
 import {QueryConfig} from '@/shared/lib/react-query';
-import {User} from '../api.types';
+import {User} from '@/shared/types';
 
 export const getUsers = (): Promise<{ content: User[] }> => {
   return api.get(`/admin/users`);

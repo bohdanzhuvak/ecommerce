@@ -1,68 +1,89 @@
-import {Link, useSearchParams} from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
+import { paths } from '@/config/paths';
+import { Button } from '@/shared/components/ui/button';
+import { Form, Input } from '@/shared/components/ui/form';
+import { useAuth } from '@/shared/lib/auth';
+import { loginInputSchema } from '@/shared/types';
 
-import {paths} from '@/config/paths';
-import {Button} from '@/shared/components/ui/button';
-import {Form, Input} from '@/shared/components/ui/form';
-import {useLogin} from '@/shared/lib/auth/auth';
-import {loginInputSchema} from '@/shared/lib/auth/types';
-import {useState} from 'react';
-import {LoginFormProps} from '../api.types';
-
-export const LoginForm = ({onSuccess}: LoginFormProps) => {
+export const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | undefined>(undefined);
-  const login = useLogin({
-    onSuccess,
-    onError: (err: any) => {
-      setError(err.response.data || 'An unknown error occurred.');
-    },
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, state } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
 
+  useEffect(() => {
+    if (state.isAuthenticated && state.user) {
+      const targetPath = redirectTo || paths.home.getHref();
+      navigate(targetPath, { replace: true });
+    }
+  }, [state.isAuthenticated, state.user, navigate, redirectTo]);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setIsSubmitting(true);
+      setError(undefined);
+      await login(values);
+    } catch (err: any) {
+      setError(err.message || 'An unknown error occurred.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (state.isAuthenticated) {
+    return null;
+  }
+
   return (
-    <div>
+    <div className="w-full max-w-md mx-auto">
       <Form
-        onSubmit={(values: any) => {
-          login.mutate(values);
-        }}
+        onSubmit={handleSubmit}
         error={error}
         schema={loginInputSchema}
       >
-        {({register, formState}) => (
+        {({ register, formState }) => (
           <>
             <Input
               type="email"
               label="Email"
               error={formState.errors['email']}
               registration={register('email')}
+              disabled={isSubmitting}
             />
             <Input
               type="password"
               label="Password"
               error={formState.errors['password']}
               registration={register('password')}
+              disabled={isSubmitting}
             />
-            <div>
+            <div className="mt-6">
               <Button
-                isLoading={login.isPending}
+                isLoading={isSubmitting}
                 type="submit"
                 className="w-full"
+                disabled={isSubmitting}
               >
-                Log in
+                {isSubmitting ? 'Signing in...' : 'Sign in'}
               </Button>
             </div>
           </>
         )}
       </Form>
-      <div className="mt-2 flex items-center justify-end">
-        <div className="text-sm">
-          <Link
-            to={paths.auth.register.getHref(redirectTo)}
+
+      <div className="mt-4 text-center">
+        <p className="text-sm text-gray-600">
+          Don't have an account?{' '}
+          <a
+            href={paths.auth.register.getHref(redirectTo)}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            Register
-          </Link>
-        </div>
+            Sign up
+          </a>
+        </p>
       </div>
     </div>
   );

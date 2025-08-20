@@ -1,35 +1,53 @@
-import {Link, useSearchParams} from 'react-router';
+import {Link, useNavigate, useSearchParams} from 'react-router';
 
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Form, Input} from '@/shared/components/ui/form';
-import {useRegister} from '@/shared/lib/auth/auth';
-import {registerInputSchema} from '@/shared/lib/auth/types';
+import {registerInputSchema} from '@/shared/types';
+import {useEffect, useState} from 'react';
 import {RegisterFormProps} from '../api.types';
+import {useAuth} from "@/shared/lib/auth";
 
 export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
-  const registering = useRegister({onSuccess});
+  const [error, setError] = useState<string | undefined>(undefined);
+  const { register, state } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
+
+  useEffect(() => {
+    if (state.isAuthenticated && state.user) {
+      const targetPath = redirectTo || paths.home.getHref();
+      navigate(targetPath, { replace: true });
+    }
+  }, [state.isAuthenticated, state.user, navigate, redirectTo]);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setError(undefined);
+      await register(values);
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unknown error occurred.');
+    }
+  };
 
   return (
     <div>
       <Form
-        onSubmit={(values: any) => {
-          registering.mutate(values);
-        }}
+        onSubmit={handleSubmit}
+        error={error}
         schema={registerInputSchema}
-        options={{
-          shouldUnregister: true,
-        }}
       >
         {({register, formState}) => (
           <>
             <Input
               type="text"
-              label="Username"
-              error={formState.errors['username']}
-              registration={register('username')}
+              label="Name"
+              error={formState.errors['name']}
+              registration={register('name')}
             />
             <Input
               type="email"
@@ -45,7 +63,7 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
             />
             <div>
               <Button
-                isLoading={registering.isPending}
+                isLoading={state.isLoading}
                 type="submit"
                 className="w-full"
               >
@@ -61,7 +79,7 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
             to={paths.auth.login.getHref(redirectTo)}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            Log In
+            Already have an account? Sign in
           </Link>
         </div>
       </div>

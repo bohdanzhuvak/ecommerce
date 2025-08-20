@@ -4,26 +4,26 @@ import {useState} from 'react';
 import {Button} from '@/shared/components/ui/button';
 import {Form, FormDrawer, Input} from '@/shared/components/ui/form';
 import {useNotifications} from '@/shared/components/ui/notifications';
-import {useLogout, useUser} from '@/shared/lib/auth/auth';
 
 import {updateProfileInputSchema, useUpdateProfile} from '../api/update-profile';
+import {useAuth} from "@/shared/lib/auth";
 
 export const UpdateProfile = () => {
-  const user = useUser();
-  const logout = useLogout();
+  const auth = useAuth();
+  const user = auth.state.user;
   const {addNotification} = useNotifications();
   const [apiError, setApiError] = useState<string | null>(null);
   const updateProfileMutation = useUpdateProfile({
     mutationConfig: {
       onSuccess: (_data, variables) => {
-        const prevEmail = user.data?.email;
+        const prevEmail = user?.email;
         const newEmail = variables.data.email;
         if (prevEmail && newEmail && prevEmail !== newEmail) {
           addNotification({
             type: 'success',
             title: 'Email changed',
           });
-          logout.mutate(undefined);
+          auth.logout();
         } else {
           addNotification({
             type: 'success',
@@ -71,8 +71,8 @@ export const UpdateProfile = () => {
         }}
         options={{
           defaultValues: {
-            email: user.data?.email ?? '',
-            username: user.data?.username ?? '',
+            email: user?.email?? '',
+            username: user?.username ?? '',
           },
         }}
         schema={updateProfileInputSchema}

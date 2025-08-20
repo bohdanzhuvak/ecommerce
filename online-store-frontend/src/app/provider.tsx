@@ -7,8 +7,8 @@ import {HelmetProvider} from 'react-helmet-async';
 import {MainErrorFallback} from '@/shared/components/errors/main';
 import {Notifications} from '@/shared/components/ui/notifications';
 import {Spinner} from '@/shared/components/ui/spinner';
-import {AuthLoader} from '@/shared/lib/auth/auth';
 import {queryConfig} from '@/shared/lib/react-query';
+import {AuthProvider} from '@/shared/lib/auth';
 
 type AppProviderProps = {
   children: React.ReactNode;
@@ -35,15 +35,9 @@ export const AppProvider = ({children}: AppProviderProps) => {
           <QueryClientProvider client={queryClient}>
             {import.meta.env.DEV && <ReactQueryDevtools/>}
             <Notifications/>
-            <AuthLoader
-              renderLoading={() => (
-                <div className="flex h-screen w-screen items-center justify-center">
-                  <Spinner size="xl"/>
-                </div>
-              )}
-            >
+            <AuthProvider>
               {children}
-            </AuthLoader>
+            </AuthProvider>
           </QueryClientProvider>
         </HelmetProvider>
       </ErrorBoundary>

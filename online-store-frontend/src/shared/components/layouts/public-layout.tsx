@@ -1,20 +1,11 @@
-import {Package, ShoppingCart, User2} from 'lucide-react';
+import {Package} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
 import {NavLink, useNavigate} from 'react-router';
 
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
-import {useUser} from '@/shared/lib/auth/auth';
 import {cn} from '@/shared/utils/cn';
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown';
 import {Link} from '../ui/link';
 
 type SideNavigationItem = {
@@ -62,7 +53,6 @@ const Progress = () => {
 
 export function PublicLayout({children}: { children: React.ReactNode }) {
   const navigate = useNavigate();
-  const user = useUser();
 
   const navigation = [
     {name: 'Catalog', to: paths.products.getHref(), icon: Package},
@@ -75,12 +65,10 @@ export function PublicLayout({children}: { children: React.ReactNode }) {
           className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:justify-between sm:border-0 sm:bg-transparent sm:px-6">
           <Progress/>
 
-          {/* Logo */}
           <div className="flex items-center">
             <Logo/>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden sm:flex items-center gap-4">
             {navigation.map((item) => (
               <NavLink
@@ -101,59 +89,9 @@ export function PublicLayout({children}: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          {/* Right side actions */}
-          <div className="flex items-center gap-4">
-            {/* Cart button */}
-            <ShoppingCart className="size-4"/>
-
-            {/* User menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="overflow-hidden rounded-full"
-                >
-                  <span className="sr-only">Open user menu</span>
-                  <User2 className="size-6 rounded-full"/>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {user.data ? (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => navigate(paths.app.profile.getHref())}
-                      className={cn('block px-4 py-2 text-sm text-gray-700')}
-                    >
-                      Your Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator/>
-                    <DropdownMenuItem
-                      className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                      onClick={() => navigate(paths.app.cart.getHref())}
-                    >
-                      Go to Cart
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => navigate(paths.auth.login.getHref())}
-                      className={cn('block px-4 py-2 text-sm text-gray-700')}
-                    >
-                      Sign In
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => navigate(paths.auth.register.getHref())}
-                      className={cn('block px-4 py-2 text-sm text-gray-700')}
-                    >
-                      Sign Up
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <Button variant={"outline"} onClick={() => navigate(paths.auth.login.getHref())}>
+            Login
+          </Button>
         </header>
 
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

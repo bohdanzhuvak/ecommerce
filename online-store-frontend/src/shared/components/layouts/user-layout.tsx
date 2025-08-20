@@ -1,11 +1,10 @@
 import {Package, ShoppingCart, User2} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
-import {NavLink, useNavigate, useNavigation} from 'react-router';
+import {NavLink, useNavigate, useNavigation, useLocation} from 'react-router';
 
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
-import {useLogout} from '@/shared/lib/auth/auth';
 import {cn} from '@/shared/utils/cn';
 
 import {
@@ -16,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import {Link} from '../ui/link';
+import {useAuth} from "@/shared/lib/auth";
 
 type NavigationItem = {
   name: string;
@@ -72,14 +72,24 @@ const Progress = () => {
 };
 
 export function UserLayout({children}: { children: React.ReactNode }) {
-  const logout = useLogout();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
 
   const navigation = [
     {name: 'Catalog', to: paths.products.getHref(), icon: Package},
     {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
     {name: 'Orders', to: paths.app.orders.getHref(), icon: Package},
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(paths.auth.login.getHref(location.pathname));
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -134,10 +144,10 @@ export function UserLayout({children}: { children: React.ReactNode }) {
               >
                 Your Profile
               </DropdownMenuItem>
-              <DropdownMenuSeparator/>
+             <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => logout.mutate({})}
+                onClick={handleLogout}
               >
                 Sign Out
               </DropdownMenuItem>

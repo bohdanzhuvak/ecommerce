@@ -1,12 +1,11 @@
-import {Home, Package, PanelLeft, Users, User2} from 'lucide-react';
+import {Home, Package, PanelLeft, User2, Users} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
-import {NavLink, useNavigate, useNavigation} from 'react-router';
+import {NavLink, useLocation, useNavigate, useNavigation} from 'react-router';
 
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Drawer, DrawerContent, DrawerTrigger,} from '@/shared/components/ui/drawer';
-import {useLogout, useUser} from '@/shared/lib/auth/auth';
 import {cn} from '@/shared/utils/cn';
 
 import {
@@ -17,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import {Link} from '../ui/link';
+import {useAuth} from "@/shared/lib/auth";
 
 type SideNavigationItem = {
   name: string;
@@ -73,9 +73,10 @@ const Progress = () => {
 };
 
 export function AdminLayout({children}: { children: React.ReactNode }) {
-  const logout = useLogout();
   const navigate = useNavigate();
-  const userEmail = useUser().data?.email ?? '';
+  const location = useLocation();
+  const { logout } = useAuth();
+  const userEmail = useAuth().state.user?.email;
 
   const navigation = [
     {name: 'Dashboard', to: paths.admin.root.getHref(), icon: Home},
@@ -84,6 +85,15 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
     {name: 'Categories', to: paths.admin.categories.getHref(), icon: Package},
     {name: 'Users', to: paths.admin.users.getHref(), icon: Users},
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(paths.auth.login.getHref(location.pathname));
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -123,7 +133,7 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:justify-end sm:border-0 sm:bg-transparent sm:px-6">
           <Progress/>
-          
+
           {/* Mobile menu */}
           <Drawer>
             <DrawerTrigger asChild>
@@ -189,14 +199,14 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
               <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => logout.mutate({})}
+                onClick={handleLogout}
               >
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        
+
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           {children}
         </main>
