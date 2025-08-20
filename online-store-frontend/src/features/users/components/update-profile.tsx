@@ -23,7 +23,7 @@ export const UpdateProfile = () => {
             type: 'success',
             title: 'Email changed',
           });
-          logout.mutate(undefined);
+          logout.mutate({} as any);
         } else {
           addNotification({
             type: 'success',

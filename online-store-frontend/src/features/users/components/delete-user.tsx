@@ -20,7 +20,7 @@ export const DeleteUser = ({userEmail}: DeleteUserProps) => {
           type: 'success',
           title: 'User Deleted',
         });
-        logout.mutate(undefined);
+        logout.mutate({} as any);
       },
     },
   });

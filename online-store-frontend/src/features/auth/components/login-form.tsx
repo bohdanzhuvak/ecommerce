@@ -10,21 +10,27 @@ import {LoginFormProps} from '../api.types';
 
 export const LoginForm = ({onSuccess}: LoginFormProps) => {
   const [error, setError] = useState<string | undefined>(undefined);
-  const login = useLogin({
-    onSuccess,
-    onError: (err: any) => {
-      setError(err.response.data || 'An unknown error occurred.');
-    },
-  });
+  const login = useLogin();
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setError(undefined);
+      await login.mutate(values);
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unknown error occurred.');
+    }
+  };
+
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
 
   return (
     <div>
       <Form
-        onSubmit={(values: any) => {
-          login.mutate(values);
-        }}
+        onSubmit={handleSubmit}
         error={error}
         schema={loginInputSchema}
       >

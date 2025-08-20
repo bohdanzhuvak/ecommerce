@@ -134,13 +134,13 @@ export function UserLayout({children}: { children: React.ReactNode }) {
               >
                 Your Profile
               </DropdownMenuItem>
-              <DropdownMenuSeparator/>
+              {/*<DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
                 onClick={() => logout.mutate({})}
               >
                 Sign Out
-              </DropdownMenuItem>
+              </DropdownMenuItem>*/}
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

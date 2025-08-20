@@ -1,7 +1,7 @@
 import {Navigate, useLocation} from 'react-router';
 
 import {paths} from '@/config/paths';
-import {useUser} from '@/shared/lib/auth/auth';
+import {useUser} from './legacy-compatibility';
 
 export const AdminRoute = ({children}: { children: React.ReactNode }) => {
   const user = useUser();

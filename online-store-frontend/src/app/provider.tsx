@@ -7,7 +7,7 @@ import {HelmetProvider} from 'react-helmet-async';
 import {MainErrorFallback} from '@/shared/components/errors/main';
 import {Notifications} from '@/shared/components/ui/notifications';
 import {Spinner} from '@/shared/components/ui/spinner';
-import {AuthLoader} from '@/shared/lib/auth/auth';
+import {AuthLoader} from '@/shared/lib/auth';
 import {queryConfig} from '@/shared/lib/react-query';
 
 type AppProviderProps = {

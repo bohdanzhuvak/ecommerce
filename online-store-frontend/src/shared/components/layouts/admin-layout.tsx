@@ -189,7 +189,7 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
               <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => logout.mutate({})}
+                onClick={() => logout.mutate({} as any)}
               >
                 Sign Out
               </DropdownMenuItem>

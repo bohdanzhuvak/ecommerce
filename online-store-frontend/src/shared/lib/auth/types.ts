@@ -1,15 +1,61 @@
-import {z} from 'zod';
+import { z } from 'zod';
 
 export const loginInputSchema = z.object({
-  email: z.string().email().min(5, 'Required'),
-  password: z.string().min(5, 'Required'),
+  email: z.string().email(),
+  password: z.string().min(6),
 });
 
 export const registerInputSchema = z.object({
-  username: z.string().min(2, 'Required'),
-  email: z.string().email().min(5, 'Required'),
-  password: z.string().min(5, 'Required'),
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(2),
 });
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
 export type RegisterInput = z.infer<typeof registerInputSchema>;
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
+
+export const AuthEvents = {
+  STATE_CHANGED: 'stateChanged',
+  LOGIN_SUCCESS: 'loginSuccess',
+  LOGIN_ERROR: 'loginError',
+  REGISTER_SUCCESS: 'registerSuccess',
+  REGISTER_ERROR: 'registerError',
+  LOGOUT_SUCCESS: 'logoutSuccess',
+  TOKEN_EXPIRED: 'tokenExpired',
+  TOKEN_REFRESHED: 'tokenRefreshed',
+  USER_LOADED: 'userLoaded',
+  USER_ERROR: 'userError',
+} as const;
+
+export interface AuthContextValue {
+  state: AuthState;
+  login: (credentials: LoginInput) => Promise<User>;
+  register: (credentials: RegisterInput) => Promise<User>;
+  logout: () => Promise<void>;
+  canAccess: (requiredRoles?: string[]) => boolean;
+  getRedirectPath: (originalPath: string) => string;
+}
+
+// Legacy compatibility types
+export interface LegacyAuthHook {
+  data: User | null;
+  isLoading: boolean;
+  error: string | null;
+  mutate: (credentials: LoginInput | RegisterInput) => Promise<void>;
+  isPending: boolean;
+  refetch: () => Promise<void>;
+}

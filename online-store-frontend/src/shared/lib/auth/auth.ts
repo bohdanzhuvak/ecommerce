@@ -1,35 +1,8 @@
-import {configureAuth} from 'react-query-auth';
+// Re-export everything from the new architecture
+export * from './context/auth-context';
+export * from './components/protected-route';
+export * from './components/public-route';
+export * from './types';
 
-import {
-  getUser,
-  loginWithUsernameAndPassword,
-  logout,
-  registerWithUsernameAndPassword,
-} from '@/shared/lib/auth/auth-api';
-import {LoginInput, RegisterInput} from '@/shared/lib/auth/types';
-import {TokenManagementEntity} from '@/shared/lib/store/auth/token';
-
-const authConfig = {
-  userFn: async () => {
-    const token = TokenManagementEntity.selector();
-    if (!token) return null;
-    return getUser();
-  },
-  loginFn: async (data: LoginInput) => {
-    const response = await loginWithUsernameAndPassword(data);
-    TokenManagementEntity.patcher(response.token);
-    return null;
-  },
-  registerFn: async (data: RegisterInput) => {
-    const response = await registerWithUsernameAndPassword(data);
-    TokenManagementEntity.patcher(response.token);
-    return null;
-  },
-  logoutFn: async () => {
-    await logout();
-    TokenManagementEntity.clear();
-  },
-};
-
-export const {useUser, useLogin, useLogout, useRegister, AuthLoader} =
-  configureAuth(authConfig);
+// Legacy exports for backward compatibility
+export * from './legacy-compatibility';

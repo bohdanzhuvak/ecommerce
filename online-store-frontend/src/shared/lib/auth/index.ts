@@ -1,8 +1,18 @@
-export * from './auth';
-export * from './auth-api';
-export * from './authorization';
-export * from './protected-route';
-export * from './public-route';
-export * from './token-utils';
+// Simple auth manager (working version)
+export * from './simple-auth-manager';
+
+// Core classes (for future use) - temporarily disabled
+// export * from './core/event-emitter';
+
+// React components
+export * from './components/protected-route';
+export * from './components/public-route';
+
+// Context and hooks
+export * from './context/auth-context';
+
+// Types
 export * from './types';
-export * from './interceptors';
+
+// Legacy exports for backward compatibility
+export * from './auth';

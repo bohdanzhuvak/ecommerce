@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import {useNavigate} from 'react-router';
 
 import {paths} from '@/config/paths';
-import {useUser} from './auth';
+import {useUser} from './legacy-compatibility';
 import {ROLES} from '@/shared/types/api';
 
 type PublicRouteProps = {

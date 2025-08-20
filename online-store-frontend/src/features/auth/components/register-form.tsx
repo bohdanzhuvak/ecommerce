@@ -5,31 +5,42 @@ import {Button} from '@/shared/components/ui/button';
 import {Form, Input} from '@/shared/components/ui/form';
 import {useRegister} from '@/shared/lib/auth/auth';
 import {registerInputSchema} from '@/shared/lib/auth/types';
+import {useState} from 'react';
 import {RegisterFormProps} from '../api.types';
 
 export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
-  const registering = useRegister({onSuccess});
+  const [error, setError] = useState<string | undefined>(undefined);
+  const registering = useRegister();
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setError(undefined);
+      await registering.mutate(values);
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unknown error occurred.');
+    }
+  };
+
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
 
   return (
     <div>
       <Form
-        onSubmit={(values: any) => {
-          registering.mutate(values);
-        }}
+        onSubmit={handleSubmit}
+        error={error}
         schema={registerInputSchema}
-        options={{
-          shouldUnregister: true,
-        }}
       >
         {({register, formState}) => (
           <>
             <Input
               type="text"
-              label="Username"
-              error={formState.errors['username']}
-              registration={register('username')}
+              label="Name"
+              error={formState.errors['name']}
+              registration={register('name')}
             />
             <Input
               type="email"
@@ -61,7 +72,7 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
             to={paths.auth.login.getHref(redirectTo)}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            Log In
+            Already have an account? Sign in
           </Link>
         </div>
       </div>
