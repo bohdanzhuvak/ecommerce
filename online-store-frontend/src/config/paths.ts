@@ -3,6 +3,14 @@ export const paths = {
     path: '/',
     getHref: () => '/',
   },
+  products: {
+    path: '/',
+    getHref: () => '/',
+  },
+  product: {
+    path: '/products/:id',
+    getHref: (id: number | string) => `/products/${id}`,
+  },
   auth: {
     register: {
       path: '/auth/register',
@@ -19,14 +27,6 @@ export const paths = {
     root: {
       path: '/',
       getHref: () => '/',
-    },
-    products: {
-      path: 'products',
-      getHref: () => '/products',
-    },
-    product: {
-      path: 'products/:id',
-      getHref: (id: number | string) => `/products/${id}`,
     },
     cart: {
       path: 'cart',

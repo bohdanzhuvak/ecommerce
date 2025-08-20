@@ -12,7 +12,7 @@ export const LandingRoute = () => {
 
   const handleStart = () => {
     if (user.data) {
-      navigate(paths.app.products.getHref());
+      navigate(paths.home.getHref());
     } else {
       navigate(paths.auth.login.getHref());
     }

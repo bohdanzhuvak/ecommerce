@@ -89,7 +89,7 @@ export function DashboardLayout({children}: { children: React.ReactNode }) {
   ].filter(Boolean) as SideNavigationItem[];
 
   const customerNavigation = [
-    {name: 'Catalog', to: paths.app.products.getHref(), icon: Package},
+    {name: 'Catalog', to: paths.products.getHref(), icon: Package},
     {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
     {name: 'Your Orders', to: paths.app.orders.getHref(), icon: Package},
   ].filter(Boolean) as SideNavigationItem[];

@@ -10,11 +10,20 @@ import {AppRoot, AppRootErrorBoundary} from './routes/app/root';
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
-      path: paths.home.path,
+      path: paths.products.path,
       lazy: async () => {
-        const {LandingRoute} = await import('./routes/landing');
-        return {Component: LandingRoute};
+        const {CatalogRoute, catalogLoader} = await import('./routes/app/catalog');
+        return {Component: () => (<CatalogRoute/>), loader: catalogLoader(queryClient)};
       },
+      ErrorBoundary: AppRootErrorBoundary,
+    },
+    {
+      path: paths.product.path,
+      lazy: async () => {
+        const {ProductDetailsRoute, productLoader} = await import('./routes/app/product');
+        return {Component: () => (<ProductDetailsRoute/>), loader: productLoader(queryClient)};
+      },
+      ErrorBoundary: AppRootErrorBoundary,
     },
     {
       path: paths.auth.register.path,
@@ -41,22 +50,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ),
       ErrorBoundary: AppRootErrorBoundary,
       children: [
-        {
-          path: paths.app.products.path,
-          lazy: async () => {
-            const {CatalogRoute, catalogLoader} = await import('./routes/app/catalog');
-            return {Component: () => (<CatalogRoute/>), loader: catalogLoader(queryClient)};
-          },
-          ErrorBoundary: AppRootErrorBoundary,
-        },
-        {
-          path: paths.app.product.path,
-          lazy: async () => {
-            const {ProductDetailsRoute, productLoader} = await import('./routes/app/product');
-            return {Component: () => (<ProductDetailsRoute/>), loader: productLoader(queryClient)};
-          },
-          ErrorBoundary: AppRootErrorBoundary,
-        },
         {
           path: paths.app.cart.path,
           lazy: async () => {

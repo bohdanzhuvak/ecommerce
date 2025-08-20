@@ -24,7 +24,7 @@ export const AdminRoute = ({children}: { children: React.ReactNode }) => {
     return <Navigate to={paths.auth.login.getHref(location.pathname)} replace/>;
   }
   if (user.data.role == 'USER') {
-    return <Navigate to={paths.app.products.getHref()} replace/>;
+    return <Navigate to={paths.home.getHref()} replace/>;
   }
   return children;
 };

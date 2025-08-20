@@ -37,7 +37,7 @@ export const Catalog: React.FC = () => {
             </div>
             <div className="mt-3 flex items-start justify-between gap-3">
               <div>
-                <Link to={paths.app.product.getHref(p.id)} className="text-white font-semibold">
+                <Link to={paths.product.getHref(p.id)} className="text-white font-semibold">
                   {p.name}
                 </Link>
                 <div className="text-sm text-gray-400">{p.categoryName}</div>
@@ -48,7 +48,7 @@ export const Catalog: React.FC = () => {
               </div>
             </div>
             <div className="mt-4 flex justify-between">
-              <Link to={paths.app.product.getHref(p.id)}>
+              <Link to={paths.product.getHref(p.id)}>
                 <Button size="sm" variant="outline">Details</Button>
               </Link>
               <AddToCartButton productId={p.id} />
