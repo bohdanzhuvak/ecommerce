@@ -4,7 +4,6 @@ import {z} from 'zod';
 import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 import {UpdateProfileRequest} from '../api.types';
-import {useAuth} from "@/shared/lib/auth";
 
 export const updateProfileInputSchema = z.object({
   email: z.string().email('Invalid email').min(1, 'Required'),

@@ -7,13 +7,7 @@ import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {cn} from '@/shared/utils/cn';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '../ui/dropdown';
 import {Link} from '../ui/link';
 
 type SideNavigationItem = {

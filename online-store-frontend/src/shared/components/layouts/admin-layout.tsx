@@ -1,6 +1,6 @@
-import {Home, Package, PanelLeft, Users, User2} from 'lucide-react';
+import {Home, Package, PanelLeft, User2, Users} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
-import {NavLink, useNavigate, useNavigation, useLocation} from 'react-router';
+import {NavLink, useLocation, useNavigate, useNavigation} from 'react-router';
 
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import {Link} from '../ui/link';
-import {AuthProvider, useAuth} from "@/shared/lib/auth";
+import {useAuth} from "@/shared/lib/auth";
 
 type SideNavigationItem = {
   name: string;

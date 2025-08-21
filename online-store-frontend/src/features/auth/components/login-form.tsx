@@ -6,7 +6,7 @@ import { Form, Input } from '@/shared/components/ui/form';
 import { useAuth } from '@/shared/lib/auth';
 import { loginInputSchema } from '@/shared/lib/auth/types';
 
-export const LoginFormV2: React.FC = () => {
+export const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, state } = useAuth();
@@ -14,7 +14,6 @@ export const LoginFormV2: React.FC = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
 
-  // Auto-redirect if already authenticated
   useEffect(() => {
     if (state.isAuthenticated && state.user) {
       const targetPath = redirectTo || paths.home.getHref();
@@ -26,10 +25,9 @@ export const LoginFormV2: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(undefined);
-      
+
       await login(values);
-      
-      // Login successful, redirect will happen in useEffect
+
     } catch (err: any) {
       setError(err.message || 'An unknown error occurred.');
     } finally {
@@ -37,7 +35,6 @@ export const LoginFormV2: React.FC = () => {
     }
   };
 
-  // Don't render form if already authenticated
   if (state.isAuthenticated) {
     return null;
   }
@@ -78,7 +75,7 @@ export const LoginFormV2: React.FC = () => {
           </>
         )}
       </Form>
-      
+
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-600">
           Don't have an account?{' '}

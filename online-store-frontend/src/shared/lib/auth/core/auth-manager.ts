@@ -140,7 +140,6 @@ export class AuthManager extends EventEmitter {
     try {
       await this.userManager.logout();
     } catch (error) {
-      // Continue with logout even if API call fails
       console.warn('Logout API call failed:', error);
     } finally {
       this.tokenManager.clearToken();
@@ -148,7 +147,6 @@ export class AuthManager extends EventEmitter {
       this._state.isAuthenticated = false;
       this._state.error = null;
 
-      // Clear React Query cache if available
       if (this.queryClient && typeof this.queryClient.clear === 'function') {
         try {
           this.queryClient.clear();
@@ -175,7 +173,6 @@ export class AuthManager extends EventEmitter {
   }
 
   public getRedirectPath(originalPath: string): string {
-    // Simple redirect logic
     if (!this._state.isAuthenticated) {
       return `/auth/login?redirectTo=${encodeURIComponent(originalPath)}`;
     }
@@ -188,7 +185,6 @@ export class AuthManager extends EventEmitter {
       return originalPath;
     }
 
-    // Redirect based on role
     if (this._state.user?.role === 'ADMIN') {
       return '/admin';
     } else {
@@ -204,7 +200,6 @@ export class AuthManager extends EventEmitter {
   }
 
   private handleTokenRefreshed(token: string): void {
-    // Token was refreshed, no need to change state
     this.emit(AuthEvents.TOKEN_REFRESHED, token);
   }
 

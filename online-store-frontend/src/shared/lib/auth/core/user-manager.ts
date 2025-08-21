@@ -41,7 +41,6 @@ export class UserManager extends EventEmitter {
 
       const data: AuthResponse = await response.json();
 
-      // Create user from response
       const user: User = {
         id: data.user.id,
         username: data.user.username,
