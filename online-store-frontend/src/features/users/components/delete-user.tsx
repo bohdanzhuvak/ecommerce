@@ -1,18 +1,18 @@
 import {Button} from '@/shared/components/ui/button';
 import {ConfirmationDialog} from '@/shared/components/ui/dialog';
 import {useNotifications} from '@/shared/components/ui/notifications';
-import {useLogout, useUser} from '@/shared/lib/auth/auth';
 
 import {useDeleteUser} from '../api/delete-user';
+import {useAuth} from "@/shared/lib/auth";
 
 type DeleteUserProps = {
   userEmail: string;
 };
 
 export const DeleteUser = ({userEmail}: DeleteUserProps) => {
-  const user = useUser();
+  const auth = useAuth();
+  const user = auth.state.user;
   const {addNotification} = useNotifications();
-  const logout = useLogout();
   const deleteUserMutation = useDeleteUser({
     mutationConfig: {
       onSuccess: () => {
@@ -20,12 +20,12 @@ export const DeleteUser = ({userEmail}: DeleteUserProps) => {
           type: 'success',
           title: 'User Deleted',
         });
-        logout.mutate({} as any);
+        auth.logout()
       },
     },
   });
 
-  if (user.data == null) return null;
+  if (user == null) return null;
 
   return (
     <ConfirmationDialog

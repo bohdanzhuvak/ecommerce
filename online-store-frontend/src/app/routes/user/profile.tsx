@@ -1,7 +1,7 @@
 import {UpdateProfile} from '@/features/users/components/update-profile';
 import {ContentLayout} from '@/shared/components/layouts';
-import {useUser} from '@/shared/lib/auth/auth';
 import {DeleteUser} from "@/features/users/components/delete-user";
+import {useAuth} from "@/shared/lib/auth";
 
 type EntryProps = {
   label: string;
@@ -17,10 +17,9 @@ const Entry = ({label, value}: EntryProps) => (
 );
 
 export const ProfileRoute = () => {
-  const user = useUser();
+  const user = useAuth().state.user;
 
-  if (!user.data) return null;
-  console.log(user.data);
+  if (!user) return null;
 
   return (
     <ContentLayout title="Profile">
@@ -38,9 +37,9 @@ export const ProfileRoute = () => {
         </div>
         <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
           <dl className="sm:divide-y sm:divide-gray-200">
-            <Entry label="Email" value={user.data.email}/>
-            <Entry label="Username" value={user.data.username}/>
-            <DeleteUser userEmail={user.data.email}/>
+            <Entry label="Email" value={user.email}/>
+            <Entry label="Username" value={user.username}/>
+            <DeleteUser userEmail={user.email}/>
           </dl>
         </div>
       </div>

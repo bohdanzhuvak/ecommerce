@@ -63,13 +63,3 @@ export interface AuthContextValue {
   canAccess: (requiredRoles?: string[]) => boolean;
   getRedirectPath: (originalPath: string) => string;
 }
-
-// Legacy compatibility types
-export interface LegacyAuthHook {
-  data: User | null;
-  isLoading: boolean;
-  error: string | null;
-  mutate: (credentials: LoginInput | RegisterInput) => Promise<void>;
-  isPending: boolean;
-  refetch: () => Promise<void>;
-}

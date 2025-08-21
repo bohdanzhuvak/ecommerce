@@ -21,11 +21,11 @@ api.interceptors.request.use(async (config) => {
       console.warn('Failed to parse auth token:', error);
     }
   }
-  
+
   if (config.headers) {
     config.headers.Accept = 'application/json';
   }
-  
+
   return config;
 });
 
@@ -33,10 +33,3 @@ api.interceptors.response.use(
   (response) => response.data,
   (error) => handleResponseError(error),
 );
-//dev interceptor for mock data
-/*api.interceptors.request.use(config=> {
-  if (config.url && !config.url.endsWith('.json')){
-    config.url += '.json'
-  }
-  return config;
-})*/

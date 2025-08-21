@@ -5,7 +5,6 @@ import {NavLink, useNavigate, useNavigation} from 'react-router';
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
-import {useLogout} from '@/shared/lib/auth/auth';
 import {cn} from '@/shared/utils/cn';
 
 import {
@@ -16,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import {Link} from '../ui/link';
+import {useAuth} from "@/shared/lib/auth";
 
 type NavigationItem = {
   name: string;
@@ -72,7 +72,6 @@ const Progress = () => {
 };
 
 export function UserLayout({children}: { children: React.ReactNode }) {
-  const logout = useLogout();
   const navigate = useNavigate();
 
   const navigation = [
@@ -134,13 +133,13 @@ export function UserLayout({children}: { children: React.ReactNode }) {
               >
                 Your Profile
               </DropdownMenuItem>
-              {/*<DropdownMenuSeparator/>
+             <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => logout.mutate({})}
+                onClick={async () => await useAuth().logout()}
               >
                 Sign Out
-              </DropdownMenuItem>*/}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

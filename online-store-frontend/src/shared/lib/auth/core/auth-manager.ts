@@ -18,7 +18,7 @@ export class AuthManager extends EventEmitter {
     super();
     this.tokenManager = new TokenManager();
     this.userManager = new UserManager();
-    
+
     this.setupEventListeners();
   }
 
@@ -81,16 +81,16 @@ export class AuthManager extends EventEmitter {
       this._state.error = null;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const { token, refreshToken, user, expiresAt, refreshExpiresAt } = await this.userManager.login(credentials);
-      this.tokenManager.setToken(token, refreshToken, expiresAt, refreshExpiresAt);
-      
+      const { token, user, expiresAt, refreshExpiresAt } = await this.userManager.login(credentials);
+      this.tokenManager.setToken(token, expiresAt, refreshExpiresAt);
+
       this._state.user = user;
       this._state.isAuthenticated = true;
       this._state.error = null;
-      
+
       this.emit(AuthEvents.LOGIN_SUCCESS, user);
       this.emit(AuthEvents.STATE_CHANGED, this._state);
-      
+
       return user;
     } catch (error) {
       this._state.error = error instanceof Error ? error.message : 'Login failed';
@@ -109,16 +109,16 @@ export class AuthManager extends EventEmitter {
       this._state.error = null;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const { token, refreshToken, user, expiresAt, refreshExpiresAt } = await this.userManager.register(credentials);
-      this.tokenManager.setToken(token, refreshToken, expiresAt, refreshExpiresAt);
-      
+      const { token, user, expiresAt, refreshExpiresAt } = await this.userManager.register(credentials);
+      this.tokenManager.setToken(token, expiresAt, refreshExpiresAt);
+
       this._state.user = user;
       this._state.isAuthenticated = true;
       this._state.error = null;
-      
+
       this.emit(AuthEvents.REGISTER_SUCCESS, user);
       this.emit(AuthEvents.STATE_CHANGED, this._state);
-      
+
       return user;
     } catch (error) {
       this._state.error = error instanceof Error ? error.message : 'Registration failed';
@@ -142,7 +142,7 @@ export class AuthManager extends EventEmitter {
       this._state.user = null;
       this._state.isAuthenticated = false;
       this._state.error = null;
-      
+
       this.emit(AuthEvents.LOGOUT_SUCCESS);
       this.emit(AuthEvents.STATE_CHANGED, this._state);
     }

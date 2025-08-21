@@ -1,28 +1,28 @@
 import * as React from 'react';
-import {useUser} from './auth';
 import {ROLES} from "@/shared/types/api.ts";
+import {useAuth} from "@/shared/lib/auth/context/auth-context.tsx";
 
 type RoleTypes = keyof typeof ROLES;
 
 export const useAuthorization = () => {
-  const user = useUser();
+  const user = useAuth().state.user;
 
-  if (!user.data) {
+  if (!user) {
     throw Error('User does not exist!');
   }
 
   const checkAccess = React.useCallback(
     ({allowedRoles}: { allowedRoles: RoleTypes[] }) => {
-      if (allowedRoles && allowedRoles.length > 0 && user.data) {
-        return allowedRoles?.includes(user.data.role as any);
+      if (allowedRoles && allowedRoles.length > 0 && user) {
+        return allowedRoles?.includes(user.role as any);
       }
 
       return true;
     },
-    [user.data],
+    [user],
   );
 
-  return {checkAccess, role: user.data.role};
+  return {checkAccess, role: user.role};
 };
 
 type AuthorizationProps = {

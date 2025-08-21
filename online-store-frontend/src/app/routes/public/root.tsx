@@ -1,12 +1,12 @@
 import {Outlet} from 'react-router';
 
 import {PublicLayout, UserLayout} from '@/shared/components/layouts';
-import {useUser} from "@/shared/lib/auth";
+import {useAuth} from "@/shared/lib/auth";
 
 export const PublicRoot = () => {
-  const user = useUser();
+  const isAuthenticated = useAuth().state.isAuthenticated;
 
-  if (!user.data) {
+  if (!isAuthenticated) {
     return (
       <PublicLayout>
         <Outlet/>

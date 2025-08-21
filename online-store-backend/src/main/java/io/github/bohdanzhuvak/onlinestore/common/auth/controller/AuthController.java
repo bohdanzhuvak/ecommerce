@@ -47,10 +47,10 @@ public class AuthController {
     User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
     String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole(), Map.of("username", user.getUsername()));
     String refreshToken = jwtService.generateRefreshToken(user.getEmail());
-    
-    AuthResponse response = buildAuthResponse(user, accessToken, refreshToken);
+
+    AuthResponse response = buildAuthResponse(user, accessToken);
     refreshTokenService.store(refreshToken, user.getEmail(), refreshTtlMillis);
-    
+
     ResponseCookie cookie = buildRefreshCookie(refreshToken);
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -65,13 +65,13 @@ public class AuthController {
     user.setPassword(passwordEncoder.encode(request.getPassword()));
     user.setRole(Role.USER);
     user = userRepository.save(user);
-    
+
     String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole(), Map.of("username", user.getUsername()));
     String refreshToken = jwtService.generateRefreshToken(user.getEmail());
-    
-    AuthResponse response = buildAuthResponse(user, accessToken, refreshToken);
+
+    AuthResponse response = buildAuthResponse(user, accessToken);
     refreshTokenService.store(refreshToken, user.getEmail(), refreshTtlMillis);
-    
+
     ResponseCookie cookie = buildRefreshCookie(refreshToken);
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -90,11 +90,11 @@ public class AuthController {
     User user = userRepository.findByEmail(email).orElseThrow();
     String newAccess = jwtService.generateAccessToken(user.getEmail(), user.getRole(), Map.of("username", user.getUsername()));
     String newRefresh = jwtService.generateRefreshToken(user.getEmail());
-    
+
     refreshTokenService.revoke(refreshToken);
     refreshTokenService.store(newRefresh, user.getEmail(), refreshTtlMillis);
-    
-    AuthResponse response = buildAuthResponse(user, newAccess, newRefresh);
+
+    AuthResponse response = buildAuthResponse(user, newAccess);
     ResponseCookie cookie = buildRefreshCookie(newRefresh);
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -104,13 +104,13 @@ public class AuthController {
   @GetMapping("/me")
   public ResponseEntity<AuthResponse.UserInfo> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
     User user = userRepository.findByEmail(userPrincipal.getEmail()).orElseThrow();
-    
+
     AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo();
     userInfo.setId(user.getId());
     userInfo.setUsername(user.getUsername());
     userInfo.setEmail(user.getEmail());
     userInfo.setRole(user.getRole());
-    
+
     return ResponseEntity.ok(userInfo);
   }
 
@@ -119,7 +119,7 @@ public class AuthController {
     if (refreshToken != null) {
       refreshTokenService.revoke(refreshToken);
     }
-    
+
     ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
         .httpOnly(true)
         .secure(false)
@@ -127,18 +127,17 @@ public class AuthController {
         .path("/api/v1/auth")
         .maxAge(0)
         .build();
-        
+
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
         .build();
   }
 
-  private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
+  private AuthResponse buildAuthResponse(User user, String accessToken) {
     AuthResponse response = new AuthResponse();
     response.setToken(accessToken);
-    response.setRefreshToken(refreshToken);
     response.setRole(user.getRole());
-    
+
     // User info
     AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo();
     userInfo.setId(user.getId());
@@ -146,14 +145,14 @@ public class AuthController {
     userInfo.setEmail(user.getEmail());
     userInfo.setRole(user.getRole());
     response.setUser(userInfo);
-    
+
     // Token info
     AuthResponse.TokenInfo tokenInfo = new AuthResponse.TokenInfo();
     Instant now = Instant.now();
     tokenInfo.setExpiresAt(now.plusMillis(accessTtlMillis).toEpochMilli());
     tokenInfo.setRefreshExpiresAt(now.plusMillis(refreshTtlMillis).toEpochMilli());
     response.setTokenInfo(tokenInfo);
-    
+
     return response;
   }
 

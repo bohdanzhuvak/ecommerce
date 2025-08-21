@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router';
-import { useAuth } from '../context/auth-context';
+import { useAuth } from '@/shared/lib/auth';
 import { paths } from '@/config/paths';
 
 interface ProtectedRouteProps {

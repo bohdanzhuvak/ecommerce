@@ -3,19 +3,19 @@ import {Link, useSearchParams} from 'react-router';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Form, Input} from '@/shared/components/ui/form';
-import {useRegister} from '@/shared/lib/auth/auth';
 import {registerInputSchema} from '@/shared/lib/auth/types';
 import {useState} from 'react';
 import {RegisterFormProps} from '../api.types';
+import {useAuth} from "@/shared/lib/auth";
 
 export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
   const [error, setError] = useState<string | undefined>(undefined);
-  const registering = useRegister();
+  const { register, state } = useAuth();
 
   const handleSubmit = async (values: any) => {
     try {
       setError(undefined);
-      await registering.mutate(values);
+      await register(values);
       if (onSuccess) {
         onSuccess();
       }
@@ -56,7 +56,7 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
             />
             <div>
               <Button
-                isLoading={registering.isPending}
+                isLoading={state.isLoading}
                 type="submit"
                 className="w-full"
               >

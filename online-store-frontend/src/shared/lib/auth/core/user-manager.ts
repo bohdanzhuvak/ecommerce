@@ -1,6 +1,6 @@
-import { EventEmitter } from './event-emitter';
-import { User, AuthResponse } from '../types';
-import { env } from '@/config/env';
+import {EventEmitter} from './event-emitter';
+import {AuthResponse, User} from '../types';
+import {env} from '@/config/env';
 
 export interface LoginCredentials {
   email: string;
@@ -22,7 +22,7 @@ export class UserManager extends EventEmitter {
     super();
   }
 
-  public async login(credentials: LoginCredentials): Promise<{ token: string; refreshToken: string; user: User; expiresAt: number; refreshExpiresAt: number }> {
+  public async login(credentials: LoginCredentials): Promise<{ token: string; user: User; expiresAt: number; refreshExpiresAt: number }> {
     try {
       const response = await fetch(`${env.API_URL}/auth/login`, {
         method: 'POST',
@@ -53,7 +53,6 @@ export class UserManager extends EventEmitter {
 
       return {
         token: data.token,
-        refreshToken: data.refreshToken,
         user,
         expiresAt: data.tokenInfo.expiresAt,
         refreshExpiresAt: data.tokenInfo.refreshExpiresAt
@@ -64,7 +63,7 @@ export class UserManager extends EventEmitter {
     }
   }
 
-  public async register(credentials: RegisterCredentials): Promise<{ token: string; refreshToken: string; user: User; expiresAt: number; refreshExpiresAt: number }> {
+  public async register(credentials: RegisterCredentials): Promise<{ token: string; user: User; expiresAt: number; refreshExpiresAt: number }> {
     try {
       const response = await fetch(`${env.API_URL}/auth/register`, {
         method: 'POST',
@@ -95,7 +94,6 @@ export class UserManager extends EventEmitter {
 
       return {
         token: data.token,
-        refreshToken: data.refreshToken,
         user,
         expiresAt: data.tokenInfo.expiresAt,
         refreshExpiresAt: data.tokenInfo.refreshExpiresAt
@@ -148,7 +146,19 @@ export class UserManager extends EventEmitter {
   }
 
   private async fetchUserFromAPI(): Promise<User> {
+    const tokenData = localStorage.getItem('auth_token');
+    if (!tokenData) {
+      throw new Error('No auth token');
+    }
+
+    const { token } = JSON.parse(tokenData);
+
     const response = await fetch(`${env.API_URL}/auth/me`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
       credentials: 'include',
     });
 
@@ -156,8 +166,7 @@ export class UserManager extends EventEmitter {
       throw new Error('Failed to fetch user');
     }
 
-    const data = await response.json();
-    return data as User;
+    return await response.json();
   }
 
   private cacheUser(user: User): void {

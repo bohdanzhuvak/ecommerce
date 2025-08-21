@@ -5,7 +5,6 @@ import {NavLink, useNavigate} from 'react-router';
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
-import {useUser} from '@/shared/lib/auth/auth';
 import {cn} from '@/shared/utils/cn';
 
 import {
@@ -62,7 +61,6 @@ const Progress = () => {
 
 export function PublicLayout({children}: { children: React.ReactNode }) {
   const navigate = useNavigate();
-  const user = useUser();
 
   const navigation = [
     {name: 'Catalog', to: paths.products.getHref(), icon: Package},
@@ -119,38 +117,18 @@ export function PublicLayout({children}: { children: React.ReactNode }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {user.data ? (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => navigate(paths.app.profile.getHref())}
-                      className={cn('block px-4 py-2 text-sm text-gray-700')}
-                    >
-                      Your Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator/>
-                    <DropdownMenuItem
-                      className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                      onClick={() => navigate(paths.app.cart.getHref())}
-                    >
-                      Go to Cart
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => navigate(paths.auth.login.getHref())}
-                      className={cn('block px-4 py-2 text-sm text-gray-700')}
-                    >
-                      Sign In
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => navigate(paths.auth.register.getHref())}
-                      className={cn('block px-4 py-2 text-sm text-gray-700')}
-                    >
-                      Sign Up
-                    </DropdownMenuItem>
-                  </>
-                )}
+                <DropdownMenuItem
+                  onClick={() => navigate(paths.auth.login.getHref())}
+                  className={cn('block px-4 py-2 text-sm text-gray-700')}
+                >
+                  Sign In
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => navigate(paths.auth.register.getHref())}
+                  className={cn('block px-4 py-2 text-sm text-gray-700')}
+                >
+                  Sign Up
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

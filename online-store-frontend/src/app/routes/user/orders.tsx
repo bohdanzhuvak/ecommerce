@@ -2,9 +2,9 @@ import {QueryClient} from '@tanstack/react-query';
 
 import {ContentLayout} from '@/shared/components/layouts';
 import {getOrdersQueryOptions} from '@/features/orders/api/get-orders';
-import {useUser} from '@/shared/lib/auth/auth';
 import {Orders} from '@/features/orders/components/orders';
 import {ErrorBoundary} from 'react-error-boundary';
+import {useAuth} from "@/shared/lib/auth";
 
 export const ordersLoader =
   (queryClient: QueryClient) =>
@@ -18,7 +18,7 @@ export const ordersLoader =
     };
 
 export const OrdersRoute = () => {
-  const user = useUser().data;
+  const user = useAuth().state.user
 
   if (!user) {
     return null;

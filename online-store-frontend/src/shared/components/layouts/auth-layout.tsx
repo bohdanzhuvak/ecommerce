@@ -6,7 +6,6 @@ import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Head} from '@/shared/components/seo';
 import {Link} from '@/shared/components/ui/link';
-import {useUser} from '@/shared/lib/auth/auth';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -14,19 +13,18 @@ type LayoutProps = {
 };
 
 export const AuthLayout = ({children, title}: LayoutProps) => {
-  const user = useUser();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+/*  useEffect(() => {
     if (user.data) {
       navigate(redirectTo ? redirectTo : paths.home.getHref(), {
         replace: true,
       });
     }
-  }, [user.data, navigate, redirectTo]);
+  }, [user.data, navigate, redirectTo]);*/
 
   return (
     <>
