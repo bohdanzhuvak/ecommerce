@@ -1,5 +1,7 @@
 import React from 'react';
 import {Order} from '../api.types';
+import {Link} from "@/shared/components/ui/link";
+import {paths} from "@/config/paths.ts";
 
 interface OrderItemProps {
   order: Order;
@@ -36,13 +38,16 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
     }
   };
 
-  // No confirm action on backend; keep simple presentation
-
   return (
     <div className="border rounded-lg p-6 bg-white shadow-sm">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold">Order #{order.id}</h3>
+          <Link
+            to={paths.app.orders.order.getHref(order.id.toString())}
+            className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Order #{order.id}
+          </Link>
           <p className="text-sm text-gray-600">{formatDate(order.createdAt)}</p>
         </div>
         <div className="text-right">
@@ -65,6 +70,15 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           </div>
         ))}
       </div>
+      <div className="mt-5">
+        <Link
+          to={paths.app.orders.order.getHref(order.id.toString())}
+          className="text-lg text-right font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+        >
+          Go to order details &rarr;
+        </Link>
+      </div>
+
     </div>
   );
 };

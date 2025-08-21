@@ -46,8 +46,8 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
             <Input
               type="text"
               label="Name"
-              error={formState.errors['name']}
-              registration={register('name')}
+              error={formState.errors['username']}
+              registration={register('username')}
             />
             <Input
               type="email"

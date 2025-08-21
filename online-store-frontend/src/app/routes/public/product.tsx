@@ -1,6 +1,6 @@
 import {QueryClient} from '@tanstack/react-query';
 import {ContentLayout} from '@/shared/components/layouts';
-import {ProductDetails} from '@/features/products/components';
+import {ProductDetails} from '@/features/products';
 import {getProductQueryOptions} from '@/features/products/api/get-product';
 import {LoaderFunctionArgs} from 'react-router';
 

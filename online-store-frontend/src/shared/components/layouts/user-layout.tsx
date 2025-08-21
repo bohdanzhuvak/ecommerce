@@ -6,6 +6,7 @@ import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {cn} from '@/shared/utils/cn';
+import {BalanceDisplay, DepositForm} from '@/features/balance';
 
 import {
   DropdownMenu,
@@ -79,7 +80,7 @@ export function UserLayout({children}: { children: React.ReactNode }) {
   const navigation = [
     {name: 'Catalog', to: paths.products.getHref(), icon: Package},
     {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
-    {name: 'Orders', to: paths.app.orders.getHref(), icon: Package},
+    {name: 'Orders', to: paths.app.orders.root.getHref(), icon: Package},
   ];
 
   const handleLogout = async () => {
@@ -124,6 +125,12 @@ export function UserLayout({children}: { children: React.ReactNode }) {
               </NavLink>
             ))}
           </nav>
+
+          {/* Balance Display and Deposit */}
+          <div className="hidden sm:flex items-center gap-2">
+            <BalanceDisplay />
+            <DepositForm />
+          </div>
 
           {/* User menu */}
           <DropdownMenu>

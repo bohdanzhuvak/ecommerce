@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.user.dto.order;
 
+import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressResponse;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,5 +13,6 @@ public class OrderResponse {
   private LocalDateTime createdAt;
   private BigDecimal totalPrice;
   private String status;
+  private DeliveryAddressResponse deliveryAddress;
   private List<OrderItemResponse> items;
 }

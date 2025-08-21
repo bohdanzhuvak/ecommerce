@@ -3,12 +3,12 @@ import {api} from '@/shared/lib/api-client';
 import {MutationConfig} from '@/shared/lib/react-query';
 import {Order} from '../api.types';
 
-export const createOrderFromCart = (): Promise<Order> => {
-  return api.post(`/orders`);
+export const createOrderFromCart = (addressId: number): Promise<Order> => {
+  return api.post(`/orders`, { deliveryAddressId: addressId });
 };
 
 type UseCreateOrderFromCartOptions = {
-  mutationConfig?: MutationConfig<() => Promise<Order>>;
+  mutationConfig?: MutationConfig<typeof createOrderFromCart>;
 };
 
 export const useCreateOrderFromCart = ({mutationConfig}: UseCreateOrderFromCartOptions) => {
@@ -16,7 +16,7 @@ export const useCreateOrderFromCart = ({mutationConfig}: UseCreateOrderFromCartO
   const {onSuccess, ...restConfig} = mutationConfig || {};
 
   return useMutation({
-    mutationFn: () => createOrderFromCart(),
+    mutationFn: createOrderFromCart,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({queryKey: ['orders']});
       queryClient.invalidateQueries({queryKey: ['cart']});

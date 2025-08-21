@@ -33,8 +33,14 @@ export const paths = {
       getHref: () => `/cart`,
     },
     orders: {
-      path: '/orders',
-      getHref: () => `/orders`,
+      root: {
+        path: '/orders',
+        getHref: () => `/orders`,
+      },
+      order: {
+        path: ':orderId',
+        getHref: (orderId: string) => `/orders/${orderId}`,
+      },
     },
     user: {
       path: '/users/:userId',

@@ -38,7 +38,7 @@ public class CartService {
   @Transactional
   public CartResponse addToCart(Long userId, AddToCartRequest request) {
     User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found with id: " + userId));
-    Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> Cart.builder().user(user).build());
+    Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> Cart.builder().user(user).items(new ArrayList<>()).build());
     Product product = productRepository.findById(request.getProductId())
         .orElseThrow(() -> new NotFoundException("Product not found"));
 
