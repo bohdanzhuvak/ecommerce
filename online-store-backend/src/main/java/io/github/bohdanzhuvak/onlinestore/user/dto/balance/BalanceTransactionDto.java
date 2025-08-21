@@ -1,0 +1,24 @@
+package io.github.bohdanzhuvak.onlinestore.user.dto.balance;
+
+import io.github.bohdanzhuvak.onlinestore.common.model.TransactionType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class BalanceTransactionDto {
+    private Long id;
+    private TransactionType type;
+    private BigDecimal amount;
+    private BigDecimal balanceAfter;
+    private String description;
+    private Long orderId;
+    private LocalDateTime createdAt;
+}

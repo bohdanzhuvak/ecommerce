@@ -1,0 +1,74 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getDeliveryAddresses } from '../api/get-addresses';
+import { DeliveryAddress } from '@/shared/types';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { Button } from '@/shared/components/ui/button';
+
+interface AddressCardProps {
+  address: DeliveryAddress;
+}
+
+const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
+  return (
+    <div className={`p-4 border rounded-lg ${address.isDefault ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
+      {address.isDefault && (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2">
+          Default
+        </span>
+      )}
+      
+      <div className="space-y-1">
+        <p className="font-medium text-gray-900">{address.street}</p>
+        <p className="text-sm text-gray-600">
+          {address.city}, {address.postalCode}
+        </p>
+        <p className="text-sm text-gray-600">{address.country}</p>
+        <p className="text-sm text-gray-600">{address.phone}</p>
+      </div>
+      
+      <div className="mt-3 flex space-x-2">
+        <Button variant="outline" size="sm">
+          Edit
+        </Button>
+        <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
+          Delete
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export const AddressList: React.FC = () => {
+  const { data: addresses, isLoading, error } = useQuery({
+    queryKey: ['delivery-addresses'],
+    queryFn: getDeliveryAddresses,
+  });
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return <div className="text-red-600">Failed to load addresses</div>;
+  }
+
+  if (!addresses || addresses.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">No delivery addresses found</p>
+        <p className="text-sm text-gray-400 mt-1">
+          Add your first delivery address to get started
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {addresses.map((address) => (
+        <AddressCard key={address.id} address={address} />
+      ))}
+    </div>
+  );
+};

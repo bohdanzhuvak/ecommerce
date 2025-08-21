@@ -1,3 +1,5 @@
+import { DeliveryAddress } from '@/shared/types';
+
 export interface OrderItem {
   productId: number;
   productName: string;
@@ -11,4 +13,5 @@ export interface Order {
   totalPrice: number;
   status: string;
   items: OrderItem[];
+  deliveryAddress: DeliveryAddress;
 }

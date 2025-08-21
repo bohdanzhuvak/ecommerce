@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,4 +32,7 @@ public class User {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private Role role;
+  
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal balance = BigDecimal.ZERO;
 }
