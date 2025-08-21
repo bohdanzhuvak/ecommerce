@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router';
+import { Navigate, useLocation, useNavigate } from 'react-router';
 import { useAuth } from '@/shared/lib/auth';
 import { paths } from '@/config/paths';
 
@@ -16,8 +16,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { state, canAccess, getRedirectPath } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Show loading state
+  useEffect(() => {
+    if (!state.isLoading && !state.isAuthenticated) {
+      const redirectPath = paths.auth.login.getHref(location.pathname);
+      navigate(redirectPath, { replace: true });
+    }
+  }, [state.isAuthenticated, state.isLoading, location.pathname, navigate]);
+
   if (state.isLoading) {
     return fallback || (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -26,13 +33,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // Check if user is authenticated
   if (!state.isAuthenticated || !state.user) {
     const redirectPath = paths.auth.login.getHref(location.pathname);
     return <Navigate to={redirectPath} replace />;
   }
 
-  // Check if user has required roles
   if (requiredRoles.length > 0 && !canAccess(requiredRoles)) {
     const redirectPath = getRedirectPath(location.pathname);
     return <Navigate to={redirectPath} replace />;
@@ -41,7 +46,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   return <>{children}</>;
 };
 
-// Convenience components for common use cases
 export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <ProtectedRoute requiredRoles={['ADMIN']}>
     {children}
@@ -49,7 +53,7 @@ export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }
 );
 
 export const UserRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute requiredRoles={['USER', 'ADMIN']}>
+  <ProtectedRoute requiredRoles={['USER']}>
     {children}
   </ProtectedRoute>
 );

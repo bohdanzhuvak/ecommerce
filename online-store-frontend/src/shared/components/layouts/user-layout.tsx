@@ -1,6 +1,6 @@
 import {Package, ShoppingCart, User2} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
-import {NavLink, useNavigate, useNavigation} from 'react-router';
+import {NavLink, useNavigate, useNavigation, useLocation} from 'react-router';
 
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
@@ -73,12 +73,23 @@ const Progress = () => {
 
 export function UserLayout({children}: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
 
   const navigation = [
     {name: 'Catalog', to: paths.products.getHref(), icon: Package},
     {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
     {name: 'Orders', to: paths.app.orders.getHref(), icon: Package},
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(paths.auth.login.getHref(location.pathname));
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -136,7 +147,7 @@ export function UserLayout({children}: { children: React.ReactNode }) {
              <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={async () => await useAuth().logout()}
+                onClick={handleLogout}
               >
                 Sign Out
               </DropdownMenuItem>

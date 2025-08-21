@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { AuthManager } from '@/shared/lib/auth';
 import { AuthContextValue, AuthState, LoginInput, RegisterInput } from '../types';
 
@@ -10,12 +11,19 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [authManager] = useState(() => AuthManager.getInstance());
+  const queryClient = useQueryClient();
   const [state, setState] = useState<AuthState>({
     isAuthenticated: false,
     user: null,
     isLoading: true,
     error: null
   });
+
+  useEffect(() => {
+    if (queryClient && typeof queryClient.clear === 'function') {
+      authManager.setQueryClient(queryClient);
+    }
+  }, [authManager, queryClient]);
 
   useEffect(() => {
     const handleStateChange = (newState: AuthState) => {
@@ -34,13 +42,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // State will be updated via stateChanged event
     };
 
-    // Subscribe to auth events
     authManager.on('stateChanged', handleStateChange);
     authManager.on('loginSuccess', handleLoginSuccess);
     authManager.on('logoutSuccess', handleLogoutSuccess);
     authManager.on('tokenExpired', handleTokenExpired);
 
-    // Initialize auth manager
     authManager.initialize();
 
     return () => {

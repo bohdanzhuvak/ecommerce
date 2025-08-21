@@ -1,6 +1,6 @@
 import {Home, Package, PanelLeft, Users, User2} from 'lucide-react';
 import {ComponentType, SVGProps, useEffect, useState} from 'react';
-import {NavLink, useNavigate, useNavigation} from 'react-router';
+import {NavLink, useNavigate, useNavigation, useLocation} from 'react-router';
 
 import logo from '@/assets/logo.svg';
 import {paths} from '@/config/paths';
@@ -74,6 +74,8 @@ const Progress = () => {
 
 export function AdminLayout({children}: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
   const userEmail = useAuth().state.user?.email;
 
   const navigation = [
@@ -83,6 +85,15 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
     {name: 'Categories', to: paths.admin.categories.getHref(), icon: Package},
     {name: 'Users', to: paths.admin.users.getHref(), icon: Users},
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(paths.auth.login.getHref(location.pathname));
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -188,7 +199,7 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
               <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => useAuth().logout()}
+                onClick={handleLogout}
               >
                 Sign Out
               </DropdownMenuItem>

@@ -13,6 +13,7 @@ export class AuthManager extends EventEmitter {
     isLoading: false,
     error: null
   };
+  private queryClient: any = null;
 
   private constructor() {
     super();
@@ -27,6 +28,10 @@ export class AuthManager extends EventEmitter {
       AuthManager.instance = new AuthManager();
     }
     return AuthManager.instance;
+  }
+
+  public setQueryClient(queryClient: any): void {
+    this.queryClient = queryClient;
   }
 
   private setupEventListeners(): void {
@@ -142,6 +147,15 @@ export class AuthManager extends EventEmitter {
       this._state.user = null;
       this._state.isAuthenticated = false;
       this._state.error = null;
+
+      // Clear React Query cache if available
+      if (this.queryClient && typeof this.queryClient.clear === 'function') {
+        try {
+          this.queryClient.clear();
+        } catch (error) {
+          console.warn('Failed to clear query cache:', error);
+        }
+      }
 
       this.emit(AuthEvents.LOGOUT_SUCCESS);
       this.emit(AuthEvents.STATE_CHANGED, this._state);

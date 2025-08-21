@@ -11,7 +11,6 @@ export const api = Axios.create({
 const tokenManager = TokenManager.getInstance();
 
 api.interceptors.request.use(async (config) => {
-  console.log(config.url);
   if (!config.url?.startsWith('/auth/')) {
     try {
       const token = await tokenManager.getToken();
