@@ -1,6 +1,7 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router';
+import React, {useEffect} from 'react';
+import {Navigate, useLocation, useNavigate, useSearchParams} from 'react-router';
 import { useAuth } from '@/shared/lib/auth';
+import {paths} from "@/config/paths.ts";
 
 interface PublicRouteProps {
   children: React.ReactNode;
@@ -15,6 +16,17 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({
 }) => {
   const { state, getRedirectPath } = useAuth();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo');
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (redirectAuthenticated && state.isAuthenticated && state.user) {
+      const targetPath = redirectTo || paths.home.getHref();
+      navigate(targetPath, { replace: true });
+    }
+  }, [state.isAuthenticated, state.user, navigate, redirectTo, state.isLoading]);
 
   if (state.isLoading) {
     return fallback || (

@@ -1,11 +1,11 @@
-import {AuthLayout} from '@/shared/components/layouts/auth-layout';
 import {LoginForm} from "@/features/auth/components/login-form.tsx";
+import {ContentLayout} from "@/shared/components/layouts";
 
 export const LoginRoute = () => {
 
   return (
-    <AuthLayout title="Log in to your account">
+    <ContentLayout title="Log in to your account">
       <LoginForm/>
-    </AuthLayout>
+    </ContentLayout>
   );
 };

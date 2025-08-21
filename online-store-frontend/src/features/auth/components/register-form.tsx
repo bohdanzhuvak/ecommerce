@@ -1,16 +1,26 @@
-import {Link, useSearchParams} from 'react-router';
+import {Link, useNavigate, useSearchParams} from 'react-router';
 
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Form, Input} from '@/shared/components/ui/form';
 import {registerInputSchema} from '@/shared/lib/auth/types';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {RegisterFormProps} from '../api.types';
 import {useAuth} from "@/shared/lib/auth";
 
 export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const { register, state } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo');
+
+  useEffect(() => {
+    if (state.isAuthenticated && state.user) {
+      const targetPath = redirectTo || paths.home.getHref();
+      navigate(targetPath, { replace: true });
+    }
+  }, [state.isAuthenticated, state.user, navigate, redirectTo]);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -23,9 +33,6 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
       setError(err.message || 'An unknown error occurred.');
     }
   };
-
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo');
 
   return (
     <div>

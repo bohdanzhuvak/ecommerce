@@ -4,7 +4,8 @@ import {PublicLayout, UserLayout} from '@/shared/components/layouts';
 import {useAuth} from "@/shared/lib/auth";
 
 export const PublicRoot = () => {
-  const isAuthenticated = useAuth().state.isAuthenticated;
+  const {state} = useAuth();
+  const isAuthenticated = state.isAuthenticated;
 
   if (!isAuthenticated) {
     return (

@@ -9,6 +9,7 @@ import {PublicRoute, AuthRoute, LandingRoute} from '@/shared/lib/auth';
 import {PublicRoot, PublicRootErrorBoundary} from './routes/public/root';
 import {UserRoot, UserRootErrorBoundary} from './routes/user/root';
 import {AdminRoot, AdminRootErrorBoundary} from './routes/admin/root';
+import {AuthRoot} from "@/app/routes/auth/root.tsx";
 
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
@@ -44,7 +45,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
       path: paths.auth.register.path,
       element: (
         <AuthRoute>
-          <PublicRoot/>
+          <AuthRoot/>
         </AuthRoute>
       ),
       children: [
@@ -61,7 +62,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
       path: paths.auth.login.path,
       element: (
         <AuthRoute>
-          <PublicRoot/>
+          <AuthRoot/>
         </AuthRoute>
       ),
       children: [

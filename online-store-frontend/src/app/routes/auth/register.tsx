@@ -2,7 +2,7 @@ import {useNavigate, useSearchParams} from 'react-router';
 
 import {paths} from '@/config/paths';
 import {RegisterForm} from '@/features/auth/components/register-form';
-import {AuthLayout} from '@/shared/components/layouts/auth-layout';
+import {ContentLayout} from "@/shared/components/layouts";
 
 export const RegisterRoute = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ export const RegisterRoute = () => {
   const redirectTo = searchParams.get('redirectTo');
 
   return (
-    <AuthLayout title="Register your account">
+    <ContentLayout title="Register your account">
       <RegisterForm
         onSuccess={() =>
           navigate(
@@ -21,6 +21,6 @@ export const RegisterRoute = () => {
           )
         }
       />
-    </AuthLayout>
+    </ContentLayout>
   );
 };

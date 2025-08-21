@@ -25,9 +25,7 @@ export const LoginForm: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(undefined);
-
       await login(values);
-
     } catch (err: any) {
       setError(err.message || 'An unknown error occurred.');
     } finally {
