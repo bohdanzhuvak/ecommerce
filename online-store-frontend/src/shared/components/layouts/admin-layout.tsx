@@ -73,7 +73,6 @@ const Progress = () => {
 };
 
 export function AdminLayout({children}: { children: React.ReactNode }) {
-  const logout = useAuth().logout();
   const navigate = useNavigate();
   const userEmail = useAuth().state.user?.email;
 
@@ -189,7 +188,7 @@ export function AdminLayout({children}: { children: React.ReactNode }) {
               <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => logout}
+                onClick={() => useAuth().logout()}
               >
                 Sign Out
               </DropdownMenuItem>

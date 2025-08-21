@@ -1,5 +1,5 @@
-import { EventEmitter } from './event-emitter';
-import { env } from '@/config/env';
+import {EventEmitter} from './event-emitter';
+import {env} from '@/config/env';
 
 export interface TokenData {
   token: string;
@@ -9,19 +9,38 @@ export interface TokenData {
 
 export class TokenManager extends EventEmitter {
   private static readonly TOKEN_KEY = 'auth_token';
-  private static readonly REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutes before expiry
   private refreshPromise: Promise<string> | null = null;
+  private static instance: TokenManager | null = null;
 
   constructor() {
     super();
   }
 
-  public getToken(): string | null {
+  public static getInstance(): TokenManager {
+    if (!TokenManager.instance) {
+      TokenManager.instance = new TokenManager();
+    }
+    return TokenManager.instance;
+  }
+
+  public static clearInstance(): void {
+    if (TokenManager.instance) {
+      TokenManager.instance.destroy();
+      TokenManager.instance = null;
+    }
+  }
+
+  public async getToken(): Promise<string | null> {
     const tokenData = this.getTokenFromStorage();
     if (!tokenData) return null;
 
-    if (this.isTokenExpired(tokenData) || this.shouldRefreshToken(tokenData)) {
-      this.refreshTokenAsync();
+    if (this.isTokenExpired(tokenData)) {
+      try {
+        return await this.refreshToken();
+      } catch (error) {
+        this.clearToken();
+        return null;
+      }
     }
 
     return tokenData.token;
@@ -40,6 +59,8 @@ export class TokenManager extends EventEmitter {
   public clearToken(): void {
     localStorage.removeItem(TokenManager.TOKEN_KEY);
     this.emit('tokenCleared');
+
+    TokenManager.clearInstance();
   }
 
   public async refreshToken(): Promise<string> {
@@ -49,8 +70,7 @@ export class TokenManager extends EventEmitter {
 
     this.refreshPromise = this.performTokenRefresh();
     try {
-      const newToken = await this.refreshPromise;
-      return newToken;
+      return await this.refreshPromise;
     } finally {
       this.refreshPromise = null;
     }
@@ -58,6 +78,7 @@ export class TokenManager extends EventEmitter {
 
   private async performTokenRefresh(): Promise<string> {
     try {
+      console.log('Starting token refresh...');
       const response = await fetch(`${env.API_URL}/auth/refresh`, {
         method: 'POST',
         credentials: 'include', // Include cookies
@@ -71,28 +92,28 @@ export class TokenManager extends EventEmitter {
       }
 
       const data = await response.json();
+      console.log('Token refresh response:', data);
 
-      // Update tokens
-      this.setToken(
-        data.token,
-        data.refreshToken,
-        data.tokenInfo.expiresAt
-      );
+      const token = data.token || data.accessToken;
+      const expiresAt = data.tokenInfo?.expiresAt || data.expiresAt || (Date.now() + 3600000); // 1 час по умолчанию
+      const refreshExpiresAt = data.tokenInfo?.refreshExpiresAt || data.refreshExpiresAt || (Date.now() + 86400000); // 24 часа по умолчанию
 
-      this.emit('tokenRefreshed', data.token);
-      return data.token;
+      if (!token) {
+        throw new Error('Invalid token response format');
+      }
+
+      console.log('Setting new token with expiresAt:', new Date(expiresAt));
+
+      this.setToken(token, expiresAt, refreshExpiresAt);
+
+      this.emit('tokenRefreshed', token);
+      return token;
     } catch (error) {
+      console.error('Token refresh failed:', error);
       this.clearToken();
       this.emit('tokenExpired');
       throw new Error('Failed to refresh token');
     }
-  }
-
-  private refreshTokenAsync(): void {
-    // Don't await, let it run in background
-    this.refreshToken().catch(error => {
-      console.warn('Background token refresh failed:', error);
-    });
   }
 
   private getTokenFromStorage(): TokenData | null {
@@ -110,10 +131,6 @@ export class TokenManager extends EventEmitter {
 
   private isTokenExpired(tokenData: TokenData): boolean {
     return Date.now() >= tokenData.expiresAt;
-  }
-
-  private shouldRefreshToken(tokenData: TokenData): boolean {
-    return Date.now() >= (tokenData.expiresAt - TokenManager.REFRESH_THRESHOLD);
   }
 
   public destroy(): void {

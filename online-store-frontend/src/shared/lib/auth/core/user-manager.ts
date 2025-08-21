@@ -1,6 +1,7 @@
 import {EventEmitter} from './event-emitter';
 import {AuthResponse, User} from '../types';
 import {env} from '@/config/env';
+import {TokenManager} from './token-manager';
 
 export interface LoginCredentials {
   email: string;
@@ -81,7 +82,6 @@ export class UserManager extends EventEmitter {
 
       const data: AuthResponse = await response.json();
 
-      // Create user from response
       const user: User = {
         id: data.user.id,
         username: data.user.username,
@@ -126,13 +126,11 @@ export class UserManager extends EventEmitter {
 
   public async logout(): Promise<void> {
     try {
-      // Call logout endpoint
       await fetch(`${env.API_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });
     } catch (error) {
-      // Continue with logout even if API call fails
       console.warn('Logout API call failed:', error);
     } finally {
       this.clearUserCache();
@@ -146,12 +144,12 @@ export class UserManager extends EventEmitter {
   }
 
   private async fetchUserFromAPI(): Promise<User> {
-    const tokenData = localStorage.getItem('auth_token');
-    if (!tokenData) {
+    const tokenManager = TokenManager.getInstance();
+    const token = await tokenManager.getToken();
+
+    if (!token) {
       throw new Error('No auth token');
     }
-
-    const { token } = JSON.parse(tokenData);
 
     const response = await fetch(`${env.API_URL}/auth/me`, {
       method: 'GET',

@@ -2,23 +2,25 @@ import Axios from 'axios';
 
 import {env} from '@/config/env';
 import {handleResponseError} from '@/shared/lib/auth/interceptors';
+import {TokenManager} from '@/shared/lib/auth/core/token-manager';
 
 export const api = Axios.create({
   baseURL: env.API_URL,
 });
 
-// Add auth token interceptor
+const tokenManager = TokenManager.getInstance();
+
 api.interceptors.request.use(async (config) => {
-  // Get token from localStorage
-  const tokenData = localStorage.getItem('auth_token');
-  if (tokenData) {
+  console.log(config.url);
+  if (!config.url?.startsWith('/auth/')) {
     try {
-      const parsed = JSON.parse(tokenData);
-      if (parsed.token) {
-        config.headers.Authorization = `Bearer ${parsed.token}`;
+      const token = await tokenManager.getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
+
     } catch (error) {
-      console.warn('Failed to parse auth token:', error);
+      console.warn('Failed to get auth token:', error);
     }
   }
 

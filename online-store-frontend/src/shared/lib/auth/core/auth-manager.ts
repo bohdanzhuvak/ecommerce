@@ -16,7 +16,7 @@ export class AuthManager extends EventEmitter {
 
   private constructor() {
     super();
-    this.tokenManager = new TokenManager();
+    this.tokenManager = TokenManager.getInstance();
     this.userManager = new UserManager();
 
     this.setupEventListeners();
@@ -56,7 +56,7 @@ export class AuthManager extends EventEmitter {
       this._state.isLoading = true;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const token = this.tokenManager.getToken();
+      const token = await this.tokenManager.getToken();
       if (token) {
         const user = await this.userManager.loadUser();
         if (user) {
