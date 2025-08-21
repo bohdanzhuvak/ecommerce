@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { User } from './entities';
 
 export const loginInputSchema = z.object({
   email: z.email(),
@@ -19,13 +20,6 @@ export interface AuthState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-}
-
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
 }
 
 export interface AuthResponse {

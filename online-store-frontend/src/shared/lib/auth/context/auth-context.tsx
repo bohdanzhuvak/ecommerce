@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthManager } from '@/shared/lib/auth';
-import { AuthContextValue, AuthState, LoginInput, RegisterInput } from '../types';
+import { AuthContextValue, AuthState, LoginInput, RegisterInput } from '@/shared/types';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 

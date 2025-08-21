@@ -4,7 +4,7 @@ import { paths } from '@/config/paths';
 import { Button } from '@/shared/components/ui/button';
 import { Form, Input } from '@/shared/components/ui/form';
 import { useAuth } from '@/shared/lib/auth';
-import { loginInputSchema } from '@/shared/lib/auth/types';
+import { loginInputSchema } from '@/shared/types';
 
 export const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | undefined>(undefined);

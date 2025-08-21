@@ -7,4 +7,4 @@ export * from './components/protected-route';
 export * from './components/public-route';
 
 export * from './context/auth-context';
-export * from './types';
+// Types are now exported from @/shared/types

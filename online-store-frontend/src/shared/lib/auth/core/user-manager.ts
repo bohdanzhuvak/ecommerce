@@ -1,5 +1,5 @@
 import {EventEmitter} from './event-emitter';
-import {AuthResponse, User} from '../types';
+import {AuthResponse, User} from '@/shared/types';
 import {env} from '@/config/env';
 import {TokenManager} from './token-manager';
 

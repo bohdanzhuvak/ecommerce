@@ -3,8 +3,7 @@ import {useMemo} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router';
 
 import {paths} from '@/config/paths';
-import {AdminRoute, UserRoute, AuthenticatedRoute} from '@/shared/lib/auth';
-import {PublicRoute, AuthRoute, LandingRoute} from '@/shared/lib/auth';
+import {AdminRoute, AuthenticatedRoute, AuthRoute, LandingRoute, UserRoute} from '@/shared/lib/auth';
 
 import {PublicRoot, PublicRootErrorBoundary} from './routes/public/root';
 import {UserRoot, UserRootErrorBoundary} from './routes/user/root';

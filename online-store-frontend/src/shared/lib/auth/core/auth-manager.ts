@@ -1,7 +1,7 @@
 import { EventEmitter } from './event-emitter';
 import { TokenManager } from './token-manager';
 import { UserManager } from './user-manager';
-import { AuthState, User, AuthEvents } from '../types';
+import { AuthState, User, AuthEvents } from '@/shared/types';
 
 export class AuthManager extends EventEmitter {
   private static instance: AuthManager;

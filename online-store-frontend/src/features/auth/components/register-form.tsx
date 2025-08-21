@@ -3,7 +3,7 @@ import {Link, useNavigate, useSearchParams} from 'react-router';
 import {paths} from '@/config/paths';
 import {Button} from '@/shared/components/ui/button';
 import {Form, Input} from '@/shared/components/ui/form';
-import {registerInputSchema} from '@/shared/lib/auth/types';
+import {registerInputSchema} from '@/shared/types';
 import {useEffect, useState} from 'react';
 import {RegisterFormProps} from '../api.types';
 import {useAuth} from "@/shared/lib/auth";

@@ -1,6 +1,6 @@
 import {api} from '@/shared/lib/api-client';
 import {AdminOrder} from '../api.types';
-import {Page} from '@/shared/types/api';
+import {Page} from '@/shared/types';
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {QueryConfig} from '@/shared/lib/react-query';
 
