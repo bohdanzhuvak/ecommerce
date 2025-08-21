@@ -41,13 +41,7 @@ export class UserManager extends EventEmitter {
 
       const data: AuthResponse = await response.json();
 
-      const user: User = {
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
-        role: data.user.role
-      };
-
+      const user: User = data.user;
       this.cacheUser(user);
       this.emit('userLoaded', user);
 
@@ -81,12 +75,7 @@ export class UserManager extends EventEmitter {
 
       const data: AuthResponse = await response.json();
 
-      const user: User = {
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
-        role: data.user.role
-      };
+      const user: User = data.user;
 
       this.cacheUser(user);
       this.emit('userLoaded', user);

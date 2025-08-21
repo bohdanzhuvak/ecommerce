@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router';
-import { useAuth } from '@/shared/lib/auth';
-import { paths } from '@/config/paths';
+import React, {useEffect} from 'react';
+import {Navigate, useLocation, useNavigate} from 'react-router';
+import {useAuth} from '@/shared/lib/auth';
+import {paths} from '@/config/paths';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
