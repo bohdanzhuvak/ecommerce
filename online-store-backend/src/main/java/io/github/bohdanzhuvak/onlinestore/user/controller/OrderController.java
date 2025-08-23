@@ -27,6 +27,11 @@ public class OrderController {
     return orderService.getOrdersByUser(user.getId());
   }
 
+  @GetMapping("{id}")
+  public OrderResponse getOrder(@PathVariable Long id, @CurrentUser UserPrincipal user) {
+    return orderService.getOrderById(id, user.getId());
+  }
+
   @PostMapping
   public OrderResponse createOrderFromCart(@CurrentUser UserPrincipal user, @RequestBody CreateOrderRequest request) {
     return orderService.createOrder(user.getId(), request);

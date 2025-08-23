@@ -1,11 +1,16 @@
 import React from 'react';
-import {Order} from '../api.types';
+import { Order } from '../api.types';
+import { PayOrderButton } from './pay-order-button';
+import { useAuth } from '@/shared/lib/auth';
+import {Link} from "@/shared/components/ui/link";
 
 interface OrderItemProps {
   order: Order;
 }
 
 export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
+  const { state: { user } } = useAuth();
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -42,7 +47,12 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
     <div className="border rounded-lg p-6 bg-white shadow-sm">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold">Order #{order.id}</h3>
+          <Link
+            to={`/orders/${order.id}`}
+            className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Order #{order.id}
+          </Link>
           <p className="text-sm text-gray-600">{formatDate(order.createdAt)}</p>
         </div>
         <div className="text-right">
@@ -65,6 +75,23 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           </div>
         ))}
       </div>
+
+      {/* Payment Actions for PENDING orders */}
+      {order.status === 'PENDING' && (
+        <div className="border-t pt-4 mt-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              <span>Your balance: </span>
+              <span className="font-medium">${user?.balance?.toFixed(2) || '0.00'}</span>
+            </div>
+            <PayOrderButton
+              orderId={order.id}
+              orderTotal={order.totalPrice}
+              userBalance={user?.balance || 0}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

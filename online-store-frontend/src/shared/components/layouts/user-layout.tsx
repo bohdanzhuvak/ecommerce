@@ -80,7 +80,7 @@ export function UserLayout({children}: { children: React.ReactNode }) {
   const navigation = [
     {name: 'Catalog', to: paths.products.getHref(), icon: Package},
     {name: 'Cart', to: paths.app.cart.getHref(), icon: ShoppingCart},
-    {name: 'Orders', to: paths.app.orders.getHref(), icon: Package},
+    {name: 'Orders', to: paths.app.orders.root.getHref(), icon: Package},
   ];
 
   const handleLogout = async () => {

@@ -95,7 +95,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ],
     },
     {
-      path: paths.app.orders.path,
+      path: paths.app.orders.root.path,
       element: (
         <UserRoute>
           <UserRoot/>
@@ -108,6 +108,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: async () => {
             const {OrdersRoute, ordersLoader} = await import('./routes/user/orders');
             return {Component: () => (<OrdersRoute/>), loader: ordersLoader(queryClient)};
+          },
+        },
+        {
+          path: paths.app.orders.order.path,
+          lazy: async () => {
+            const {OrderDetailsRoute, orderDetailsLoader} = await import('./routes/user/order-details');
+            return {Component: () => (<OrderDetailsRoute/>), loader: orderDetailsLoader(queryClient)};
           },
         },
       ],

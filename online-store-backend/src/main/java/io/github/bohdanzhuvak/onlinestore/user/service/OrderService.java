@@ -38,6 +38,17 @@ public class OrderService {
     return orderMapper.toResponse(orders);
   }
 
+  public OrderResponse getOrderById(Long orderId, Long userId) {
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(() -> new NotFoundException("Order not found with id: " + orderId));
+
+    if (!order.getUser().getId().equals(userId)) {
+      throw new RuntimeException("Access denied to order");
+    }
+
+    return orderMapper.toResponse(order);
+  }
+
   @Transactional
   public OrderResponse createOrder(Long userId, CreateOrderRequest request) {
     User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
