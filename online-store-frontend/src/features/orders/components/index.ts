@@ -1,3 +1,4 @@
 export {Orders} from './orders';
 export {OrderItem} from './order-item';
-export {CreateOrderButton} from './create-order-button';
+export {CreateOrderForm} from './create-order-form';
+export {PayOrderButton} from './pay-order-button';
