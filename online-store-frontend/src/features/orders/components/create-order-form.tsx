@@ -6,7 +6,7 @@ import { Button } from '@/shared/components/ui/button';
 import { useCreateOrderFromCart } from '../api/create-order-from-cart';
 import { useNotifications } from '@/shared/components/ui/notifications';
 import { useCart } from '@/features/cart/api/get-cart';
-import { useAuth } from '@/shared/lib/auth';
+import { useBalance } from '@/features/balance/hooks/use-balance';
 import { getDeliveryAddresses } from '@/features/delivery-addresses/api/get-addresses';
 import { DeliveryAddress } from '@/shared/types';
 import { Spinner } from '@/shared/components/ui/spinner';
@@ -24,7 +24,8 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const { addNotification } = useNotifications();
   const queryClient = useQueryClient();
-  const { state: { user } } = useAuth();
+  // Get balance data
+  const { data: balanceData } = useBalance();
   
   // Get cart data
   const cartQuery = useCart({});
@@ -73,7 +74,8 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
 
   const cart = cartQuery.data;
   const totalPrice = cart?.totalPrice || 0;
-  const hasSufficientFunds = user?.balance && user.balance >= totalPrice;
+  const currentBalance = balanceData?.currentBalance || 0;
+  const hasSufficientFunds = currentBalance >= totalPrice;
 
   return (
     <>
@@ -107,7 +109,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Your Balance:</span>
                   <span className={`font-medium ${hasSufficientFunds ? 'text-green-600' : 'text-red-600'}`}>
-                    ${user?.balance?.toFixed(2) || '0.00'}
+                    ${currentBalance.toFixed(2)}
                   </span>
                 </div>
               </div>

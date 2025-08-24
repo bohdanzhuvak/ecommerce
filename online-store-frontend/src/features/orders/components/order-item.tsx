@@ -1,7 +1,7 @@
 import React from 'react';
 import { Order } from '../api.types';
 import { PayOrderButton } from './pay-order-button';
-import { useAuth } from '@/shared/lib/auth';
+import { useBalance } from '@/features/balance/hooks/use-balance';
 import {Link} from "@/shared/components/ui/link";
 
 interface OrderItemProps {
@@ -9,8 +9,8 @@ interface OrderItemProps {
 }
 
 export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
-  const { state: { user } } = useAuth();
-
+  const { data: balanceData } = useBalance();
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -82,12 +82,12 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
               <span>Your balance: </span>
-              <span className="font-medium">${user?.balance?.toFixed(2) || '0.00'}</span>
+              <span className="font-medium">${balanceData?.currentBalance?.toFixed(2) || '0.00'}</span>
             </div>
             <PayOrderButton
               orderId={order.id}
               orderTotal={order.totalPrice}
-              userBalance={user?.balance || 0}
+              userBalance={balanceData?.currentBalance || 0}
             />
           </div>
         </div>

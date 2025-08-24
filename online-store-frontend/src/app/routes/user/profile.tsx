@@ -2,7 +2,7 @@ import {UpdateProfile} from '@/features/users/components/update-profile';
 import {ContentLayout} from '@/shared/components/layouts';
 import {DeleteUser} from "@/features/users/components/delete-user";
 import {useAuth} from "@/shared/lib/auth";
-import {BalanceHistory, DepositForm} from '@/features/balance';
+import {BalanceHistory, DepositForm, useBalance} from '@/features/balance';
 import {AddressForm, AddressList} from '@/features/delivery-addresses';
 
 type EntryProps = {
@@ -20,6 +20,7 @@ const Entry = ({label, value}: EntryProps) => (
 
 export const ProfileRoute = () => {
   const user = useAuth().state.user;
+  const { data: balanceData } = useBalance();
 
   if (!user) return null;
 
@@ -43,7 +44,7 @@ export const ProfileRoute = () => {
             <dl className="sm:divide-y sm:divide-gray-200">
               <Entry label="Email" value={user.email}/>
               <Entry label="Username" value={user.username}/>
-              <Entry label="Balance" value={`$${user.balance?.toFixed(2) || '0.00'}`}/>
+              <Entry label="Balance" value={`$${balanceData?.currentBalance?.toFixed(2) || '0.00'}`}/>
               <DeleteUser userEmail={user.email}/>
             </dl>
           </div>

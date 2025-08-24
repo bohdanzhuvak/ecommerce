@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getOrder } from '../api/get-order';
 import { PayOrderButton } from './pay-order-button';
-import { useAuth } from '@/shared/lib/auth';
+import { useBalance } from '@/features/balance/hooks/use-balance';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { OrderItem } from '../api.types';
 
@@ -11,8 +11,8 @@ interface OrderDetailsProps {
 }
 
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
-  const { state: { user } } = useAuth();
-
+  const { data: balanceData } = useBalance();
+  
   const { data: order, isLoading, error } = useQuery({
     queryKey: ['order', orderId],
     queryFn: () => getOrder(orderId),
@@ -61,7 +61,8 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
     }
   };
 
-  const canPay = order.status === 'PENDING' && user?.balance && user.balance >= order.totalPrice;
+  const currentBalance = balanceData?.currentBalance || 0;
+  const canPay = order.status === 'PENDING' && currentBalance >= order.totalPrice;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -86,18 +87,18 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">
-                  Your balance: <span className="font-medium">${user?.balance?.toFixed(2) || '0.00'}</span>
+                  Your balance: <span className="font-medium">${currentBalance.toFixed(2)}</span>
                 </p>
                 {!canPay && (
                   <p className="text-sm text-red-600 mt-1">
-                    Insufficient funds. You need ${(order.totalPrice - (user?.balance || 0)).toFixed(2)} more.
+                    Insufficient funds. You need ${(order.totalPrice - currentBalance).toFixed(2)} more.
                   </p>
                 )}
               </div>
               <PayOrderButton
                 orderId={order.id}
                 orderTotal={order.totalPrice}
-                userBalance={user?.balance || 0}
+                userBalance={currentBalance}
               />
             </div>
           </div>

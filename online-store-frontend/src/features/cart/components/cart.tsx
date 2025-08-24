@@ -4,11 +4,11 @@ import {useCart} from '../api/get-cart';
 import {ClearCart} from "@/features/cart/components/clear-cart";
 import {CreateOrderForm} from "@/features/orders/components/create-order-form";
 import {BalanceDisplay} from "@/features/balance";
-import {useAuth} from "@/shared/lib/auth";
+import {useBalance} from "@/features/balance/hooks/use-balance";
 
 export const Cart: React.FC = () => {
   const cartQuery = useCart({});
-  const { state: { user } } = useAuth();
+  const { data: balanceData } = useBalance();
 
   if (cartQuery.isLoading) {
     return <div className="flex justify-center p-8">Loading cart...</div>;
@@ -26,7 +26,8 @@ export const Cart: React.FC = () => {
 
   const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.totalPrice;
-  const hasSufficientFunds = user?.balance && user.balance >= totalPrice;
+  const currentBalance = balanceData?.currentBalance || 0;
+  const hasSufficientFunds = currentBalance >= totalPrice;
 
   return (
     <div className="p-6">
@@ -66,7 +67,7 @@ export const Cart: React.FC = () => {
                   </h3>
                   <div className="mt-2 text-sm text-yellow-700">
                     <p>
-                      You need ${(totalPrice - (user?.balance || 0)).toFixed(2)} more to complete this order.
+                      You need ${(totalPrice - currentBalance).toFixed(2)} more to complete this order.
                       You can still create the order and pay later.
                     </p>
                   </div>
