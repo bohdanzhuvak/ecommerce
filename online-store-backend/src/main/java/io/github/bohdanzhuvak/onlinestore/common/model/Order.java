@@ -39,7 +39,7 @@ public class Order {
   @ManyToOne
   private User user;
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<OrderItem> items;
 
   private BigDecimal totalPrice;
@@ -50,7 +50,9 @@ public class Order {
   @Enumerated(EnumType.STRING)
   private OrderStatus status;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  // Using @ManyToOne instead of @OneToOne because one delivery address can be used for multiple orders
+  // @OneToOne would create a unique constraint, preventing reuse of addresses
+  @ManyToOne
   @JoinColumn(name = "delivery_address_id")
   private DeliveryAddress deliveryAddress;
 

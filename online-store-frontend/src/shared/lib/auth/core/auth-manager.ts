@@ -108,7 +108,7 @@ export class AuthManager extends EventEmitter {
     }
   }
 
-  public async register(credentials: { email: string; password: string; name: string }): Promise<User> {
+  public async register(credentials: { email: string; password: string; username: string }): Promise<User> {
     try {
       this._state.isLoading = true;
       this._state.error = null;
