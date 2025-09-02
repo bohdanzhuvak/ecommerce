@@ -3,6 +3,8 @@ import { Order } from '../api.types';
 import { PayOrderButton } from './pay-order-button';
 import { useBalance } from '@/features/balance/hooks/use-balance';
 import {Link} from "@/shared/components/ui/link";
+import {Button} from "@/shared/components/ui/button";
+import {paths} from "@/config/paths.ts";
 
 interface OrderItemProps {
   order: Order;
@@ -10,7 +12,7 @@ interface OrderItemProps {
 
 export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
   const { data: balanceData } = useBalance();
-  
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -48,7 +50,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
       <div className="flex justify-between items-start mb-4">
         <div>
           <Link
-            to={`/orders/${order.id}`}
+            to={paths.app.orders.order.getHref(order.id.toString())}
             className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline"
           >
             Order #{order.id}
@@ -75,23 +77,15 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           </div>
         ))}
       </div>
+      <div className="mt-5">
+        <Link
+          to={paths.app.orders.order.getHref(order.id.toString())}
+          className="text-lg text-right font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+        >
+          Go to order details &rarr;
+        </Link>
+      </div>
 
-      {/* Payment Actions for PENDING orders */}
-      {order.status === 'PENDING' && (
-        <div className="border-t pt-4 mt-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              <span>Your balance: </span>
-              <span className="font-medium">${balanceData?.currentBalance?.toFixed(2) || '0.00'}</span>
-            </div>
-            <PayOrderButton
-              orderId={order.id}
-              orderTotal={order.totalPrice}
-              userBalance={balanceData?.currentBalance || 0}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

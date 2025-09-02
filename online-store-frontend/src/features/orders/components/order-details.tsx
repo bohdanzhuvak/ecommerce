@@ -1,10 +1,11 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getOrder } from '../api/get-order';
-import { PayOrderButton } from './pay-order-button';
-import { useBalance } from '@/features/balance/hooks/use-balance';
-import { Spinner } from '@/shared/components/ui/spinner';
-import { OrderItem } from '../api.types';
+import {useQuery} from '@tanstack/react-query';
+import {getOrder} from '../api/get-order';
+import {PayOrderButton} from './pay-order-button';
+import {useBalance} from '@/features/balance/hooks/use-balance';
+import {Spinner} from '@/shared/components/ui/spinner';
+import {OrderItem} from '../api.types';
+import {DepositForm} from "@/features/balance";
 
 interface OrderDetailsProps {
   orderId: number;
@@ -12,7 +13,7 @@ interface OrderDetailsProps {
 
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
   const { data: balanceData } = useBalance();
-  
+
   const { data: order, isLoading, error } = useQuery({
     queryKey: ['order', orderId],
     queryFn: () => getOrder(orderId),
@@ -89,17 +90,21 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                 <p className="text-sm text-gray-600">
                   Your balance: <span className="font-medium">${currentBalance.toFixed(2)}</span>
                 </p>
-                {!canPay && (
-                  <p className="text-sm text-red-600 mt-1">
-                    Insufficient funds. You need ${(order.totalPrice - currentBalance).toFixed(2)} more.
-                  </p>
+                {!canPay ? (
+                  <>
+                    <p className="text-sm text-red-600 mt-1">
+                      Insufficient funds. You need ${(order.totalPrice - currentBalance).toFixed(2)} more.
+                    </p>
+                    <DepositForm defaultAmount={order.totalPrice.toString()}/>
+                  </>
+                ) : (
+                  <PayOrderButton
+                    orderId={order.id}
+                    orderTotal={order.totalPrice}
+                    userBalance={currentBalance}
+                  />
                 )}
               </div>
-              <PayOrderButton
-                orderId={order.id}
-                orderTotal={order.totalPrice}
-                userBalance={currentBalance}
-              />
             </div>
           </div>
         )}

@@ -6,9 +6,13 @@ import { useDisclosure } from '@/shared/hooks/use-disclosure';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/shared/components/ui/drawer';
 import { DepositRequest } from '@/shared/types';
 
-export const DepositForm: React.FC = () => {
+interface DepositFormProps {
+  defaultAmount?: string;
+}
+
+export const DepositForm: React.FC<DepositFormProps> = ({defaultAmount}) => {
   const { isOpen, open, close } = useDisclosure();
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(defaultAmount || '');
   const [description, setDescription] = useState('');
   const queryClient = useQueryClient();
 
@@ -44,7 +48,7 @@ export const DepositForm: React.FC = () => {
           <DrawerHeader>
             <DrawerTitle>Deposit to Balance</DrawerTitle>
           </DrawerHeader>
-          
+
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
