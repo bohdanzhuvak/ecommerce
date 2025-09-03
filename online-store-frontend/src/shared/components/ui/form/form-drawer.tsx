@@ -49,7 +49,7 @@ export const FormDrawer = ({
         </div>
         <DrawerFooter>
           <DrawerClose asChild>
-            <Button variant="outline" type="submit">
+            <Button variant="outline">
               Close
             </Button>
           </DrawerClose>

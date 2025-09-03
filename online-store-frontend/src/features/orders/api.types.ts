@@ -1,4 +1,4 @@
-import { DeliveryAddress } from '@/shared/types';
+import {DeliveryAddress} from "@/features/delivery-addresses/api.types.ts";
 
 export interface OrderItem {
   productId: number;

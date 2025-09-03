@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { useDisclosure } from '@/shared/hooks/use-disclosure';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/shared/components/ui/drawer';
-import { Button } from '@/shared/components/ui/button';
-import { useCreateOrderFromCart } from '../api/create-order-from-cart';
-import { useNotifications } from '@/shared/components/ui/notifications';
-import { useCart } from '@/features/cart/api/get-cart';
-import { useBalance } from '@/features/balance/hooks/use-balance';
-import { getDeliveryAddresses } from '@/features/delivery-addresses/api/get-addresses';
-import { DeliveryAddress } from '@/shared/types';
-import { Spinner } from '@/shared/components/ui/spinner';
+import React, {useState} from 'react';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useDisclosure} from '@/shared/hooks/use-disclosure';
+import {Drawer, DrawerContent, DrawerHeader, DrawerTitle} from '@/shared/components/ui/drawer';
+import {Button} from '@/shared/components/ui/button';
+import {useCreateOrderFromCart} from '../api/create-order-from-cart';
+import {useNotifications} from '@/shared/components/ui/notifications';
+import {useCart} from '@/features/cart/api/get-cart';
+import {useBalance} from '@/features/balance/hooks/use-balance';
+import {getDeliveryAddresses} from '@/features/delivery-addresses/api/get-addresses';
+import {Spinner} from '@/shared/components/ui/spinner';
+import {DeliveryAddress} from "@/features/delivery-addresses/api.types.ts";
 
 interface CreateOrderFormProps {
   className?: string;
@@ -26,10 +26,10 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
   const queryClient = useQueryClient();
   // Get balance data
   const { data: balanceData } = useBalance();
-  
+
   // Get cart data
   const cartQuery = useCart({});
-  
+
   // Get delivery addresses
   const { data: addresses, isLoading: addressesLoading } = useQuery({
     queryKey: ['delivery-addresses'],
@@ -92,7 +92,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
           <DrawerHeader>
             <DrawerTitle>Create Order</DrawerTitle>
           </DrawerHeader>
-          
+
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Order Summary */}
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -113,11 +113,11 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                   </span>
                 </div>
               </div>
-              
+
               {!hasSufficientFunds && (
                 <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                   <p className="text-sm text-yellow-800">
-                    <strong>Note:</strong> You don't have sufficient funds to pay for this order immediately. 
+                    <strong>Note:</strong> You don't have sufficient funds to pay for this order immediately.
                     The order will be created with status "PENDING" and you can pay later.
                   </p>
                 </div>
@@ -127,7 +127,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
             {/* Address Selection */}
             <div>
               <h3 className="font-medium text-gray-900 mb-3">Delivery Address</h3>
-              
+
               {addressesLoading ? (
                 <Spinner />
               ) : !addresses || addresses.length === 0 ? (

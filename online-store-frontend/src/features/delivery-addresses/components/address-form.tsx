@@ -1,175 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createDeliveryAddress } from '../api/create-address';
-import { Button } from '@/shared/components/ui/button';
-import { useDisclosure } from '@/shared/hooks/use-disclosure';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/shared/components/ui/drawer';
-import { CreateDeliveryAddressRequest, DeliveryAddress } from '@/shared/types';
+import {Plus} from 'lucide-react';
 
-interface AddressFormProps {
-  address?: DeliveryAddress;
-  onSuccess?: () => void;
-}
+import {Button} from '@/shared/components/ui/button';
+import {Controller, Form, FormDrawer, Input, Switch} from '@/shared/components/ui/form';
+import {useNotifications} from '@/shared/components/ui/notifications';
 
-export const AddressForm: React.FC<AddressFormProps> = ({ address, onSuccess }) => {
-  const { isOpen, open, close } = useDisclosure();
-  const [formData, setFormData] = useState<CreateDeliveryAddressRequest>({
-    street: '',
-    city: '',
-    postalCode: '',
-    country: '',
-    phone: '',
-    isDefault: false,
-  });
-  
-  const queryClient = useQueryClient();
+import {useCreateDeliveryAddress} from '../api/create-address';
+import {type AddressFormData, createAddressFormSchema} from '../api.types';
 
-  useEffect(() => {
-    if (address) {
-      setFormData({
-        street: address.street,
-        city: address.city,
-        postalCode: address.postalCode,
-        country: address.country,
-        phone: address.phone,
-        isDefault: address.isDefault,
-      });
-    }
-  }, [address]);
-
-  const createMutation = useMutation({
-    mutationFn: createDeliveryAddress,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['delivery-addresses'] });
-      close();
-      setFormData({
-        street: '',
-        city: '',
-        postalCode: '',
-        country: '',
-        phone: '',
-        isDefault: false,
-      });
-      onSuccess?.();
+export const AddressForm = () => {
+  const {addNotification} = useNotifications();
+  const createDeliveryAddressMutation = useCreateDeliveryAddress({
+    mutationConfig: {
+      onSuccess: () => {
+        addNotification({
+          type: 'success',
+          title: 'Address added successfully!',
+        });
+      },
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createMutation.mutate(formData);
-  };
-
-  const handleInputChange = (field: keyof CreateDeliveryAddressRequest, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   return (
-    <>
-      <Button onClick={open} variant="outline" size="sm">
-        {address ? 'Edit Address' : 'Add Address'}
-      </Button>
+    <FormDrawer
+      isDone={createDeliveryAddressMutation.isSuccess}
+      triggerButton={
+        <Button size="sm" icon={<Plus className="size-4"/>}>
+          Add Address
+        </Button>
+      }
+      title="Add Address"
+      submitButton={
+        <Button
+          form="address-form"
+          type="submit"
+          size="sm"
+          isLoading={createDeliveryAddressMutation.isPending}
+        >
+          Submit
+        </Button>
+      }
+    >
+      <Form
+        id="address-form"
+        onSubmit={(values: AddressFormData) => {
+          console.log('Form submitted with values:', values);
+          createDeliveryAddressMutation.mutate(values);
+        }}
+        schema={createAddressFormSchema}
+        options={{
+          defaultValues: {
+            street: '',
+            city: '',
+            postalCode: '',
+            country: '',
+            phone: '',
+            isDefault: false,
+          },
+        }}
+      >
+        {({register, formState, control}) => (
+          <>
+            <Input
+              label="Street Address"
+              placeholder="123 Main St"
+              error={formState.errors['street']}
+              registration={register('street')}
+            />
 
-      <Drawer open={isOpen} onOpenChange={(isOpen) => isOpen ? open() : close()}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>{address ? 'Edit Address' : 'Add New Address'}</DrawerTitle>
-          </DrawerHeader>
-          
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Street Address *
-              </label>
-              <input
-                type="text"
-                value={formData.street}
-                onChange={(e) => handleInputChange('street', e.target.value)}
-                placeholder="123 Main St"
-                required
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
+            <Input
+              label="City"
+              placeholder="New York"
+              error={formState.errors['city']}
+              registration={register('city')}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                City *
-              </label>
-              <input
-                type="text"
-                value={formData.city}
-                onChange={(e) => handleInputChange('city', e.target.value)}
-                placeholder="New York"
-                required
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
+            <Input
+              label="Postal Code"
+              placeholder="10001"
+              error={formState.errors['postalCode']}
+              registration={register('postalCode')}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Postal Code *
-              </label>
-              <input
-                type="text"
-                value={formData.postalCode}
-                onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                placeholder="10001"
-                required
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
+            <Input
+              label="Country"
+              placeholder="United States"
+              error={formState.errors['country']}
+              registration={register('country')}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Country *
-              </label>
-              <input
-                type="text"
-                value={formData.country}
-                onChange={(e) => handleInputChange('country', e.target.value)}
-                placeholder="United States"
-                required
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
+            <Input
+              label="Phone"
+              type="tel"
+              placeholder="+1234567890"
+              error={formState.errors['phone']}
+              registration={register('phone')}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone *
-              </label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="+1234567890"
-                required
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            <div className="flex items-center space-x-2">
+              <Controller
+                name="isDefault"
+                control={control}
+                render={({field}) => (
+                  <Switch
+                    id="isDefault"
+                    checked={field.value || false}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isDefault"
-                checked={formData.isDefault}
-                onChange={(e) => handleInputChange('isDefault', e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="isDefault" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="isDefault" className="text-sm font-medium">
                 Set as default address
               </label>
             </div>
-
-            <Button
-              type="submit"
-              disabled={createMutation.isPending || !formData.street || !formData.city || 
-                       !formData.postalCode || !formData.country || !formData.phone}
-              className="w-full"
-            >
-              {createMutation.isPending ? 'Saving...' : (address ? 'Update Address' : 'Add Address')}
-            </Button>
-          </form>
-        </DrawerContent>
-      </Drawer>
-    </>
+          </>
+        )}
+      </Form>
+    </FormDrawer>
   );
 };

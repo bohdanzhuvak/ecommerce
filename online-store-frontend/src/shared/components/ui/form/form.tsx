@@ -223,4 +223,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  Controller,
 };

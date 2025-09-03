@@ -1,9 +1,8 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getDeliveryAddresses } from '../api/get-addresses';
-import { DeliveryAddress } from '@/shared/types';
-import { Spinner } from '@/shared/components/ui/spinner';
-import { Button } from '@/shared/components/ui/button';
+import {useDeliveryAddresses} from '../api/get-addresses';
+import {Spinner} from '@/shared/components/ui/spinner';
+import {Button} from '@/shared/components/ui/button';
+import {DeliveryAddress} from "../api.types.ts";
 
 interface AddressCardProps {
   address: DeliveryAddress;
@@ -17,7 +16,7 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
           Default
         </span>
       )}
-      
+
       <div className="space-y-1">
         <p className="font-medium text-gray-900">{address.street}</p>
         <p className="text-sm text-gray-600">
@@ -26,7 +25,7 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
         <p className="text-sm text-gray-600">{address.country}</p>
         <p className="text-sm text-gray-600">{address.phone}</p>
       </div>
-      
+
       <div className="mt-3 flex space-x-2">
         <Button variant="outline" size="sm">
           Edit
@@ -40,18 +39,18 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
 };
 
 export const AddressList: React.FC = () => {
-  const { data: addresses, isLoading, error } = useQuery({
-    queryKey: ['delivery-addresses'],
-    queryFn: getDeliveryAddresses,
-  });
 
-  if (isLoading) {
-    return <Spinner />;
+  const addressesQuery = useDeliveryAddresses({});
+
+  if (addressesQuery.isLoading) {
+    return (
+      <div className="flex h-48 w-full items-center justify-center">
+        <Spinner size="lg"/>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="text-red-600">Failed to load addresses</div>;
-  }
+  const addresses = addressesQuery.data;
 
   if (!addresses || addresses.length === 0) {
     return (
