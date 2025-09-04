@@ -12,11 +12,22 @@ import java.util.Optional;
 
 @Repository
 public interface DeliveryAddressRepository extends JpaRepository<DeliveryAddress, Long> {
-    List<DeliveryAddress> findByUserIdOrderByIsDefaultDescCreatedAtDesc(Long userId);
-    
-    Optional<DeliveryAddress> findByUserIdAndIsDefaultTrue(Long userId);
-    
+    // Методы для работы с активными адресами (для отображения в профиле)
+    List<DeliveryAddress> findByUserIdAndIsTechnicalFalseOrderByIsDefaultDescCreatedAtDesc(Long userId);
+
+    Optional<DeliveryAddress> findByUserIdAndIsDefaultTrueAndIsTechnicalFalse(Long userId);
+
     @Modifying
-    @Query("UPDATE DeliveryAddress da SET da.isDefault = false WHERE da.user.id = :userId")
+    @Query("UPDATE DeliveryAddress da SET da.isDefault = false WHERE da.user.id = :userId AND da.isTechnical = false")
     void clearDefaultAddress(@Param("userId") Long userId);
+
+    // Методы для работы со всеми адресами (включая технические)
+    List<DeliveryAddress> findByUserIdOrderByIsDefaultDescCreatedAtDesc(Long userId);
+
+    Optional<DeliveryAddress> findByUserIdAndIsDefaultTrue(Long userId);
+
+    // Методы для работы с техническими адресами
+    @Modifying
+    @Query("UPDATE DeliveryAddress da SET da.isTechnical = true WHERE da.id = :addressId")
+    void markAsTechnical(@Param("addressId") Long addressId);
 }

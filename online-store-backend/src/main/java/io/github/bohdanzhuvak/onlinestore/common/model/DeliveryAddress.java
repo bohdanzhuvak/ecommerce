@@ -42,7 +42,15 @@ public class DeliveryAddress {
     private String phone;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDefault = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isTechnical = false;
+
+    @Column(name = "original_id")
+    private Long originalId;
 
     @CreatedDate
     private LocalDateTime createdAt;
