@@ -1,14 +1,31 @@
 import React from 'react';
 import {useDeliveryAddresses} from '../api/get-addresses';
+import {useDeleteDeliveryAddress} from '../api/delete-address';
 import {Spinner} from '@/shared/components/ui/spinner';
 import {Button} from '@/shared/components/ui/button';
+import {ConfirmationDialog} from '@/shared/components/ui/dialog';
+import {useNotifications} from '@/shared/components/ui/notifications';
 import {DeliveryAddress} from "../api.types.ts";
+import {AddressForm} from './address-form';
 
 interface AddressCardProps {
   address: DeliveryAddress;
 }
 
 const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
+  const {addNotification} = useNotifications();
+  
+  const deleteDeliveryAddressMutation = useDeleteDeliveryAddress({
+    mutationConfig: {
+      onSuccess: () => {
+        addNotification({
+          type: 'success',
+          title: 'Address deleted successfully!',
+        });
+      },
+    },
+  });
+
   return (
     <div className={`p-4 border rounded-lg ${address.isDefault ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
       {address.isDefault && (
@@ -27,12 +44,27 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
       </div>
 
       <div className="mt-3 flex space-x-2">
-        <Button variant="outline" size="sm">
-          Edit
-        </Button>
-        <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
-          Delete
-        </Button>
+        <AddressForm address={address} mode="edit" />
+        <ConfirmationDialog
+          icon="danger"
+          title="Delete Address"
+          body="Are you sure you want to delete this address? This action cannot be undone."
+          triggerButton={
+            <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
+              Delete
+            </Button>
+          }
+          confirmButton={
+            <Button
+              isLoading={deleteDeliveryAddressMutation.isPending}
+              type="button"
+              variant="destructive"
+              onClick={() => deleteDeliveryAddressMutation.mutate({ id: address.id })}
+            >
+              Delete Address
+            </Button>
+          }
+        />
       </div>
     </div>
   );
@@ -64,10 +96,15 @@ export const AddressList: React.FC = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {addresses.map((address) => (
-        <AddressCard key={address.id} address={address} />
-      ))}
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <AddressForm />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {addresses.map((address) => (
+          <AddressCard key={address.id} address={address} />
+        ))}
+      </div>
     </div>
   );
 };

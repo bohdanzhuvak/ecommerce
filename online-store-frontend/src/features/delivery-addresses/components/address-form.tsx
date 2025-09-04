@@ -1,14 +1,22 @@
-import {Plus} from 'lucide-react';
+import {Plus, Edit} from 'lucide-react';
 
 import {Button} from '@/shared/components/ui/button';
 import {Controller, Form, FormDrawer, Input, Switch} from '@/shared/components/ui/form';
 import {useNotifications} from '@/shared/components/ui/notifications';
 
 import {useCreateDeliveryAddress} from '../api/create-address';
-import {type AddressFormData, createAddressFormSchema} from '../api.types';
+import {useUpdateDeliveryAddress} from '../api/update-address';
+import {type AddressFormData, createAddressFormSchema, type UpdateAddressFormData, updateAddressFormSchema, type DeliveryAddress} from '../api.types';
 
-export const AddressForm = () => {
+interface AddressFormProps {
+  address?: DeliveryAddress;
+  mode?: 'create' | 'edit';
+}
+
+export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
   const {addNotification} = useNotifications();
+  const isEditMode = mode === 'edit' && address;
+  
   const createDeliveryAddressMutation = useCreateDeliveryAddress({
     mutationConfig: {
       onSuccess: () => {
@@ -20,35 +28,68 @@ export const AddressForm = () => {
     },
   });
 
+  const updateDeliveryAddressMutation = useUpdateDeliveryAddress({
+    mutationConfig: {
+      onSuccess: () => {
+        addNotification({
+          type: 'success',
+          title: 'Address updated successfully!',
+        });
+      },
+    },
+  });
+
+  const handleSubmit = (values: AddressFormData | UpdateAddressFormData) => {
+    if (isEditMode && address) {
+      updateDeliveryAddressMutation.mutate(values as UpdateAddressFormData);
+    } else {
+      createDeliveryAddressMutation.mutate(values as AddressFormData);
+    }
+  };
+
+  const isSuccess = isEditMode ? updateDeliveryAddressMutation.isSuccess : createDeliveryAddressMutation.isSuccess;
+  const isLoading = isEditMode ? updateDeliveryAddressMutation.isPending : createDeliveryAddressMutation.isPending;
+
   return (
     <FormDrawer
-      isDone={createDeliveryAddressMutation.isSuccess}
+      isDone={isSuccess}
       triggerButton={
-        <Button size="sm" icon={<Plus className="size-4"/>}>
-          Add Address
-        </Button>
+        isEditMode ? (
+          <Button size="sm" icon={<Edit className="size-4"/>}>
+            Edit
+          </Button>
+        ) : (
+          <Button size="sm" icon={<Plus className="size-4"/>}>
+            Add Address
+          </Button>
+        )
       }
-      title="Add Address"
+      title={isEditMode ? "Edit Address" : "Add Address"}
       submitButton={
         <Button
           form="address-form"
           type="submit"
           size="sm"
-          isLoading={createDeliveryAddressMutation.isPending}
+          isLoading={isLoading}
         >
-          Submit
+          {isEditMode ? "Update" : "Submit"}
         </Button>
       }
     >
       <Form
         id="address-form"
-        onSubmit={(values: AddressFormData) => {
-          console.log('Form submitted with values:', values);
-          createDeliveryAddressMutation.mutate(values);
-        }}
-        schema={createAddressFormSchema}
+        onSubmit={handleSubmit}
+        schema={isEditMode ? updateAddressFormSchema : createAddressFormSchema}
         options={{
-          defaultValues: {
+          defaultValues: isEditMode && address ? {
+            id: address.id,
+            street: address.street,
+            city: address.city,
+            postalCode: address.postalCode,
+            country: address.country,
+            phone: address.phone,
+            isDefault: address.isDefault,
+          } : {
             street: '',
             city: '',
             postalCode: '',
@@ -60,6 +101,9 @@ export const AddressForm = () => {
       >
         {({register, formState, control}) => (
           <>
+            {isEditMode && (
+              <input type="hidden" {...register('id')} />
+            )}
             <Input
               label="Street Address"
               placeholder="123 Main St"
