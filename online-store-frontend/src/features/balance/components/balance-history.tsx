@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getBalance } from '../api/get-balance';
+import {getBalance, useBalance} from '../api/get-balance';
 import { BalanceTransaction, TRANSACTION_TYPES } from '@/shared/types';
 import { Spinner } from '@/shared/components/ui/spinner';
 
@@ -33,28 +33,26 @@ const getTransactionColor = (type: BalanceTransaction['type']) => {
 };
 
 export const BalanceHistory: React.FC = () => {
-  const { data: balanceData, isLoading, error } = useQuery({
-    queryKey: ['balance'],
-    queryFn: getBalance,
-  });
+  const balanceQuery = useBalance();
 
-  if (isLoading) {
+  if (balanceQuery.isLoading) {
     return <Spinner />;
   }
+  const balance = balanceQuery.data;
 
-  if (error || !balanceData) {
+  if (balance == null) {
     return <div className="text-gray-500">Failed to load balance history</div>;
   }
 
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Transaction History</h3>
-      
-      {balanceData.recentTransactions.length === 0 ? (
+
+      {balance.recentTransactions.length === 0 ? (
         <p className="text-gray-500 text-center py-4">No transactions yet</p>
       ) : (
         <div className="space-y-3">
-          {balanceData.recentTransactions.map((transaction) => (
+          {balance.recentTransactions.map((transaction) => (
             <div
               key={transaction.id}
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
@@ -71,10 +69,10 @@ export const BalanceHistory: React.FC = () => {
                   )}
                 </div>
               </div>
-              
+
               <div className="text-right">
                 <p className={`font-semibold ${getTransactionColor(transaction.type)}`}>
-                  {transaction.type === TRANSACTION_TYPES.DEPOSIT || 
+                  {transaction.type === TRANSACTION_TYPES.DEPOSIT ||
                    transaction.type === TRANSACTION_TYPES.REFUND ? '+' : ''}
                   ${transaction.amount.toFixed(2)}
                 </p>

@@ -15,7 +15,7 @@ export const getDeliveryAddressesQueryOptions = () => {
 }
 
 type UseDeliveryAddressesOptions = {
-  queryConfig?: QueryConfig<typeof getDeliveryAddresses>;
+  queryConfig?: QueryConfig<typeof getDeliveryAddressesQueryOptions>;
 };
 
 export const useDeliveryAddresses = ({queryConfig}: UseDeliveryAddressesOptions) => {

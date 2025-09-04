@@ -22,8 +22,3 @@ export interface BalanceResponse {
   currentBalance: number;
   recentTransactions: BalanceTransaction[];
 }
-
-export interface DepositRequest {
-  amount: number;
-  description?: string;
-}

@@ -50,26 +50,6 @@ export const ProfileRoute = () => {
           </div>
         </div>
 
-        {/* Balance Management */}
-        <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-          <div className="px-4 py-5 sm:px-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Balance Management
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  Manage your account balance and transaction history.
-                </p>
-              </div>
-              <DepositForm />
-            </div>
-          </div>
-          <div className="border-t border-gray-200 px-4 py-5">
-            <BalanceHistory />
-          </div>
-        </div>
-
         {/* Delivery Addresses */}
         <div className="overflow-hidden bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6">
@@ -87,6 +67,26 @@ export const ProfileRoute = () => {
           </div>
           <div className="border-t border-gray-200 px-4 py-5">
             <AddressList />
+          </div>
+        </div>
+
+        {/* Balance Management */}
+        <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-medium leading-6 text-gray-900">
+                  Balance Management
+                </h3>
+                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                  Manage your account balance and transaction history.
+                </p>
+              </div>
+              <DepositForm />
+            </div>
+          </div>
+          <div className="border-t border-gray-200 px-4 py-5">
+            <BalanceHistory />
           </div>
         </div>
       </div>
