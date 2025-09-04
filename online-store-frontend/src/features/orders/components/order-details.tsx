@@ -95,7 +95,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                     <p className="text-sm text-red-600 mt-1">
                       Insufficient funds. You need ${(order.totalPrice - currentBalance).toFixed(2)} more.
                     </p>
-                    <DepositForm defaultAmount={order.totalPrice}/>
+                    <DepositForm defaultAmount={order.totalPrice - currentBalance}/>
                   </>
                 ) : (
                   <PayOrderButton
