@@ -4,7 +4,7 @@ import {useCart} from '../api/get-cart';
 import {ClearCart} from "@/features/cart/components/clear-cart";
 import {CreateOrderForm} from "@/features/orders/components/create-order-form";
 import {BalanceDisplay} from "@/features/balance";
-import {useBalance} from "@/features/balance/hooks/use-balance";
+import {useBalance} from "@/shared/hooks";
 
 export const Cart: React.FC = () => {
   const cartQuery = useCart({});

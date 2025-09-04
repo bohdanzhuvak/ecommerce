@@ -1,5 +1,5 @@
 import React from 'react';
-import {useBalance} from '../api/get-balance';
+import {useBalance} from '@/shared/hooks';
 import {Spinner} from '@/shared/components/ui/spinner';
 
 export const BalanceDisplay: React.FC = () => {

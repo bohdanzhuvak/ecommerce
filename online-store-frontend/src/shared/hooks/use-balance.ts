@@ -1,7 +1,7 @@
 import {api} from '@/shared/lib/api-client';
 import {BalanceResponse} from '@/shared/types';
-import {MutationConfig, QueryConfig} from "@/shared/lib/react-query.ts";
 import {queryOptions, useQuery} from "@tanstack/react-query";
+import {QueryConfig} from "@/shared/lib/react-query.ts";
 
 export const getBalance = (): Promise<BalanceResponse> => {
   return api.get('/users/balance');

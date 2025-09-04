@@ -6,7 +6,7 @@ import {Button} from '@/shared/components/ui/button';
 import {useCreateOrderFromCart} from '../api/create-order-from-cart';
 import {useNotifications} from '@/shared/components/ui/notifications';
 import {useCart} from '@/features/cart/api/get-cart';
-import {useBalance} from '@/features/balance/hooks/use-balance';
+import {useBalance} from '@/shared/hooks';
 import {getDeliveryAddresses} from '@/features/delivery-addresses/api/get-addresses';
 import {Spinner} from '@/shared/components/ui/spinner';
 import {DeliveryAddress} from "@/features/delivery-addresses/api.types.ts";

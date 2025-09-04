@@ -1,8 +1,7 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import {getBalance, useBalance} from '../api/get-balance';
-import { BalanceTransaction, TRANSACTION_TYPES } from '@/shared/types';
-import { Spinner } from '@/shared/components/ui/spinner';
+import {useBalance} from '@/shared/hooks';
+import {BalanceTransaction, TRANSACTION_TYPES} from '@/shared/types';
+import {Spinner} from '@/shared/components/ui/spinner';
 
 const getTransactionIcon = (type: BalanceTransaction['type']) => {
   switch (type) {

@@ -2,7 +2,8 @@ import {UpdateProfile} from '@/features/users/components/update-profile';
 import {ContentLayout} from '@/shared/components/layouts';
 import {DeleteUser} from "@/features/users/components/delete-user";
 import {useAuth} from "@/shared/lib/auth";
-import {BalanceHistory, DepositForm, useBalance} from '@/features/balance';
+import {BalanceHistory, DepositForm} from '@/features/balance';
+import {useBalance} from '@/shared/hooks';
 import {AddressForm, AddressList} from '@/features/delivery-addresses';
 
 type EntryProps = {

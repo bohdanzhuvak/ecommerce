@@ -2,7 +2,7 @@ import React from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {getOrder} from '../api/get-order';
 import {PayOrderButton} from './pay-order-button';
-import {useBalance} from '@/features/balance/hooks/use-balance';
+import {useBalance} from '@/shared/hooks';
 import {Spinner} from '@/shared/components/ui/spinner';
 import {OrderItem} from '../api.types';
 import {DepositForm} from "@/features/balance";

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Order } from '../api.types';
 import { PayOrderButton } from './pay-order-button';
-import { useBalance } from '@/features/balance/hooks/use-balance';
+import { useBalance } from '@/shared/hooks';
 import {Link} from "@/shared/components/ui/link";
 import {Button} from "@/shared/components/ui/button";
 import {paths} from "@/config/paths.ts";
