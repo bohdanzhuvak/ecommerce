@@ -1,6 +1,6 @@
 import {QueryClient} from '@tanstack/react-query';
 import {ContentLayout} from '@/shared/components/layouts';
-import {Catalog} from '@/features/products/components';
+import {Catalog} from '@/features/products';
 import {getProductsQueryOptions} from '@/features/products/api/get-products.ts';
 
 export const catalogLoader = (queryClient: QueryClient) => async () => {
