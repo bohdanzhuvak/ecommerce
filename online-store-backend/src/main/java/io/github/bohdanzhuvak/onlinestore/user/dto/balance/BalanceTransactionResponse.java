@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BalanceTransactionDto {
+public class BalanceTransactionResponse {
     private Long id;
     private TransactionType type;
     private BigDecimal amount;

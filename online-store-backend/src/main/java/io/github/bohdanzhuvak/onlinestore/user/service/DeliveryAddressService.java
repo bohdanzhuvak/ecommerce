@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.user.service;
 
+import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
 import io.github.bohdanzhuvak.onlinestore.common.model.DeliveryAddress;
 import io.github.bohdanzhuvak.onlinestore.common.model.User;
 import io.github.bohdanzhuvak.onlinestore.common.repository.DeliveryAddressRepository;
@@ -7,8 +8,10 @@ import io.github.bohdanzhuvak.onlinestore.common.repository.OrderRepository;
 import io.github.bohdanzhuvak.onlinestore.common.repository.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.CreateDeliveryAddressRequest;
 import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressResponse;
+import io.github.bohdanzhuvak.onlinestore.user.mapper.DeliveryAddressMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,141 +23,110 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DeliveryAddressService {
 
-    private final DeliveryAddressRepository deliveryAddressRepository;
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
+  private final DeliveryAddressRepository deliveryAddressRepository;
+  private final OrderRepository orderRepository;
+  private final UserRepository userRepository;
+  private final DeliveryAddressMapper deliveryAddressMapper;
 
-    @Transactional(readOnly = true)
-    public List<DeliveryAddressResponse> getUserAddresses(Long userId) {
-        List<DeliveryAddress> addresses = deliveryAddressRepository
-                .findByUserIdAndIsTechnicalFalseOrderByIsDefaultDescCreatedAtDesc(userId);
+  @Transactional(readOnly = true)
+  public List<DeliveryAddressResponse> getUserAddresses(Long userId) {
+    return deliveryAddressRepository
+        .findByUserIdAndIsTechnicalFalseOrderByIsDefaultDescCreatedAtDesc(userId)
+        .stream()
+        .map(deliveryAddressMapper::toResponse)
+        .collect(Collectors.toList());
+  }
 
-        return addresses.stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+  @Transactional
+  public DeliveryAddressResponse createAddress(Long userId, CreateDeliveryAddressRequest request) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found"));
+
+    if (request.getIsDefault() != null && request.getIsDefault()) {
+      deliveryAddressRepository.clearDefaultAddress(userId);
     }
 
-    @Transactional
-    public DeliveryAddressResponse createAddress(Long userId, CreateDeliveryAddressRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    DeliveryAddress address = deliveryAddressMapper.toEntity(request);
+    address.setUser(user);
+    address.setIsTechnical(false);
 
-        if (request.getIsDefault() != null && request.getIsDefault()) {
-            deliveryAddressRepository.clearDefaultAddress(userId);
-        }
+    DeliveryAddress savedAddress = deliveryAddressRepository.save(address);
+    log.info("Created delivery address for user {}", userId);
 
-        DeliveryAddress address = DeliveryAddress.builder()
-                .user(user)
-                .street(request.getStreet())
-                .city(request.getCity())
-                .postalCode(request.getPostalCode())
-                .country(request.getCountry())
-                .phone(request.getPhone())
-                .isDefault(request.getIsDefault() != null ? request.getIsDefault() : false)
-                .isTechnical(false)
-                .originalId(null)
-                .build();
+    return deliveryAddressMapper.toResponse(savedAddress);
+  }
 
-        DeliveryAddress savedAddress = deliveryAddressRepository.save(address);
-        log.info("Created delivery address for user {}", userId);
+  @Transactional
+  public DeliveryAddressResponse updateAddress(Long userId, Long addressId, CreateDeliveryAddressRequest request) {
+    DeliveryAddress address = deliveryAddressRepository.findById(addressId)
+        .orElseThrow(() -> new NotFoundException("Address not found"));
 
-        return mapToDto(savedAddress);
+    checkUserAccess(userId, address);
+
+    boolean hasOrders = orderRepository.existsByDeliveryAddressId(addressId);
+
+    if (hasOrders) {
+      log.info("Address {} has orders, creating clone for user {}", addressId, userId);
+
+      if (request.getIsDefault() != null && request.getIsDefault()) {
+        deliveryAddressRepository.clearDefaultAddress(userId);
+      }
+
+      deliveryAddressRepository.markAsTechnical(addressId);
+
+      DeliveryAddress newAddress = deliveryAddressMapper.toEntity(request);
+      newAddress.setUser(address.getUser());
+      newAddress.setIsTechnical(false);
+      newAddress.setOriginalId(addressId);
+
+      DeliveryAddress savedAddress = deliveryAddressRepository.save(newAddress);
+      log.info("Created clone address {} for user {} (original: {})", savedAddress.getId(), userId, addressId);
+
+      return deliveryAddressMapper.toResponse(savedAddress);
+    } else {
+      if (request.getIsDefault() != null && request.getIsDefault()) {
+        deliveryAddressRepository.clearDefaultAddress(userId);
+      }
+
+      address = deliveryAddressMapper.updateEntity(address, request);
+
+      DeliveryAddress savedAddress = deliveryAddressRepository.save(address);
+      log.info("Updated delivery address {} for user {}", addressId, userId);
+
+      return deliveryAddressMapper.toResponse(savedAddress);
     }
+  }
 
-    @Transactional
-    public DeliveryAddressResponse updateAddress(Long userId, Long addressId, CreateDeliveryAddressRequest request) {
-        DeliveryAddress address = deliveryAddressRepository.findById(addressId)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+  @Transactional
+  public void deleteAddress(Long userId, Long addressId) {
+    DeliveryAddress address = deliveryAddressRepository.findById(addressId)
+        .orElseThrow(() -> new NotFoundException("Address not found"));
 
-        if (!address.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Access denied");
-        }
+    checkUserAccess(userId, address);
 
-        boolean hasOrders = orderRepository.existsByDeliveryAddressId(addressId);
+    boolean hasOrders = orderRepository.existsByDeliveryAddressId(addressId);
 
-        if (hasOrders) {
-            log.info("Address {} has orders, creating clone for user {}", addressId, userId);
-
-            deliveryAddressRepository.markAsTechnical(addressId);
-
-            DeliveryAddress newAddress = DeliveryAddress.builder()
-                    .user(address.getUser())
-                    .street(request.getStreet())
-                    .city(request.getCity())
-                    .postalCode(request.getPostalCode())
-                    .country(request.getCountry())
-                    .phone(request.getPhone())
-                    .isDefault(request.getIsDefault() != null ? request.getIsDefault() : false)
-                    .isTechnical(false)
-                    .originalId(addressId)
-                    .build();
-
-            if (request.getIsDefault() != null && request.getIsDefault()) {
-                deliveryAddressRepository.clearDefaultAddress(userId);
-            }
-
-            DeliveryAddress savedAddress = deliveryAddressRepository.save(newAddress);
-            log.info("Created clone address {} for user {} (original: {})", savedAddress.getId(), userId, addressId);
-
-            return mapToDto(savedAddress);
-        } else {
-            if (request.getIsDefault() != null && request.getIsDefault()) {
-                deliveryAddressRepository.clearDefaultAddress(userId);
-            }
-
-            address.setStreet(request.getStreet());
-            address.setCity(request.getCity());
-            address.setPostalCode(request.getPostalCode());
-            address.setCountry(request.getCountry());
-            address.setPhone(request.getPhone());
-            address.setIsDefault(request.getIsDefault() != null ? request.getIsDefault() : false);
-
-            DeliveryAddress savedAddress = deliveryAddressRepository.save(address);
-            log.info("Updated delivery address {} for user {}", addressId, userId);
-
-            return mapToDto(savedAddress);
-        }
+    if (hasOrders) {
+      log.info("Address {} has orders, marking as technical and inactive for user {}", addressId, userId);
+      deliveryAddressRepository.markAsTechnical(addressId);
+    } else {
+      deliveryAddressRepository.delete(address);
+      log.info("Deleted delivery address {} for user {}", addressId, userId);
     }
+  }
 
-    @Transactional
-    public void deleteAddress(Long userId, Long addressId) {
-        DeliveryAddress address = deliveryAddressRepository.findById(addressId)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+  @Transactional(readOnly = true)
+  public DeliveryAddressResponse getDefaultAddress(Long userId) {
+    return deliveryAddressRepository
+        .findByUserIdAndIsDefaultTrueAndIsTechnicalFalse(userId)
+        .map(deliveryAddressMapper::toResponse)
+        .orElse(null);
+  }
 
-        if (!address.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Access denied");
-        }
-
-        boolean hasOrders = orderRepository.existsByDeliveryAddressId(addressId);
-
-        if (hasOrders) {
-            log.info("Address {} has orders, marking as technical and inactive for user {}", addressId, userId);
-            deliveryAddressRepository.markAsTechnical(addressId);
-        } else {
-            deliveryAddressRepository.delete(address);
-            log.info("Deleted delivery address {} for user {}", addressId, userId);
-        }
+  private void checkUserAccess(Long userId, DeliveryAddress address) {
+    if (!address.getUser().getId().equals(userId)) {
+      throw new AccessDeniedException("User: " + userId + " has no access to address " + address.getId());
     }
+  }
 
-    @Transactional(readOnly = true)
-    public DeliveryAddressResponse getDefaultAddress(Long userId) {
-        DeliveryAddress defaultAddress = deliveryAddressRepository
-                .findByUserIdAndIsDefaultTrueAndIsTechnicalFalse(userId)
-                .orElse(null);
-
-        return defaultAddress != null ? mapToDto(defaultAddress) : null;
-    }
-
-    private DeliveryAddressResponse mapToDto(DeliveryAddress address) {
-        return DeliveryAddressResponse.builder()
-                .id(address.getId())
-                .street(address.getStreet())
-                .city(address.getCity())
-                .postalCode(address.getPostalCode())
-                .country(address.getCountry())
-                .phone(address.getPhone())
-                .isDefault(address.getIsDefault())
-                .createdAt(address.getCreatedAt())
-                .build();
-    }
 }

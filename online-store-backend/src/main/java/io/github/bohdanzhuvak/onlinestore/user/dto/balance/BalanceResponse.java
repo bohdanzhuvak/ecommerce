@@ -14,5 +14,5 @@ import java.util.List;
 @AllArgsConstructor
 public class BalanceResponse {
     private BigDecimal currentBalance;
-    private List<BalanceTransactionDto> recentTransactions;
+  private List<BalanceTransactionResponse> recentTransactions;
 }
