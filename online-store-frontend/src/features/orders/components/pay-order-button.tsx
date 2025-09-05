@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from '@/shared/components/ui/button';
-import { usePayOrder } from '../api/pay-order';
-import { useNotifications } from '@/shared/components/ui/notifications';
-import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import {Button} from '@/shared/components/ui/button';
+import {usePayOrder} from '../api/pay-order';
+import {useNotifications} from '@/shared/components/ui/notifications';
+import {ConfirmationDialog} from '@/shared/components/ui/dialog';
 
 interface PayOrderButtonProps {
   orderId: number;
@@ -21,6 +21,7 @@ export const PayOrderButton: React.FC<PayOrderButtonProps> = ({
   const hasSufficientFunds = userBalance >= orderTotal;
 
   const payOrderMutation = usePayOrder({
+    orderId,
     mutationConfig: {
       onSuccess: () => {
         addNotification({
