@@ -9,7 +9,7 @@ export const getOrder = (orderId: number): Promise<Order> => {
 
 export const getOrderQueryOptions = (orderId: number) =>
   queryOptions({
-    queryKey: ['order', orderId],
+    queryKey: ['orders', orderId],
     queryFn: () => getOrder(orderId),
   });
 

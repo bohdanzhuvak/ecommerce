@@ -13,26 +13,26 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryAddressDto {
+public class DeliveryAddressResponse {
     private Long id;
-    
+
     @NotBlank(message = "Street is required")
     private String street;
-    
+
     @NotBlank(message = "City is required")
     private String city;
-    
+
     @NotBlank(message = "Postal code is required")
     @Pattern(regexp = "^[0-9A-Za-z\\s-]{3,10}$", message = "Invalid postal code format")
     private String postalCode;
-    
+
     @NotBlank(message = "Country is required")
     private String country;
-    
+
     @NotBlank(message = "Phone is required")
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number format")
     private String phone;
-    
+
     private Boolean isDefault;
     private LocalDateTime createdAt;
 }

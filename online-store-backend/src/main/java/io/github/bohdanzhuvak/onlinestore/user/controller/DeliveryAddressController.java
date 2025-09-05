@@ -3,7 +3,7 @@ package io.github.bohdanzhuvak.onlinestore.user.controller;
 import io.github.bohdanzhuvak.onlinestore.common.auth.security.CurrentUser;
 import io.github.bohdanzhuvak.onlinestore.common.auth.security.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.CreateDeliveryAddressRequest;
-import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressDto;
+import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressResponse;
 import io.github.bohdanzhuvak.onlinestore.user.service.DeliveryAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,23 +29,23 @@ public class DeliveryAddressController {
   private final DeliveryAddressService deliveryAddressService;
 
   @GetMapping
-  public ResponseEntity<List<DeliveryAddressDto>> getUserAddresses(@CurrentUser UserPrincipal user) {
-    List<DeliveryAddressDto> addresses = deliveryAddressService.getUserAddresses(user.getId());
+  public ResponseEntity<List<DeliveryAddressResponse>> getUserAddresses(@CurrentUser UserPrincipal user) {
+    List<DeliveryAddressResponse> addresses = deliveryAddressService.getUserAddresses(user.getId());
     return ResponseEntity.ok(addresses);
   }
 
   @PostMapping
-  public ResponseEntity<DeliveryAddressDto> createAddress(@CurrentUser UserPrincipal user,
-                                                          @Valid @RequestBody CreateDeliveryAddressRequest request) {
-    DeliveryAddressDto address = deliveryAddressService.createAddress(user.getId(), request);
+  public ResponseEntity<DeliveryAddressResponse> createAddress(@CurrentUser UserPrincipal user,
+                                                               @Valid @RequestBody CreateDeliveryAddressRequest request) {
+    DeliveryAddressResponse address = deliveryAddressService.createAddress(user.getId(), request);
     return ResponseEntity.ok(address);
   }
 
   @PutMapping("/{addressId}")
-  public ResponseEntity<DeliveryAddressDto> updateAddress(@CurrentUser UserPrincipal user,
-                                                          @PathVariable Long addressId,
-                                                          @Valid @RequestBody CreateDeliveryAddressRequest request) {
-    DeliveryAddressDto address = deliveryAddressService.updateAddress(user.getId(), addressId, request);
+  public ResponseEntity<DeliveryAddressResponse> updateAddress(@CurrentUser UserPrincipal user,
+                                                               @PathVariable Long addressId,
+                                                               @Valid @RequestBody CreateDeliveryAddressRequest request) {
+    DeliveryAddressResponse address = deliveryAddressService.updateAddress(user.getId(), addressId, request);
     return ResponseEntity.ok(address);
   }
 
@@ -57,8 +57,8 @@ public class DeliveryAddressController {
   }
 
   @GetMapping("/default")
-  public ResponseEntity<DeliveryAddressDto> getDefaultAddress(@CurrentUser UserPrincipal user) {
-    DeliveryAddressDto address = deliveryAddressService.getDefaultAddress(user.getId());
+  public ResponseEntity<DeliveryAddressResponse> getDefaultAddress(@CurrentUser UserPrincipal user) {
+    DeliveryAddressResponse address = deliveryAddressService.getDefaultAddress(user.getId());
     return ResponseEntity.ok(address);
   }
 }

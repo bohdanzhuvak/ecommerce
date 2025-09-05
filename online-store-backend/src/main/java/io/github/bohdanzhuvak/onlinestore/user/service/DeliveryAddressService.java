@@ -6,7 +6,7 @@ import io.github.bohdanzhuvak.onlinestore.common.repository.DeliveryAddressRepos
 import io.github.bohdanzhuvak.onlinestore.common.repository.OrderRepository;
 import io.github.bohdanzhuvak.onlinestore.common.repository.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.CreateDeliveryAddressRequest;
-import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressDto;
+import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class DeliveryAddressService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<DeliveryAddressDto> getUserAddresses(Long userId) {
+    public List<DeliveryAddressResponse> getUserAddresses(Long userId) {
         List<DeliveryAddress> addresses = deliveryAddressRepository
                 .findByUserIdAndIsTechnicalFalseOrderByIsDefaultDescCreatedAtDesc(userId);
 
@@ -35,11 +35,10 @@ public class DeliveryAddressService {
     }
 
     @Transactional
-    public DeliveryAddressDto createAddress(Long userId, CreateDeliveryAddressRequest request) {
+    public DeliveryAddressResponse createAddress(Long userId, CreateDeliveryAddressRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Если это первый адрес или помечен как основной, сбросить другие основные адреса
         if (request.getIsDefault() != null && request.getIsDefault()) {
             deliveryAddressRepository.clearDefaultAddress(userId);
         }
@@ -63,7 +62,7 @@ public class DeliveryAddressService {
     }
 
     @Transactional
-    public DeliveryAddressDto updateAddress(Long userId, Long addressId, CreateDeliveryAddressRequest request) {
+    public DeliveryAddressResponse updateAddress(Long userId, Long addressId, CreateDeliveryAddressRequest request) {
         DeliveryAddress address = deliveryAddressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
 
@@ -71,17 +70,13 @@ public class DeliveryAddressService {
             throw new RuntimeException("Access denied");
         }
 
-        // Проверяем, есть ли заказы с этим адресом
         boolean hasOrders = orderRepository.existsByDeliveryAddressId(addressId);
 
         if (hasOrders) {
-            // Если есть заказы - клонируем адрес
             log.info("Address {} has orders, creating clone for user {}", addressId, userId);
 
-            // Помечаем текущий адрес как технический
             deliveryAddressRepository.markAsTechnical(addressId);
 
-            // Создаем новый активный адрес с обновленными данными
             DeliveryAddress newAddress = DeliveryAddress.builder()
                     .user(address.getUser())
                     .street(request.getStreet())
@@ -91,10 +86,9 @@ public class DeliveryAddressService {
                     .phone(request.getPhone())
                     .isDefault(request.getIsDefault() != null ? request.getIsDefault() : false)
                     .isTechnical(false)
-                    .originalId(addressId) // Связываем с оригинальным адресом
+                    .originalId(addressId)
                     .build();
 
-            // Если новый адрес помечен как основной, сбросить другие основные адреса
             if (request.getIsDefault() != null && request.getIsDefault()) {
                 deliveryAddressRepository.clearDefaultAddress(userId);
             }
@@ -104,7 +98,6 @@ public class DeliveryAddressService {
 
             return mapToDto(savedAddress);
         } else {
-            // Если заказов нет - обычное редактирование
             if (request.getIsDefault() != null && request.getIsDefault()) {
                 deliveryAddressRepository.clearDefaultAddress(userId);
             }
@@ -132,22 +125,19 @@ public class DeliveryAddressService {
             throw new RuntimeException("Access denied");
         }
 
-        // Проверяем, есть ли заказы с этим адресом
         boolean hasOrders = orderRepository.existsByDeliveryAddressId(addressId);
 
         if (hasOrders) {
-            // Если есть заказы - мягкое удаление (помечаем как технический и неактивный)
             log.info("Address {} has orders, marking as technical and inactive for user {}", addressId, userId);
             deliveryAddressRepository.markAsTechnical(addressId);
         } else {
-            // Если заказов нет - обычное удаление
             deliveryAddressRepository.delete(address);
             log.info("Deleted delivery address {} for user {}", addressId, userId);
         }
     }
 
     @Transactional(readOnly = true)
-    public DeliveryAddressDto getDefaultAddress(Long userId) {
+    public DeliveryAddressResponse getDefaultAddress(Long userId) {
         DeliveryAddress defaultAddress = deliveryAddressRepository
                 .findByUserIdAndIsDefaultTrueAndIsTechnicalFalse(userId)
                 .orElse(null);
@@ -155,8 +145,8 @@ public class DeliveryAddressService {
         return defaultAddress != null ? mapToDto(defaultAddress) : null;
     }
 
-    private DeliveryAddressDto mapToDto(DeliveryAddress address) {
-        return DeliveryAddressDto.builder()
+    private DeliveryAddressResponse mapToDto(DeliveryAddress address) {
+        return DeliveryAddressResponse.builder()
                 .id(address.getId())
                 .street(address.getStreet())
                 .city(address.getCity())

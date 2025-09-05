@@ -1,6 +1,5 @@
 import React from 'react';
-import {useQuery} from '@tanstack/react-query';
-import {getOrder} from '../api/get-order';
+import {useOrder} from '../api/get-order';
 import {PayOrderButton} from './pay-order-button';
 import {useBalance} from '@/shared/hooks';
 import {Spinner} from '@/shared/components/ui/spinner';
@@ -14,12 +13,9 @@ interface OrderDetailsProps {
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
   const { data: balanceData } = useBalance();
 
-  const { data: order, isLoading, error } = useQuery({
-    queryKey: ['order', orderId],
-    queryFn: () => getOrder(orderId),
-  });
+  const orderQuery = useOrder(orderId);
 
-  if (isLoading) {
+  if (orderQuery.isLoading) {
     return (
       <div className="flex h-48 w-full items-center justify-center">
         <Spinner size="lg" />
@@ -27,13 +23,9 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
     );
   }
 
-  if (error || !order) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">Failed to load order details</p>
-      </div>
-    );
-  }
+  const order = orderQuery.data;
+
+  if (order == null) return null;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

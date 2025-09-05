@@ -54,12 +54,10 @@ public class OrderService {
     User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
     Cart cart = cartRepository.findByUserId(userId)
         .orElseThrow(() -> new NotFoundException("Cart not found for user with id: " + userId));
-    
-    // Get delivery address
+
     DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(request.getDeliveryAddressId())
         .orElseThrow(() -> new NotFoundException("Delivery address not found"));
-    
-    // Verify address belongs to user
+
     if (!deliveryAddress.getUser().getId().equals(userId)) {
       throw new RuntimeException("Access denied to delivery address");
     }
@@ -106,15 +104,12 @@ public class OrderService {
       throw new RuntimeException("Access denied to order");
     }
 
-    // Check if user has sufficient funds
     if (!balanceService.hasSufficientFunds(userId, order.getTotalPrice())) {
       throw new RuntimeException("Insufficient funds to pay for this order");
     }
 
-    // Deduct amount from balance
     balanceService.purchaseOrder(userId, order, order.getTotalPrice());
 
-    // Update order status
     order.setStatus(OrderStatus.PAID);
     order = orderRepository.save(order);
 

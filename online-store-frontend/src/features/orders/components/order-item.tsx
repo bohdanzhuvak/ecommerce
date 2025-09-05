@@ -1,9 +1,6 @@
 import React from 'react';
-import { Order } from '../api.types';
-import { PayOrderButton } from './pay-order-button';
-import { useBalance } from '@/shared/hooks';
+import {Order} from '../api.types';
 import {Link} from "@/shared/components/ui/link";
-import {Button} from "@/shared/components/ui/button";
 import {paths} from "@/config/paths.ts";
 
 interface OrderItemProps {
@@ -11,8 +8,6 @@ interface OrderItemProps {
 }
 
 export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
-  const { data: balanceData } = useBalance();
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -42,8 +37,6 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
-  // No confirm action on backend; keep simple presentation
 
   return (
     <div className="border rounded-lg p-6 bg-white shadow-sm">
