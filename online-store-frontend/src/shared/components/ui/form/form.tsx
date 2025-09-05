@@ -20,6 +20,7 @@ import {cn} from '@/shared/utils/cn';
 
 import {Label} from './label';
 import {Error as ErrorComponent} from '@/shared/components/ui/form/error';
+
 type ZodTypeDef = any;
 
 type FormFieldContextValue<
@@ -184,7 +185,6 @@ type FormProps<TSchema extends ZodType<any, ZodTypeDef, any>> = {
   error?: string;
 };
 
-// Исправленный компонент Form
 const Form = <TSchema extends ZodType<any, ZodTypeDef, any>>({
                                                                onSubmit,
                                                                children,

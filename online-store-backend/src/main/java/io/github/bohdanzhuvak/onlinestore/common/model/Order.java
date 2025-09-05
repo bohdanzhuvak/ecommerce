@@ -10,12 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,7 +28,8 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 @Table(name = "orders")
 public class Order {
@@ -50,8 +51,6 @@ public class Order {
   @Enumerated(EnumType.STRING)
   private OrderStatus status;
 
-  // Using @ManyToOne instead of @OneToOne because one delivery address can be used for multiple orders
-  // @OneToOne would create a unique constraint, preventing reuse of addresses
   @ManyToOne
   @JoinColumn(name = "delivery_address_id")
   private DeliveryAddress deliveryAddress;

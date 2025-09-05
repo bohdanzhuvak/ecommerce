@@ -24,13 +24,11 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const { addNotification } = useNotifications();
   const queryClient = useQueryClient();
-  // Get balance data
+
   const { data: balanceData } = useBalance();
 
-  // Get cart data
   const cartQuery = useCart({});
 
-  // Get delivery addresses
   const { data: addresses, isLoading: addressesLoading } = useQuery({
     queryKey: ['delivery-addresses'],
     queryFn: getDeliveryAddresses,
