@@ -1,7 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.user.mapper;
 
 import io.github.bohdanzhuvak.onlinestore.common.model.DeliveryAddress;
-import io.github.bohdanzhuvak.onlinestore.common.model.User;
 import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.CreateDeliveryAddressRequest;
 import io.github.bohdanzhuvak.onlinestore.user.dto.delivery.DeliveryAddressResponse;
 import org.mapstruct.Mapper;
@@ -17,20 +16,6 @@ public interface DeliveryAddressMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   DeliveryAddress toEntity(CreateDeliveryAddressRequest request);
-
-  default DeliveryAddress toEntity(CreateDeliveryAddressRequest request, User user, boolean isTechnical, Long originalId) {
-    return DeliveryAddress.builder()
-        .user(user)
-        .street(request.getStreet())
-        .city(request.getCity())
-        .postalCode(request.getPostalCode())
-        .country(request.getCountry())
-        .phone(request.getPhone())
-        .isDefault(Boolean.TRUE.equals(request.getIsDefault()))
-        .isTechnical(isTechnical)
-        .originalId(originalId)
-        .build();
-  }
 
   default DeliveryAddress updateEntity(DeliveryAddress address, CreateDeliveryAddressRequest request) {
     address.setStreet(request.getStreet());

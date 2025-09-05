@@ -39,7 +39,7 @@ public class BalanceService {
                 .findByUserIdOrderByCreatedAtDesc(userId, Pageable.ofSize(10));
 
       List<BalanceTransactionResponse> transactionDtos = transactions.getContent().stream()
-          .map(balanceMapper::toDto)
+          .map(balanceMapper::toResponse)
                 .collect(Collectors.toList());
 
         return BalanceResponse.builder()

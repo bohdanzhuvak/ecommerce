@@ -9,5 +9,5 @@ import org.mapstruct.Mapping;
 public interface BalanceMapper {
 
   @Mapping(target = "orderId", source = "order.id")
-  BalanceTransactionResponse toDto(BalanceTransaction transaction);
+  BalanceTransactionResponse toResponse(BalanceTransaction transaction);
 }

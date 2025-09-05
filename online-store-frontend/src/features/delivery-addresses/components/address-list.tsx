@@ -14,7 +14,7 @@ interface AddressCardProps {
 
 const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
   const {addNotification} = useNotifications();
-  
+
   const deleteDeliveryAddressMutation = useDeleteDeliveryAddress({
     mutationConfig: {
       onSuccess: () => {
@@ -97,9 +97,6 @@ export const AddressList: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <AddressForm />
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {addresses.map((address) => (
           <AddressCard key={address.id} address={address} />
