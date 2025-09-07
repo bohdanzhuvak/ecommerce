@@ -16,8 +16,13 @@ public class AdminOrderService {
   private final OrderRepository orderRepository;
   private final AdminOrderMapper orderMapper;
 
-  public Page<OrderResponse> getOrders(Pageable pageable) {
-    Page<Order> orders = orderRepository.findAll(pageable);
+  public Page<OrderResponse> getOrders(Pageable pageable, Long userId) {
+    Page<Order> orders;
+    if (userId != null) {
+      orders = orderRepository.findAllByUser_Id(userId, pageable);
+    } else {
+      orders = orderRepository.findAll(pageable);
+    }
     return orderMapper.toResponsePage(orders);
   }
 

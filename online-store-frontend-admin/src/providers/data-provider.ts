@@ -31,17 +31,22 @@ export default (
     const pageNumber = page - 1;
     const pageSize = perPage;
 
-    const query: {
-      page: number;
-      size: number;
-      sort?: string;
-    } = {
+    const query: Record<string, any> = {
       page: pageNumber,
       size: pageSize,
     };
 
     if (field && order) {
       query.sort = `${field},${order.toLowerCase()}`;
+    }
+
+    // Добавляем фильтры из params.filter в query параметры
+    if (params.filter) {
+      Object.keys(params.filter).forEach((key) => {
+        if (params.filter[key] !== undefined && params.filter[key] !== null) {
+          query[key] = params.filter[key];
+        }
+      });
     }
 
     const url = `${apiUrl}/admin/${resource}?${stringify(query)}`;

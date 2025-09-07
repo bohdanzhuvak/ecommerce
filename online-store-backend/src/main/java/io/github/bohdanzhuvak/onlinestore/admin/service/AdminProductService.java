@@ -41,9 +41,19 @@ public class AdminProductService {
   }
 
   public ProductResponse updateProduct(Long id, UpdateProductRequest product) {
-    Product existingProduct = productRepository.findById(id).orElseThrow(()-> new NotFoundException("Product not found with id: " + id));
-    Product updatedProduct = adminProductMapper.updateProduct(existingProduct, product);
-    Product savedProduct = productRepository.save(updatedProduct);
+    Product existingProduct = productRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Product not found with id: " + id));
+
+    adminProductMapper.updateProduct(existingProduct, product);
+
+    existingProduct.getImages().clear();
+    existingProduct.getImages().addAll(
+        product.getImageUrls().stream()
+            .map(url -> new ProductImage(null, url, existingProduct))
+            .toList()
+    );
+
+    Product savedProduct = productRepository.save(existingProduct);
     return adminProductMapper.toResponse(savedProduct);
   }
 

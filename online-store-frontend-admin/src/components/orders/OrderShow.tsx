@@ -4,6 +4,7 @@ import {
   DateField,
   FunctionField,
   NumberField,
+  ReferenceField,
   Show,
   SimpleShowLayout,
   Tab,
@@ -62,8 +63,12 @@ export const OrderShow = () => (
 
       <Tab label="Order Items">
         <ArrayField source="items">
-          <Datagrid>
-            <TextField source="productId" label="Product ID" />
+          <Datagrid rowClick={false}>
+            <ReferenceField
+              source="productId"
+              label="Product ID"
+              reference="products"
+            />
             <NumberField source="quantity" />
             <NumberField source="pricePerUnit" label="Price Per Unit" />
             <FunctionField

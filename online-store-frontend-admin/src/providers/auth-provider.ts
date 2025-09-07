@@ -200,7 +200,7 @@ export const authProvider: AuthProvider = {
     return Promise.resolve();
   },
 
-  async canAccess(params) {
+  async canAccess() {
     const userInfo = getUserInfo();
     if (!userInfo) {
       return Promise.resolve(false);
