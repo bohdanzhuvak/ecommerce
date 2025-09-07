@@ -2,6 +2,7 @@ package io.github.bohdanzhuvak.onlinestore.admin.service;
 
 import io.github.bohdanzhuvak.onlinestore.admin.dto.order.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.admin.mapper.AdminOrderMapper;
+import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
 import io.github.bohdanzhuvak.onlinestore.common.model.Order;
 import io.github.bohdanzhuvak.onlinestore.common.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,11 @@ public class AdminOrderService {
   public Page<OrderResponse> getOrders(Pageable pageable) {
     Page<Order> orders = orderRepository.findAll(pageable);
     return orderMapper.toResponsePage(orders);
+  }
+
+  public OrderResponse getOrder(Long id) {
+    Order order = orderRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Order not found with id: " + id));
+    return orderMapper.toResponse(order);
   }
 }

@@ -22,6 +22,12 @@ public class AdminUserService {
     return adminUserMapper.toResponsePage(userPage);
   }
 
+  public UserResponse getUser(Long id) {
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+    return adminUserMapper.toResponse(user);
+  }
+
   public UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
