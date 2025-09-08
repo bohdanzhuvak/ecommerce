@@ -27,7 +27,7 @@ const CustomUserMenu = () => {
         </ListItemIcon>
         <ListItemText>
           <Typography variant="body2">
-            {identity?.username || 'Пользователь'}
+            {identity?.username || 'User'}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {identity?.email || ''}
@@ -43,7 +43,7 @@ const CustomAppBar = () => (
   <AppBar userMenu={<CustomUserMenu />}>
     <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
       <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        Админ панель - Интернет магазин
+        Admin Panel | Ecommerce
       </Typography>
     </Box>
   </AppBar>

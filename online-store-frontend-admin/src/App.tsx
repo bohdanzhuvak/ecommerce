@@ -5,9 +5,14 @@ import {
   Resource,
   ShowGuesser,
 } from 'react-admin';
+import {
+  Category as CategoriesIcon,
+  People as UsersIcon,
+  Receipt as OrdersIcon,
+  ShoppingCart as ProductsIcon,
+} from '@mui/icons-material';
 import { Layout } from './Layout';
 import dataProvider from './providers/data-provider.ts';
-import { authProvider } from './providers/auth-provider.ts';
 import { OrderList } from './components/orders/OrderList';
 import { OrderShow } from './components/orders/OrderShow';
 import { ProductCreate } from './components/products/ProductCreate';
@@ -15,6 +20,7 @@ import { CategoryCreate } from './components/categories/CategoryCreate';
 import { Route } from 'react-router';
 import { UserList } from './components/users/UserList.tsx';
 import { ProductEdit } from './components/products/ProductEdit.tsx';
+import { authProvider } from './auth';
 
 export const App = () => (
   <Admin
@@ -29,12 +35,14 @@ export const App = () => (
       create={ProductCreate}
       edit={ProductEdit}
       show={ShowGuesser}
+      icon={ProductsIcon}
     />
     <Resource
       name="users"
       list={UserList}
       edit={EditGuesser}
       show={ShowGuesser}
+      icon={UsersIcon}
     >
       <Route path=":id/orders" element={<OrderList />} />
     </Resource>
@@ -44,7 +52,13 @@ export const App = () => (
       create={CategoryCreate}
       edit={EditGuesser}
       show={ShowGuesser}
+      icon={CategoriesIcon}
     />
-    <Resource name="orders" list={OrderList} show={OrderShow} />
+    <Resource
+      name="orders"
+      list={OrderList}
+      show={OrderShow}
+      icon={OrdersIcon}
+    />
   </Admin>
 );

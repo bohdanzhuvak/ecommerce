@@ -27,7 +27,6 @@ export default (
     const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
     const { field, order } = params.sort || { field: 'id', order: 'ASC' };
 
-    // Spring Boot использует 0-based пагинацию
     const pageNumber = page - 1;
     const pageSize = perPage;
 
@@ -40,7 +39,6 @@ export default (
       query.sort = `${field},${order.toLowerCase()}`;
     }
 
-    // Добавляем фильтры из params.filter в query параметры
     if (params.filter) {
       Object.keys(params.filter).forEach((key) => {
         if (params.filter[key] !== undefined && params.filter[key] !== null) {
