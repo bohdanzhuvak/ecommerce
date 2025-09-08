@@ -2,7 +2,6 @@ package io.github.bohdanzhuvak.onlinestore.common.auth.security;
 
 import io.github.bohdanzhuvak.onlinestore.common.auth.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,7 +21,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -32,8 +30,7 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final RestAuthenticationEntryPoint authenticationEntryPoint;
-  @Value("${security.cors.allowed-origins}")
-  private String allowedOrigins;
+  private final CorsProperties corsProperties;
 
 
   @Bean
@@ -73,8 +70,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    List<String> allowedOriginsList = Arrays.asList(allowedOrigins.split(","));
-    config.setAllowedOrigins(allowedOriginsList);
+    config.setAllowedOrigins(corsProperties.getAllowedOrigins());
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
     config.setAllowCredentials(true);

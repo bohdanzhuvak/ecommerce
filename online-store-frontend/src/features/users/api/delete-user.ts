@@ -1,13 +1,12 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
-import {api} from '@/shared/lib/api-client';
-import {MutationConfig} from '@/shared/lib/react-query';
+import { api } from '@/shared/lib/api-client';
+import { MutationConfig } from '@/shared/lib/react-query';
 
-import {getClientsQueryOptions} from './get-users.ts';
-import {DeleteUserRequest} from "../api.types";
+import { DeleteUserRequest } from '../api.types';
 
-export const deleteUser = ({userEmail}: DeleteUserRequest) => {
-  return api.delete(`/users/${userEmail}`)
+export const deleteUser = ({ userEmail }: DeleteUserRequest) => {
+  return api.delete(`/users/${userEmail}`);
 };
 
 type UseDeleteUserOptions = {
@@ -15,17 +14,12 @@ type UseDeleteUserOptions = {
 };
 
 export const useDeleteUser = ({
-                                mutationConfig,
-                              }: UseDeleteUserOptions = {}) => {
-  const queryClient = useQueryClient();
-
-  const {onSuccess, ...restConfig} = mutationConfig || {};
+  mutationConfig,
+}: UseDeleteUserOptions = {}) => {
+  const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({
-        queryKey: getClientsQueryOptions().queryKey,
-      });
       onSuccess?.(...args);
     },
     ...restConfig,

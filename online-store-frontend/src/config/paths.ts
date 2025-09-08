@@ -51,34 +51,4 @@ export const paths = {
       getHref: () => `/profile`,
     }
   },
-  admin: {
-    root: {
-      path: '/admin',
-      getHref: () => '/admin',
-    },
-    products: {
-      path: 'products',
-      getHref: () => '/admin/products',
-    },
-    categories: {
-      path: 'categories',
-      getHref: () => '/admin/categories',
-    },
-    orders: {
-      path: 'orders',
-      getHref: () => '/admin/orders',
-    },
-    users: {
-      path: 'users',
-      getHref: () => '/admin/users',
-    },
-    dashboard: {
-      path: '',
-      getHref: () => '/admin',
-    },
-    profile: {
-      path: 'profile',
-      getHref: () => '/admin/profile',
-    }
-  },
 } as const;
