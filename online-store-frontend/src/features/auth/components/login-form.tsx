@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { paths } from '@/config/paths';
 import { Button } from '@/shared/components/ui/button';
@@ -33,6 +33,14 @@ export const LoginForm: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (state.error) {
+      setError(state.error);
+    } else {
+      setError(undefined);
+    }
+  }, [state.error]);
+
   if (state.isAuthenticated) {
     return null;
   }
@@ -41,7 +49,7 @@ export const LoginForm: React.FC = () => {
     <div className="w-full max-w-md mx-auto">
       <Form
         onSubmit={handleSubmit}
-        error={error}
+        error={error || state.error || undefined}
         schema={loginInputSchema}
       >
         {({ register, formState }) => (
