@@ -3,49 +3,35 @@ import { API_URL, ERROR_MESSAGES } from './constants.ts';
 
 class AuthService {
   async login(credentials: LoginParams): Promise<AuthResponse> {
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: credentials.username,
-          password: credentials.password,
-        }),
-      });
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        email: credentials.username,
+        password: credentials.password,
+      }),
+    });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || ERROR_MESSAGES.LOGIN_FAILED);
-      }
-
-      return response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new AuthError(error.message);
-      }
-      throw new AuthError(ERROR_MESSAGES.NETWORK_ERROR);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new AuthError(errorText || ERROR_MESSAGES.LOGIN_FAILED);
     }
+
+    return response.json();
   }
 
   async refreshToken(): Promise<AuthResponse> {
-    try {
-      const response = await fetch(`${API_URL}/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+    const response = await fetch(`${API_URL}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    });
 
-      if (!response.ok) {
-        throw new Error('Token refresh failed');
-      }
-
-      return response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new AuthError(error.message);
-      }
-      throw new AuthError(ERROR_MESSAGES.NETWORK_ERROR);
+    if (!response.ok) {
+      throw new AuthError('Token refresh failed');
     }
+
+    return response.json();
   }
 
   async logout(): Promise<void> {
@@ -60,22 +46,15 @@ class AuthService {
   }
 
   async getCurrentUser(token: string): Promise<User> {
-    try {
-      const response = await fetch(`${API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const response = await fetch(`${API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch user information');
-      }
-
-      return response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new AuthError(error.message);
-      }
-      throw new AuthError(ERROR_MESSAGES.NETWORK_ERROR);
+    if (!response.ok) {
+      throw new AuthError('Failed to fetch user information');
     }
+
+    return response.json();
   }
 }
 

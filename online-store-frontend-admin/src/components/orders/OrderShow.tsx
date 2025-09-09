@@ -50,9 +50,6 @@ export const OrderShow = () => (
                   <strong>Phone:</strong> {addr.phone}
                 </div>
                 <div>
-                  <strong>Is Default:</strong> {addr.isDefault ? 'Yes' : 'No'}
-                </div>
-                <div>
                   <strong>Created At:</strong>{' '}
                   {new Date(addr.createdAt).toLocaleString()}
                 </div>

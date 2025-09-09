@@ -26,9 +26,7 @@ const CustomUserMenu = () => {
           <PersonIcon fontSize="small" />
         </ListItemIcon>
         <ListItemText>
-          <Typography variant="body2">
-            {identity?.username || 'User'}
-          </Typography>
+          <Typography variant="body2">{identity?.username || ''}</Typography>
           <Typography variant="caption" color="text.secondary">
             {identity?.email || ''}
           </Typography>

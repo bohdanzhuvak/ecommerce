@@ -10,6 +10,7 @@ export interface Order {
 
 export interface OrderItem {
   productId: string | number;
+  productName: string;
   quantity: number;
   pricePerUnit: number;
 }
@@ -20,35 +21,5 @@ export interface DeliveryAddress {
   postalCode: string;
   country: string;
   phone: string;
-  isDefault: boolean;
   createdAt: string;
-}
-
-export interface User {
-  id: string | number;
-  username: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Product {
-  id: string | number;
-  name: string;
-  description?: string;
-  price: number;
-  categoryId: string | number;
-  stock: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Category {
-  id: string | number;
-  name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
 }

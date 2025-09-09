@@ -6,25 +6,18 @@ import { ERROR_MESSAGES, USER_ROLES } from './constants.ts';
 
 export const authProvider: AuthProvider = {
   async login(params: LoginParams) {
-    try {
-      const data = await authService.login(params);
+    const data = await authService.login(params);
 
-      if (data.role !== USER_ROLES.ADMIN) {
-        throw new Error(ERROR_MESSAGES.ACCESS_DENIED);
-      }
-
-      tokenManager.setToken(
-        data.token,
-        data.tokenInfo.expiresAt,
-        data.tokenInfo.refreshExpiresAt,
-      );
-      tokenManager.setUserInfo(data.user);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error(ERROR_MESSAGES.LOGIN_FAILED);
+    if (data.role !== USER_ROLES.ADMIN) {
+      throw new Error(ERROR_MESSAGES.ACCESS_DENIED);
     }
+
+    tokenManager.setToken(
+      data.token,
+      data.tokenInfo.expiresAt,
+      data.tokenInfo.refreshExpiresAt,
+    );
+    tokenManager.setUserInfo(data.user);
   },
 
   async checkError(error) {
@@ -40,7 +33,6 @@ export const authProvider: AuthProvider = {
         tokenManager.clearAll();
         return Promise.reject();
       } else {
-        // Токен еще действителен, возможно проблема в другом
         return Promise.resolve();
       }
     }
