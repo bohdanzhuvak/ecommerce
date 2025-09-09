@@ -26,6 +26,11 @@ public class AdminUserController {
     return adminUserService.getUsers(pageable);
   }
 
+  @GetMapping("/{id}")
+  public UserResponse getUser(@PathVariable Long id) {
+    return adminUserService.getUser(id);
+  }
+
   @PutMapping("/{id}")
   public UserResponse updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
     return adminUserService.updateUser(id, updateUserRequest);

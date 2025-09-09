@@ -1,7 +1,7 @@
 import { EventEmitter } from './event-emitter';
 import { TokenManager } from './token-manager';
 import { UserManager } from './user-manager';
-import { AuthState, User, AuthEvents } from '@/shared/types';
+import { AuthEvents, AuthState, User } from '@/shared/types';
 
 export class AuthManager extends EventEmitter {
   private static instance: AuthManager;
@@ -11,7 +11,7 @@ export class AuthManager extends EventEmitter {
     isAuthenticated: false,
     user: null,
     isLoading: false,
-    error: null
+    error: null,
   };
   private queryClient: any = null;
 
@@ -65,6 +65,16 @@ export class AuthManager extends EventEmitter {
       if (token) {
         const user = await this.userManager.loadUser();
         if (user) {
+          if (user.role === 'ADMIN') {
+            this.tokenManager.clearToken();
+            this._state.user = null;
+            this._state.isAuthenticated = false;
+            this._state.error =
+              'Administrators cannot log into the client application. Please use the control panel instead.';
+            this.emit(AuthEvents.STATE_CHANGED, this._state);
+            throw new Error(this._state.error);
+          }
+
           this._state.user = user;
           this._state.isAuthenticated = true;
         } else {
@@ -72,7 +82,8 @@ export class AuthManager extends EventEmitter {
         }
       }
     } catch (error) {
-      this._state.error = error instanceof Error ? error.message : 'Unknown error';
+      this._state.error =
+        error instanceof Error ? error.message : 'Unknown error';
       this.tokenManager.clearToken();
     } finally {
       this._state.isLoading = false;
@@ -80,13 +91,29 @@ export class AuthManager extends EventEmitter {
     }
   }
 
-  public async login(credentials: { email: string; password: string }): Promise<User> {
+  public async login(credentials: {
+    email: string;
+    password: string;
+  }): Promise<User> {
     try {
       this._state.isLoading = true;
       this._state.error = null;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const { token, user, expiresAt, refreshExpiresAt } = await this.userManager.login(credentials);
+      const { token, user, expiresAt, refreshExpiresAt } =
+        await this.userManager.login(credentials);
+
+      if (user.role === 'ADMIN') {
+        this._state.isLoading = false;
+        this._state.isAuthenticated = false;
+        this._state.user = null;
+        this._state.error =
+          'Administrators cannot log into the client application. Please use the control panel instead.';
+        this.emit(AuthEvents.LOGIN_ERROR, this._state.error);
+        this.emit(AuthEvents.STATE_CHANGED, this._state);
+        throw new Error(this._state.error);
+      }
+
       this.tokenManager.setToken(token, expiresAt, refreshExpiresAt);
 
       this._state.user = user;
@@ -98,7 +125,8 @@ export class AuthManager extends EventEmitter {
 
       return user;
     } catch (error) {
-      this._state.error = error instanceof Error ? error.message : 'Login failed';
+      this._state.error =
+        error instanceof Error ? error.message : 'Login failed';
       this.emit(AuthEvents.LOGIN_ERROR, this._state.error);
       this.emit(AuthEvents.STATE_CHANGED, this._state);
       throw error;
@@ -108,13 +136,18 @@ export class AuthManager extends EventEmitter {
     }
   }
 
-  public async register(credentials: { email: string; password: string; username: string }): Promise<User> {
+  public async register(credentials: {
+    email: string;
+    password: string;
+    username: string;
+  }): Promise<User> {
     try {
       this._state.isLoading = true;
       this._state.error = null;
       this.emit(AuthEvents.STATE_CHANGED, this._state);
 
-      const { token, user, expiresAt, refreshExpiresAt } = await this.userManager.register(credentials);
+      const { token, user, expiresAt, refreshExpiresAt } =
+        await this.userManager.register(credentials);
       this.tokenManager.setToken(token, expiresAt, refreshExpiresAt);
 
       this._state.user = user;
@@ -126,7 +159,8 @@ export class AuthManager extends EventEmitter {
 
       return user;
     } catch (error) {
-      this._state.error = error instanceof Error ? error.message : 'Registration failed';
+      this._state.error =
+        error instanceof Error ? error.message : 'Registration failed';
       this.emit(AuthEvents.REGISTER_ERROR, this._state.error);
       this.emit(AuthEvents.STATE_CHANGED, this._state);
       throw error;
@@ -177,19 +211,7 @@ export class AuthManager extends EventEmitter {
       return `/auth/login?redirectTo=${encodeURIComponent(originalPath)}`;
     }
 
-    if (this._state.user?.role === 'ADMIN' && originalPath.startsWith('/admin')) {
-      return originalPath;
-    }
-
-    if (this._state.user?.role === 'USER' && !originalPath.startsWith('/admin')) {
-      return originalPath;
-    }
-
-    if (this._state.user?.role === 'ADMIN') {
-      return '/admin';
-    } else {
-      return '/';
-    }
+    return originalPath;
   }
 
   private handleTokenExpired(): void {
