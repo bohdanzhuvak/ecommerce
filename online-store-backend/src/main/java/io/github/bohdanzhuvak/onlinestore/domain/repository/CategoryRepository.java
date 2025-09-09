@@ -1,0 +1,7 @@
+package io.github.bohdanzhuvak.onlinestore.domain.repository;
+
+import io.github.bohdanzhuvak.onlinestore.domain.model.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+}

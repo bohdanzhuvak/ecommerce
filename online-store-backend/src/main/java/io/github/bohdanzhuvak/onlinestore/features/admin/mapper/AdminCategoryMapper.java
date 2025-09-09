@@ -1,0 +1,22 @@
+package io.github.bohdanzhuvak.onlinestore.features.admin.mapper;
+
+import io.github.bohdanzhuvak.onlinestore.domain.model.Category;
+import io.github.bohdanzhuvak.onlinestore.features.admin.dto.category.CategoryResponse;
+import io.github.bohdanzhuvak.onlinestore.features.admin.dto.category.CreateCategoryRequest;
+import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface AdminCategoryMapper {
+  CategoryResponse toResponse(Category category);
+
+  Category createCategory(CreateCategoryRequest categoryRequest);
+
+  List<CategoryResponse> toResponse(List<Category> categories);
+
+  default Page<CategoryResponse> toResponsePage(Page<Category> categoryPage) {
+    return categoryPage.map(this::toResponse);
+  }
+}

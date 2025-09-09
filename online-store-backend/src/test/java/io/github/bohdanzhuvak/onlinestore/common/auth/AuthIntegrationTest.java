@@ -1,8 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.common.auth;
 
-import io.github.bohdanzhuvak.onlinestore.common.model.Role;
-import io.github.bohdanzhuvak.onlinestore.common.model.User;
-import io.github.bohdanzhuvak.onlinestore.common.repository.UserRepository;
+import io.github.bohdanzhuvak.onlinestore.domain.model.Role;
+import io.github.bohdanzhuvak.onlinestore.domain.model.User;
+import io.github.bohdanzhuvak.onlinestore.domain.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
