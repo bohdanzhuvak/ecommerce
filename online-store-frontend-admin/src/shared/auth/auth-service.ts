@@ -1,5 +1,5 @@
-import { AuthError, AuthResponse, LoginParams, User } from './types';
-import { API_URL, ERROR_MESSAGES } from './constants';
+import { AuthError, AuthResponse, LoginParams, User } from './types.ts';
+import { API_URL, ERROR_MESSAGES } from './constants.ts';
 
 class AuthService {
   async login(credentials: LoginParams): Promise<AuthResponse> {

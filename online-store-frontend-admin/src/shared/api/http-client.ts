@@ -1,6 +1,6 @@
 import { fetchUtils } from 'ra-core';
 import { HttpClient, HttpClientOptions } from '../../types/data-provider';
-import { tokenManager } from '../../auth';
+import { tokenManager } from '../auth';
 
 export const httpClientWithAuth: HttpClient = <T = any>(
   url: string,

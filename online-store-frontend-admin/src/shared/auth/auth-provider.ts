@@ -1,8 +1,8 @@
 import { AuthProvider } from 'react-admin';
-import { authService } from './auth-service';
-import { tokenManager } from './token-manager';
-import { LoginParams, Permission } from './types';
-import { ERROR_MESSAGES, USER_ROLES } from './constants';
+import { authService } from './auth-service.ts';
+import { tokenManager } from './token-manager.ts';
+import { LoginParams, Permission } from './types.ts';
+import { ERROR_MESSAGES, USER_ROLES } from './constants.ts';
 
 export const authProvider: AuthProvider = {
   async login(params: LoginParams) {
@@ -72,7 +72,7 @@ export const authProvider: AuthProvider = {
           data.tokenInfo.refreshExpiresAt,
         );
         tokenManager.setUserInfo(data.user);
-      } catch (error) {
+      } catch {
         tokenManager.clearAll();
         return Promise.reject({ message: ERROR_MESSAGES.TOKEN_EXPIRED });
       }

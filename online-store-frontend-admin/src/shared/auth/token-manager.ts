@@ -1,5 +1,5 @@
-import { User } from './types';
-import { STORAGE_KEYS } from './constants';
+import { User } from './types.ts';
+import { STORAGE_KEYS } from './constants.ts';
 
 interface TokenData {
   token: string;

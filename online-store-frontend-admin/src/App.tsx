@@ -19,7 +19,7 @@ import { CategoryCreate } from './components/categories/CategoryCreate';
 import { Route } from 'react-router';
 import { UserList } from './components/users/UserList.tsx';
 import { ProductEdit } from './components/products/ProductEdit.tsx';
-import { authProvider } from './auth';
+import { authProvider } from './shared/auth';
 import { dataProvider } from './shared/data-provider';
 
 export const App = () => (
