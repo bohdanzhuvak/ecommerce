@@ -11,6 +11,7 @@ import {
   TabbedShowLayout,
   TextField,
 } from 'react-admin';
+import { Order, OrderItem } from '../../types/entities';
 
 export const OrderShow = () => (
   <Show>
@@ -28,7 +29,7 @@ export const OrderShow = () => (
       <Tab label="Delivery Address">
         <FunctionField
           label="Full Address"
-          render={(record: any) => {
+          render={(record: Order) => {
             if (!record.deliveryAddress) return 'No delivery address';
             const addr = record.deliveryAddress;
             return (
@@ -73,7 +74,7 @@ export const OrderShow = () => (
             <NumberField source="pricePerUnit" label="Price Per Unit" />
             <FunctionField
               label="Total"
-              render={(record: any) =>
+              render={(record: OrderItem) =>
                 (record.quantity * record.pricePerUnit).toFixed(2)
               }
             />

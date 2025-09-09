@@ -41,4 +41,14 @@ export default defineConfig([
       },
     },
   },
+  {
+    files: [
+      'src/types/data-provider.ts',
+      'src/shared/api/**/*.ts',
+      'src/shared/data-provider/**/*.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ]);

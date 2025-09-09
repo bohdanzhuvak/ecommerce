@@ -9,6 +9,7 @@ import {
   TextField,
 } from 'react-admin';
 import { useParams } from 'react-router';
+import { Order } from '../../types/entities';
 
 export const OrderList = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export const OrderList = () => {
         <TextField source="status" />
         <FunctionField
           label="Delivery Address"
-          render={(record: any) => {
+          render={(record: Order) => {
             if (!record.deliveryAddress) return 'No address';
             const addr = record.deliveryAddress;
             return `${addr.street}, ${addr.city}, ${addr.postalCode}, ${addr.country}`;

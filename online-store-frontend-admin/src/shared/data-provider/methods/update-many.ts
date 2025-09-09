@@ -1,7 +1,10 @@
 import { endpoints } from '../../api/endpoints.ts';
+import { HttpClient } from '../../../types/data-provider';
+import { UpdateManyParams } from 'ra-core';
 
 export const updateMany =
-  (httpClient: any) => async (resource: string, params: any) => {
+  (httpClient: HttpClient) =>
+  async (resource: string, params: UpdateManyParams) => {
     const responses = await Promise.all(
       params.ids.map((id: string | number) =>
         httpClient(`${endpoints.update(resource, id)}`, {
@@ -11,5 +14,7 @@ export const updateMany =
       ),
     );
 
-    return { data: responses.map(({ json }) => json.id) };
+    return {
+      data: responses.map(({ json }) => json.id || json),
+    };
   };

@@ -1,7 +1,10 @@
 import { endpoints } from '../../api/endpoints.ts';
+import { HttpClient } from '../../../types/data-provider';
+import { CreateParams } from 'ra-core';
 
 export const create =
-  (httpClient: any) => async (resource: string, params: any) => {
+  (httpClient: HttpClient) =>
+  async (resource: string, params: CreateParams) => {
     const url = `${endpoints.create(resource)}`;
     const { json } = await httpClient(url, {
       method: 'POST',

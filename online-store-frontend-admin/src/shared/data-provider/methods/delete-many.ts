@@ -1,7 +1,10 @@
 import { endpoints } from '../../api/endpoints.ts';
+import { HttpClient } from '../../../types/data-provider';
+import { DeleteManyParams } from 'ra-core';
 
 export const deleteMany =
-  (httpClient: any) => async (resource: string, params: any) => {
+  (httpClient: HttpClient) =>
+  async (resource: string, params: DeleteManyParams) => {
     const responses = await Promise.all(
       params.ids.map((id: string | number) =>
         httpClient(`${endpoints.delete(resource, id)}`, {
@@ -10,5 +13,7 @@ export const deleteMany =
       ),
     );
 
-    return { data: responses.map(({ json }) => json.id) };
+    return {
+      data: responses.map(({ json }) => json.id || json),
+    };
   };

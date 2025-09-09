@@ -1,8 +1,12 @@
 import { fetchUtils } from 'ra-core';
+import { HttpClient, HttpClientOptions } from '../../types/data-provider';
 
 const getToken = (): string | null => localStorage.getItem('accessToken');
 
-export const httpClientWithAuth = (url: string, options: any = {}) => {
+export const httpClientWithAuth: HttpClient = <T = any>(
+  url: string,
+  options: HttpClientOptions = {},
+) => {
   const token = getToken();
   const headers = new Headers(options.headers || {});
 
@@ -13,5 +17,5 @@ export const httpClientWithAuth = (url: string, options: any = {}) => {
   return fetchUtils.fetchJson(url, {
     ...options,
     headers,
-  });
+  }) as Promise<{ json: T; status: number; headers: Headers }>;
 };
