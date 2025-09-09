@@ -12,7 +12,6 @@ import {
   ShoppingCart as ProductsIcon,
 } from '@mui/icons-material';
 import { Layout } from './Layout';
-import dataProvider from './providers/data-provider.ts';
 import { OrderList } from './components/orders/OrderList';
 import { OrderShow } from './components/orders/OrderShow';
 import { ProductCreate } from './components/products/ProductCreate';
@@ -21,11 +20,12 @@ import { Route } from 'react-router';
 import { UserList } from './components/users/UserList.tsx';
 import { ProductEdit } from './components/products/ProductEdit.tsx';
 import { authProvider } from './auth';
+import { dataProvider } from './shared/data-provider';
 
 export const App = () => (
   <Admin
     layout={Layout}
-    dataProvider={dataProvider('http://localhost:8080/api/v1')}
+    dataProvider={dataProvider}
     authProvider={authProvider}
     requireAuth
   >
