@@ -1,13 +1,32 @@
 import { User } from './types';
 import { STORAGE_KEYS } from './constants';
 
+interface TokenData {
+  token: string;
+  expiresAt: number;
+  refreshExpiresAt: number;
+}
+
 class TokenManager {
   getToken(): string | null {
-    return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const tokenData = this.getTokenData();
+    return tokenData?.token || null;
   }
 
-  setToken(token: string): void {
-    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+  setToken(token: string, expiresAt: number, refreshExpiresAt: number): void {
+    const tokenData: TokenData = {
+      token,
+      expiresAt,
+      refreshExpiresAt,
+    };
+    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, JSON.stringify(tokenData));
+  }
+
+  isTokenExpired(): boolean {
+    const tokenData = this.getTokenData();
+    if (!tokenData) return true;
+
+    return Date.now() >= tokenData.expiresAt;
   }
 
   removeToken(): void {
@@ -27,16 +46,19 @@ class TokenManager {
     localStorage.removeItem(STORAGE_KEYS.USER_INFO);
   }
 
-  isTokenExpired(): boolean {
-    const token = this.getToken();
-    if (!token) return true;
+  isRefreshTokenExpired(): boolean {
+    const tokenData = this.getTokenData();
+    if (!tokenData) return true;
 
+    return Date.now() >= tokenData.refreshExpiresAt;
+  }
+
+  private getTokenData(): TokenData | null {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Date.now() / 1000;
-      return payload.exp < currentTime;
+      const stored = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+      return stored ? JSON.parse(stored) : null;
     } catch {
-      return true;
+      return null;
     }
   }
 

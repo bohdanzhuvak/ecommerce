@@ -1,13 +1,12 @@
 import { fetchUtils } from 'ra-core';
 import { HttpClient, HttpClientOptions } from '../../types/data-provider';
-
-const getToken = (): string | null => localStorage.getItem('accessToken');
+import { tokenManager } from '../../auth';
 
 export const httpClientWithAuth: HttpClient = <T = any>(
   url: string,
   options: HttpClientOptions = {},
 ) => {
-  const token = getToken();
+  const token = tokenManager.getToken();
   const headers = new Headers(options.headers || {});
 
   if (token) {

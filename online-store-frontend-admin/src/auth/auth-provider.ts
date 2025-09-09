@@ -13,7 +13,11 @@ export const authProvider: AuthProvider = {
         throw new Error(ERROR_MESSAGES.ACCESS_DENIED);
       }
 
-      tokenManager.setToken(data.token);
+      tokenManager.setToken(
+        data.token,
+        data.tokenInfo.expiresAt,
+        data.tokenInfo.refreshExpiresAt,
+      );
       tokenManager.setUserInfo(data.user);
     } catch (error) {
       if (error instanceof Error) {
@@ -25,24 +29,55 @@ export const authProvider: AuthProvider = {
 
   async checkError(error) {
     const status = error.status;
+
     if (status === 401 || status === 403) {
-      tokenManager.clearAll();
-      return Promise.reject();
+      const token = tokenManager.getToken();
+      if (
+        !token ||
+        tokenManager.isTokenExpired() ||
+        tokenManager.isRefreshTokenExpired()
+      ) {
+        tokenManager.clearAll();
+        return Promise.reject();
+      } else {
+        // Токен еще действителен, возможно проблема в другом
+        return Promise.resolve();
+      }
     }
     return Promise.resolve();
   },
 
   async checkAuth() {
-    if (!tokenManager.getToken() || tokenManager.isTokenExpired()) {
+    const token = tokenManager.getToken();
+
+    if (!token) {
+      tokenManager.clearAll();
+      return Promise.reject({ message: ERROR_MESSAGES.TOKEN_EXPIRED });
+    }
+
+    const isTokenExpired = tokenManager.isTokenExpired();
+    const isRefreshTokenExpired = tokenManager.isRefreshTokenExpired();
+
+    if (isRefreshTokenExpired) {
+      tokenManager.clearAll();
+      return Promise.reject({ message: ERROR_MESSAGES.TOKEN_EXPIRED });
+    }
+
+    if (isTokenExpired) {
       try {
         const data = await authService.refreshToken();
-        tokenManager.setToken(data.token);
+        tokenManager.setToken(
+          data.token,
+          data.tokenInfo.expiresAt,
+          data.tokenInfo.refreshExpiresAt,
+        );
         tokenManager.setUserInfo(data.user);
-      } catch {
+      } catch (error) {
         tokenManager.clearAll();
         return Promise.reject({ message: ERROR_MESSAGES.TOKEN_EXPIRED });
       }
     }
+
     return Promise.resolve();
   },
 
