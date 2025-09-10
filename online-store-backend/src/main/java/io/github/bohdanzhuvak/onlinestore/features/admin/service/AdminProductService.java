@@ -34,7 +34,7 @@ public class AdminProductService {
     Product product = adminProductMapper.createProduct(productRequest);
     Product finalProduct = product;
     product.setImages(productRequest.getImageUrls().stream()
-        .map(url -> new ProductImage(null, url, finalProduct))
+        .map(url -> new ProductImage(url, finalProduct))
         .toList());
     product = productRepository.save(product);
     return adminProductMapper.toResponse(product);
@@ -49,7 +49,7 @@ public class AdminProductService {
     existingProduct.getImages().clear();
     existingProduct.getImages().addAll(
         product.getImageUrls().stream()
-            .map(url -> new ProductImage(null, url, existingProduct))
+            .map(url -> new ProductImage(url, existingProduct))
             .toList()
     );
 

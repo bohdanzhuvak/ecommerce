@@ -2,60 +2,60 @@ package io.github.bohdanzhuvak.onlinestore.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
 @Table(name = "balance_transactions")
-public class BalanceTransaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class BalanceTransaction extends AuditableEntity {
 
+  @NotNull(message = "User is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+  @NotNull(message = "Transaction type is required")
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+  @Column(nullable = false, length = 20)
     private TransactionType type;
 
-    @Column(nullable = false)
+  @NotNull(message = "Amount is required")
+  @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be positive")
+  @Digits(integer = 8, fraction = 2, message = "Amount must have at most 8 integer digits and 2 decimal places")
+  @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+  @NotNull(message = "Balance after is required")
+  @DecimalMin(value = "0.0", message = "Balance after must be non-negative")
+  @Digits(integer = 8, fraction = 2, message = "Balance after must have at most 8 integer digits and 2 decimal places")
+  @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal balanceAfter;
 
+  @Size(max = 500, message = "Description must not exceed 500 characters")
+  @Column(length = 500)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
 }

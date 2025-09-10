@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.domain.repository;
 
-import io.github.bohdanzhuvak.onlinestore.features.user.model.Cart;
+import io.github.bohdanzhuvak.onlinestore.features.customer.model.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

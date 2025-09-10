@@ -20,10 +20,16 @@ public interface AdminProductMapper {
   ProductResponse toResponse(Product product);
 
   @Mapping(target = "category.id", source = "categoryId")
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "images", ignore = true)
   Product updateProduct(@MappingTarget Product existingProduct, UpdateProductRequest productRequest);
 
-  @Mapping(target = "id", ignore = true)
   @Mapping(target = "category.id", source = "categoryId")
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "images", ignore = true)
     // Images are handled separately
   Product createProduct(CreateProductRequest productResponse);
