@@ -1,44 +1,74 @@
 package io.github.bohdanzhuvak.onlinestore.features.admin.service;
 
-import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
 import io.github.bohdanzhuvak.onlinestore.domain.model.User;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.UserRepository;
-import io.github.bohdanzhuvak.onlinestore.features.admin.dto.user.UpdateUserRequest;
-import io.github.bohdanzhuvak.onlinestore.features.admin.dto.user.UserResponse;
+import io.github.bohdanzhuvak.onlinestore.features.admin.dto.user.AdminUserRequestDto;
+import io.github.bohdanzhuvak.onlinestore.features.admin.dto.user.AdminUserResponseDto;
 import io.github.bohdanzhuvak.onlinestore.features.admin.mapper.AdminUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Admin service for User management with react-admin support.
+ * Extends AbstractAdminFullAccessService with user-specific admin operations.
+ */
 @Service
 @RequiredArgsConstructor
-public class AdminUserService {
+public class AdminUserService extends AbstractAdminFullAccessService<User, AdminUserResponseDto, AdminUserRequestDto, Long> {
+
   private final UserRepository userRepository;
   private final AdminUserMapper adminUserMapper;
 
-  public Page<UserResponse> getUsers(Pageable pageable) {
-    Page<User> userPage = userRepository.findAll(pageable);
-    return adminUserMapper.toResponsePage(userPage);
+  @Override
+  protected UserRepository getRepository() {
+    return userRepository;
   }
 
-  public UserResponse getUser(Long id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-    return adminUserMapper.toResponse(user);
+  @Override
+  protected AdminUserMapper getMapper() {
+    return adminUserMapper;
   }
 
-  public UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-
-    user = adminUserMapper.updateUser(user, updateUserRequest);
-    user = userRepository.save(user);
-
-    return adminUserMapper.toResponse(user);
+  @Override
+  protected Page<AdminUserResponseDto> findByFiltersWithPagination(Map<String, String> filters, Pageable pageable) {
+    // Implement user-specific filtering logic here
+    // For now, return all users (can be enhanced with specific filters)
+    Page<User> users = userRepository.findAll(pageable);
+    return users.map(adminUserMapper::toResponseDto);
   }
 
-  public void deleteUser(Long id) {
-    userRepository.deleteById(id);
+  @Override
+  public List<AdminUserResponseDto> findByFilters(Map<String, String> filters) {
+    // Implement user-specific filtering logic here
+    // For now, return all users (can be enhanced with specific filters)
+    List<User> users = userRepository.findAll();
+    return adminUserMapper.toResponseDtoList(users);
+  }
+
+  @Override
+  public boolean hasPermission(Long entityId, String operation) {
+    // Implement user-specific permission logic here
+    // For now, allow all operations (can be enhanced with role-based permissions)
+    return true;
+  }
+
+  @Override
+  public Map<String, Object> getStatistics() {
+    Map<String, Object> stats = super.getStatistics();
+
+    // Add user-specific statistics
+    long activeUsers = userRepository.findAll().stream()
+        .filter(user -> user.getBalance().compareTo(java.math.BigDecimal.ZERO) >= 0)
+        .count();
+
+    stats.put("activeUsers", activeUsers);
+    stats.put("totalUsers", userRepository.count());
+
+    return stats;
   }
 }

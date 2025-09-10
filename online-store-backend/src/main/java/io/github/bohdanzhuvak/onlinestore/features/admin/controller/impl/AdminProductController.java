@@ -1,4 +1,4 @@
-package io.github.bohdanzhuvak.onlinestore.features.admin.controller;
+package io.github.bohdanzhuvak.onlinestore.features.admin.controller.impl;
 
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.CreateProductRequest;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.ProductResponse;

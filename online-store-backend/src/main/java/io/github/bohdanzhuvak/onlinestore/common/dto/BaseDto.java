@@ -1,10 +1,9 @@
 package io.github.bohdanzhuvak.onlinestore.common.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+/**
+ * Base DTO for all operations.
+ * Can be extended by both request and response DTOs.
+ */
+public interface BaseDto {
 
-@Getter
-@Setter
-public abstract class BaseDto {
-  private Long id;
 }

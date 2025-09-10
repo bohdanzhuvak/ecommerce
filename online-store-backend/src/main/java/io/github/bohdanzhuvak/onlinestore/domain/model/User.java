@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Table(name = "users")
-public class User extends AuditableEntity {
+public class User extends BaseEntity {
 
   @NotBlank(message = "Username is required")
   @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")

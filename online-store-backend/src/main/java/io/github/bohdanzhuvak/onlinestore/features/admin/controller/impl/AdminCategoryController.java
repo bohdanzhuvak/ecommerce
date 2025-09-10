@@ -1,4 +1,4 @@
-package io.github.bohdanzhuvak.onlinestore.features.admin.controller;
+package io.github.bohdanzhuvak.onlinestore.features.admin.controller.impl;
 
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.category.CategoryResponse;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.category.CreateCategoryRequest;

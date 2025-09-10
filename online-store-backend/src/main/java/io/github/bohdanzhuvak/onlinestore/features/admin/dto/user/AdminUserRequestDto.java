@@ -1,25 +1,25 @@
-package io.github.bohdanzhuvak.onlinestore.features.customer.dto.user;
+package io.github.bohdanzhuvak.onlinestore.features.admin.dto.user;
 
-import io.github.bohdanzhuvak.onlinestore.common.dto.BaseAuditableResponseDto;
 import io.github.bohdanzhuvak.onlinestore.domain.model.Role;
+import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminRequestDto;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@NoArgsConstructor
-@AllArgsConstructor
+/**
+ * Admin request DTO for User entity.
+ * Contains only fields that can be provided by admin client.
+ */
 @Getter
 @Setter
-public class UserDto extends BaseAuditableResponseDto {
+public class AdminUserRequestDto extends AdminRequestDto {
 
   @NotBlank(message = "Username is required")
   @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")

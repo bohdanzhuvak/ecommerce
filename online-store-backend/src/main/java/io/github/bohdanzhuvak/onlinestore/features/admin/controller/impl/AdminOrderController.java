@@ -1,4 +1,4 @@
-package io.github.bohdanzhuvak.onlinestore.features.admin.controller;
+package io.github.bohdanzhuvak.onlinestore.features.admin.controller.impl;
 
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.order.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.features.admin.service.AdminOrderService;

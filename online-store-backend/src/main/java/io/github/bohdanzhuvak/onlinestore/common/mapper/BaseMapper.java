@@ -1,49 +1,49 @@
 package io.github.bohdanzhuvak.onlinestore.common.mapper;
 
-import io.github.bohdanzhuvak.onlinestore.common.dto.BaseDto;
+import io.github.bohdanzhuvak.onlinestore.common.dto.BaseRequestDto;
+import io.github.bohdanzhuvak.onlinestore.common.dto.BaseResponseDto;
 import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
+import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 /**
- * Base mapper interface for common mapping operations.
- * Concrete mappers should implement this interface using MapStruct.
+ * Minimal base mapper interface for common mapping operations.
+ * This provides basic mapping functionality that can be extended by specific mappers.
+ * Most mapping logic should be implemented in AdminBaseMapper or CustomerBaseMapper.
  */
-public interface BaseMapper<E extends BaseEntity, D extends BaseDto> {
+public interface BaseMapper<E extends BaseEntity, R extends BaseResponseDto, S extends BaseRequestDto> {
 
   /**
    * Convert entity to DTO
    */
-  D toDto(E entity);
+  R toResponseDto(E entity);
 
   /**
    * Convert DTO to entity
    */
-  E toEntity(D dto);
+  E toEntity(S dto);
 
   /**
    * Convert entity list to DTO list
    */
-  List<D> toDtoList(List<E> entities);
+  List<R> toResponseDtoList(List<E> entities);
 
   /**
    * Convert DTO list to entity list
    */
-  List<E> toEntityList(List<D> dtos);
-
-  /**
-   * Convert entity page to DTO page
-   */
-  Page<D> toDtoPage(Page<E> entityPage);
-
-  /**
-   * Convert DTO to entity for creation (ignores audit fields)
-   */
-  E toEntityForCreate(D dto);
+  List<E> toEntityList(List<S> dtos);
 
   /**
    * Update entity from DTO (ignores audit fields)
    */
-  void updateEntity(E entity, D dto);
+  void updateEntity(@MappingTarget E entity, S dto);
+
+  /**
+   * Convert entity page to DTO page
+   */
+  default Page<R> toResponseDtoPage(Page<E> entityPage) {
+    return entityPage.map(this::toResponseDto);
+  }
 }

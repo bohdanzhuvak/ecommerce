@@ -1,24 +1,43 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.service;
 
-import io.github.bohdanzhuvak.onlinestore.common.service.AbstractBaseService;
+import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
 import io.github.bohdanzhuvak.onlinestore.domain.model.User;
-import io.github.bohdanzhuvak.onlinestore.domain.repository.BaseRepository;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.UserRepository;
+import io.github.bohdanzhuvak.onlinestore.features.customer.dto.user.UpdateUserRequest;
+import io.github.bohdanzhuvak.onlinestore.features.customer.dto.user.UserResponse;
+import io.github.bohdanzhuvak.onlinestore.features.customer.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-/**
- * User service implementation using BaseServiceImpl.
- * This shows how to implement a service for specific entity types.
- */
 @Service
 @RequiredArgsConstructor
-public class UserService extends AbstractBaseService<User, Long> {
-
+public class UserService {
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
-  @Override
-  protected BaseRepository<User, Long> getRepository() {
-    return userRepository;
+  public UserResponse getUser(Long userId) {
+    var user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+    return userMapper.toResponse(user);
   }
+
+  public UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+    user = userMapper.updateUser(user, updateUserRequest);
+    user = userRepository.save(user);
+
+    return userMapper.toResponse(user);
+  }
+
+  public void deleteUser(Long userId) {
+    if (!userRepository.existsById(userId)) {
+      throw new NotFoundException("User not found with id: " + userId);
+    }
+
+    userRepository.deleteById(userId);
+  }
+
 }
