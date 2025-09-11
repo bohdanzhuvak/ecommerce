@@ -39,8 +39,5 @@ public interface AdminOrderMapper extends AdminBaseMapper<Order, AdminOrderRespo
   @Mapping(target = "status", source = "status")
   @Mapping(target = "items", ignore = true)
   @Mapping(target = "deliveryAddress", ignore = true)
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "createdAt", ignore = true)
-  @Mapping(target = "updatedAt", ignore = true)
   void updateEntity(@MappingTarget Order entity, AdminOrderRequest dto);
 }

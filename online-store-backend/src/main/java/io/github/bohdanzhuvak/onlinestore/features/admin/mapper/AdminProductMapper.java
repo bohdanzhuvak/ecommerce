@@ -4,11 +4,13 @@ import io.github.bohdanzhuvak.onlinestore.domain.model.Product;
 import io.github.bohdanzhuvak.onlinestore.domain.model.ProductImage;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.AdminProductRequest;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.AdminProductResponse;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -38,7 +40,7 @@ public interface AdminProductMapper extends AdminBaseMapper<Product, AdminProduc
   @Mapping(target = "stock", source = "stock")
   @Mapping(target = "category", ignore = true)
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "images", ignore = true)
+  @Mapping(target = "images", source = "imageUrls", qualifiedByName = "mapImageUrlsToEntities")
   Product toEntity(AdminProductRequest dto);
 
   @Override
@@ -48,7 +50,7 @@ public interface AdminProductMapper extends AdminBaseMapper<Product, AdminProduc
   @Mapping(target = "stock", source = "stock")
   @Mapping(target = "category", ignore = true)
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "images", ignore = true)
+  @Mapping(target = "images", source = "imageUrls", qualifiedByName = "mapImageUrlsToEntities")
   void updateEntity(@MappingTarget Product entity, AdminProductRequest dto);
 
   @Named("mapImages")
@@ -57,5 +59,24 @@ public interface AdminProductMapper extends AdminBaseMapper<Product, AdminProduc
     return images.stream()
         .map(ProductImage::getUrl)
         .toList();
+  }
+
+  @Named("mapImageUrlsToEntities")
+  default List<ProductImage> mapImageUrlsToEntities(List<String> urls) {
+    if (urls == null) return new ArrayList<>();
+    List<ProductImage> images = new ArrayList<>();
+    for (String url : urls) {
+      ProductImage image = new ProductImage();
+      image.setUrl(url);
+      images.add(image);
+    }
+    return images;
+  }
+
+  @AfterMapping
+  default void linkImagesToProduct(@MappingTarget Product product) {
+    if (product.getImages() != null) {
+      product.getImages().forEach(img -> img.setProduct(product));
+    }
   }
 }

@@ -37,6 +37,5 @@ public interface AdminOrderItemMapper extends AdminBaseMapper<OrderItem, AdminOr
   @Mapping(target = "pricePerUnit", source = "pricePerUnit")
   @Mapping(target = "product", ignore = true)
   @Mapping(target = "order", ignore = true)
-  @Mapping(target = "id", ignore = true)
   void updateEntity(@MappingTarget OrderItem entity, AdminOrderItemRequest dto);
 }

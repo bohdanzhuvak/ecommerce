@@ -9,7 +9,10 @@ export const getMany =
     resource: string,
     params: GetManyParams<RecordType>,
   ): Promise<GetManyResult<RecordType>> => {
-    const query = { id: params.ids };
+    const query = {
+      filter: JSON.stringify({ id: params.ids }),
+    };
+
     const url = `${endpoints.list(resource, fetchUtils.queryParameters(query))}`;
     const { json } = await httpClient<
       { data: RecordType[]; total: number } | RecordType[]

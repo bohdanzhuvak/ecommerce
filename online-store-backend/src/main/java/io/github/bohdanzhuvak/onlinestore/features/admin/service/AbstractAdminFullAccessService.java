@@ -4,6 +4,7 @@ import io.github.bohdanzhuvak.onlinestore.common.service.AbstractFullAccessServi
 import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminRequestDto;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminResponseDto;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,6 @@ public abstract class AbstractAdminFullAccessService<E extends BaseEntity, R ext
       int perPage,
       Map<String, Object> filters) {
 
-    // Определяем направление сортировки
     Sort.Direction direction = (order != null && order.equalsIgnoreCase("DESC"))
         ? Sort.Direction.DESC
         : Sort.Direction.ASC;
@@ -131,7 +131,6 @@ public abstract class AbstractAdminFullAccessService<E extends BaseEntity, R ext
   protected Specification<E> createFieldSpecification(String field, Object value) {
     return (root, query, cb) -> {
       try {
-        // Handle nested properties (e.g., "category.name")
         String[] fieldParts = field.split("\\.");
         var path = root.get(fieldParts[0]);
 
@@ -140,22 +139,22 @@ public abstract class AbstractAdminFullAccessService<E extends BaseEntity, R ext
         }
 
         if (value instanceof String stringValue) {
-          // Check if it's a search pattern (contains % or _)
           if (stringValue.contains("%") || stringValue.contains("_")) {
             return cb.like(path.as(String.class), stringValue);
           } else {
             return cb.like(cb.lower(path.as(String.class)), "%" + stringValue.toLowerCase() + "%");
           }
-        } else if (value instanceof Number) {
+        } else if (value instanceof Number || value instanceof Boolean) {
           return cb.equal(path, value);
-        } else if (value instanceof Boolean) {
-          return cb.equal(path, value);
+        } else if (value instanceof List<?> listValue) {
+          // поддержка IN (...) для списков
+          CriteriaBuilder.In<Object> inClause = cb.in(path);
+          listValue.forEach(inClause::value);
+          return inClause;
         } else {
           return cb.equal(path, value);
         }
       } catch (Exception e) {
-        // Log the error and return null to skip this filter
-        // This prevents crashes when field doesn't exist
         return null;
       }
     };

@@ -1,5 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.features.admin.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminRequestDto;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminResponseDto;
@@ -45,11 +47,18 @@ public abstract class AdminBaseController<
       @RequestParam(required = false, defaultValue = "ASC") String order,
       @RequestParam(required = false, defaultValue = "1") int page,
       @RequestParam(required = false, defaultValue = "10") int perPage,
-      @RequestParam(required = false) Map<String, String> filter) {
-
+      @RequestParam(required = false) String filter
+  ) {
     Map<String, Object> filterMap = new HashMap<>();
-    if (filter != null) {
-      filterMap.putAll(filter);
+
+    if (filter != null && !filter.isBlank()) {
+      try {
+        ObjectMapper mapper = new ObjectMapper();
+        filterMap = mapper.readValue(filter, new TypeReference<>() {
+        });
+      } catch (Exception e) {
+        throw new RuntimeException("Invalid filter format", e);
+      }
     }
 
     Page<R> dtos = getAdminService().findAllWithFilters(sort, order, page, perPage, filterMap);

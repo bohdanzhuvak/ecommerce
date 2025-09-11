@@ -17,3 +17,11 @@ export type HttpClient = <T = any>(
   url: string,
   options?: HttpClientOptions,
 ) => Promise<HttpClientResponse<T>>;
+
+export interface ListQuery {
+  sort: string;
+  order: 'ASC' | 'DESC';
+  page: number;
+  perPage: number;
+  filter?: string;
+}
