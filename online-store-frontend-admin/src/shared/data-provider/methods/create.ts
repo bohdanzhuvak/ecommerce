@@ -1,14 +1,20 @@
 import { endpoints } from '../../api/endpoints.ts';
-import { HttpClient } from '../../../types/data-provider';
-import { CreateParams } from 'ra-core';
+import { HttpClient } from '../../../types/data-provider.ts';
+import { CreateParams, CreateResult, Identifier, RaRecord } from 'react-admin';
 
 export const create =
   (httpClient: HttpClient) =>
-  async (resource: string, params: CreateParams) => {
+  async <
+    RecordType extends Omit<RaRecord, 'id'> = any,
+    ResultRecordType extends RaRecord = RecordType & { id: Identifier },
+  >(
+    resource: string,
+    params: CreateParams<RecordType>,
+  ): Promise<CreateResult<ResultRecordType>> => {
     const url = `${endpoints.create(resource)}`;
-    const { json } = await httpClient(url, {
+    const { json } = await httpClient<{ data: ResultRecordType }>(url, {
       method: 'POST',
       body: JSON.stringify(params.data),
     });
-    return { data: json };
+    return json;
   };

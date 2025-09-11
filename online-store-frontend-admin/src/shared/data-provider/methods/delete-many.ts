@@ -1,19 +1,22 @@
 import { endpoints } from '../../api/endpoints.ts';
-import { HttpClient } from '../../../types/data-provider';
-import { DeleteManyParams } from 'ra-core';
+import { HttpClient } from '../../../types/data-provider.ts';
+import {
+  DeleteManyParams,
+  DeleteManyResult,
+  Identifier,
+  RaRecord,
+} from 'react-admin';
 
 export const deleteMany =
   (httpClient: HttpClient) =>
-  async (resource: string, params: DeleteManyParams) => {
-    const responses = await Promise.all(
-      params.ids.map((id: string | number) =>
-        httpClient(`${endpoints.delete(resource, id)}`, {
-          method: 'DELETE',
-        }),
-      ),
-    );
-
-    return {
-      data: responses.map(({ json }) => json.id || json),
-    };
+  async <RecordType extends RaRecord = any>(
+    resource: string,
+    params: DeleteManyParams<RecordType>,
+  ): Promise<DeleteManyResult<RecordType>> => {
+    const url = `${endpoints.delete(resource, '')}`.replace(/\/$/, ''); // Убираем последний слеш
+    const { json } = await httpClient<{ data: Identifier[] }>(url, {
+      method: 'DELETE',
+      body: JSON.stringify(params.ids),
+    });
+    return json;
   };

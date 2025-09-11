@@ -21,6 +21,7 @@ import { UserList } from './components/users/UserList.tsx';
 import { ProductEdit } from './components/products/ProductEdit.tsx';
 import { authProvider } from './shared/auth';
 import { dataProvider } from './shared/data-provider';
+import { ProductList } from './components/products/ProductList.tsx';
 
 export const App = () => (
   <Admin
@@ -31,7 +32,7 @@ export const App = () => (
   >
     <Resource
       name="products"
-      list={ListGuesser}
+      list={ProductList}
       create={ProductCreate}
       edit={ProductEdit}
       show={ShowGuesser}

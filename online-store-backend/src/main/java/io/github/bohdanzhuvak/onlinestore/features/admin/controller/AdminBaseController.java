@@ -1,8 +1,5 @@
 package io.github.bohdanzhuvak.onlinestore.features.admin.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminRequestDto;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminResponseDto;
@@ -39,22 +36,20 @@ public abstract class AdminBaseController<
   protected abstract AdminFullAccessService<E, R, S, ID> getAdminService();
 
   /**
-   * Get all records (react-admin compatible).
+   * Get all records (react-admin standard format).
    * Query params: sort, order, page, perPage, filter
    */
   @GetMapping
   public ResponseEntity<Map<String, Object>> getAll(
       @RequestParam(required = false) String sort,
-      @RequestParam(required = false) String order,
+      @RequestParam(required = false, defaultValue = "ASC") String order,
       @RequestParam(required = false, defaultValue = "1") int page,
       @RequestParam(required = false, defaultValue = "10") int perPage,
-      @RequestParam(required = false) String filter) throws JsonProcessingException {
+      @RequestParam(required = false) Map<String, String> filter) {
 
     Map<String, Object> filterMap = new HashMap<>();
-    if (filter != null && !filter.isBlank()) {
-      ObjectMapper mapper = new ObjectMapper();
-      filterMap = mapper.readValue(filter, new TypeReference<Map<String, Object>>() {
-      });
+    if (filter != null) {
+      filterMap.putAll(filter);
     }
 
     Page<R> dtos = getAdminService().findAllWithFilters(sort, order, page, perPage, filterMap);

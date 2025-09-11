@@ -1,13 +1,21 @@
 import { endpoints } from '../../api/endpoints.ts';
 import { HttpClient } from '../../../types/data-provider';
-import { UpdateManyParams } from 'ra-core';
+import {
+  Identifier,
+  RaRecord,
+  UpdateManyParams,
+  UpdateManyResult,
+} from 'react-admin';
 
 export const updateMany =
   (httpClient: HttpClient) =>
-  async (resource: string, params: UpdateManyParams) => {
+  async <RecordType extends RaRecord = any>(
+    resource: string,
+    params: UpdateManyParams<RecordType>,
+  ): Promise<UpdateManyResult<RecordType>> => {
     const responses = await Promise.all(
-      params.ids.map((id: string | number) =>
-        httpClient(`${endpoints.update(resource, id)}`, {
+      params.ids.map((id: Identifier) =>
+        httpClient<{ data: RecordType }>(`${endpoints.update(resource, id)}`, {
           method: 'PUT',
           body: JSON.stringify(params.data),
         }),
@@ -15,6 +23,6 @@ export const updateMany =
     );
 
     return {
-      data: responses.map(({ json }) => json.id || json),
+      data: responses.map(({ json }) => json.data.id),
     };
   };

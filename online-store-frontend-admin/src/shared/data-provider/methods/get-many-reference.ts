@@ -1,19 +1,37 @@
-import { buildSpringPaginationQuery } from '../../api/utils.ts';
+import { fetchUtils } from 'ra-core';
 import { endpoints } from '../../api/endpoints.ts';
-import { HttpClient, SpringPageResponse } from '../../../types/data-provider';
-import { GetManyReferenceParams } from 'ra-core';
+import { HttpClient } from '../../../types/data-provider';
+import {
+  GetManyReferenceParams,
+  GetManyReferenceResult,
+  RaRecord,
+} from 'react-admin';
 
 export const getManyReference =
   (httpClient: HttpClient) =>
-  async (resource: string, params: GetManyReferenceParams) => {
-    const query = buildSpringPaginationQuery(params);
-    const url = `${endpoints.list(resource, query)}`;
-    const { json } = await httpClient<SpringPageResponse>(url, {
-      signal: params?.signal,
-    });
+  async <RecordType extends RaRecord = any>(
+    resource: string,
+    params: GetManyReferenceParams,
+  ): Promise<GetManyReferenceResult<RecordType>> => {
+    const { page, perPage } = params.pagination;
+    const { field, order } = params.sort;
 
-    return {
-      data: json.content,
-      total: json.totalElements,
+    const query = {
+      sort: field,
+      order: order,
+      page: page,
+      perPage: perPage,
+      [params.target]: params.id,
+      ...params.filter,
     };
+
+    const url = `${endpoints.list(resource, fetchUtils.queryParameters(query))}`;
+    const { json } = await httpClient<{ data: RecordType[]; total: number }>(
+      url,
+      {
+        signal: params?.signal,
+      },
+    );
+
+    return json;
   };

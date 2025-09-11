@@ -1,19 +1,24 @@
-import { stringify } from 'query-string';
+import { fetchUtils } from 'ra-core';
 import { endpoints } from '../../api/endpoints.ts';
-import { HttpClient, SpringPageResponse } from '../../../types/data-provider';
-import { GetManyParams } from 'ra-core';
+import { HttpClient } from '../../../types/data-provider.ts';
+import { GetManyParams, GetManyResult, RaRecord } from 'react-admin';
 
 export const getMany =
   (httpClient: HttpClient) =>
-  async (resource: string, params: GetManyParams) => {
-    const query = { filter: JSON.stringify({ id: params.ids }) };
-    const url = `${endpoints.list(resource, stringify(query))}`;
-    const { json } = await httpClient<SpringPageResponse | any[]>(url, {
+  async <RecordType extends RaRecord = any>(
+    resource: string,
+    params: GetManyParams<RecordType>,
+  ): Promise<GetManyResult<RecordType>> => {
+    const query = { id: params.ids };
+    const url = `${endpoints.list(resource, fetchUtils.queryParameters(query))}`;
+    const { json } = await httpClient<
+      { data: RecordType[]; total: number } | RecordType[]
+    >(url, {
       signal: params?.signal,
     });
 
-    if (json && typeof json === 'object' && 'content' in json) {
-      return { data: (json as SpringPageResponse).content };
+    if (json && typeof json === 'object' && 'data' in json) {
+      return { data: json.data };
     }
 
     return { data: Array.isArray(json) ? json : [json] };

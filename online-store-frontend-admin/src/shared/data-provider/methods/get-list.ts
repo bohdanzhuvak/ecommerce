@@ -1,19 +1,32 @@
-import { buildSpringPaginationQuery } from '../../api/utils.ts';
+import { fetchUtils } from 'ra-core';
 import { endpoints } from '../../api/endpoints.ts';
-import { HttpClient, SpringPageResponse } from '../../../types/data-provider';
-import { GetListParams } from 'ra-core';
+import { HttpClient } from '../../../types/data-provider.ts';
+import { GetListParams, GetListResult, RaRecord } from 'react-admin';
 
 export const getList =
   (httpClient: HttpClient) =>
-  async (resource: string, params: GetListParams) => {
-    const query = buildSpringPaginationQuery(params);
-    const url = `${endpoints.list(resource, query)}`;
-    const { json } = await httpClient<SpringPageResponse>(url, {
-      signal: params?.signal,
-    });
+  async <RecordType extends RaRecord = any>(
+    resource: string,
+    params: GetListParams,
+  ): Promise<GetListResult<RecordType>> => {
+    const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
+    const { field, order } = params.sort || { field: 'id', order: 'ASC' };
 
-    return {
-      data: json.content,
-      total: json.totalElements,
+    const query = {
+      sort: field,
+      order: order,
+      page: page,
+      perPage: perPage,
+      ...params.filter,
     };
+
+    const url = `${endpoints.list(resource, fetchUtils.queryParameters(query))}`;
+    const { json } = await httpClient<{ data: RecordType[]; total: number }>(
+      url,
+      {
+        signal: params?.signal,
+      },
+    );
+
+    return json;
   };
