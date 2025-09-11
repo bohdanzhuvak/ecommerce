@@ -1,6 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.features.admin.service;
 
+import io.github.bohdanzhuvak.onlinestore.domain.model.Category;
 import io.github.bohdanzhuvak.onlinestore.domain.model.Product;
+import io.github.bohdanzhuvak.onlinestore.domain.repository.CategoryRepository;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.ProductRepository;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.AdminProductRequest;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.AdminProductResponse;
@@ -11,6 +13,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -18,6 +21,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class AdminProductService extends AbstractAdminFullAccessService<Product, AdminProductResponse, AdminProductRequest, Long> {
   private final ProductRepository productRepository;
+  private final CategoryRepository categoryRepository;
   private final AdminProductMapper adminProductMapper;
 
   @Override
@@ -28,6 +32,41 @@ public class AdminProductService extends AbstractAdminFullAccessService<Product,
   @Override
   protected AdminProductMapper getMapper() {
     return adminProductMapper;
+  }
+
+  @Override
+  @Transactional
+  public AdminProductResponse save(AdminProductRequest dto) {
+    Product product = getMapper().toEntity(dto);
+
+    // Load category if categoryId is provided
+    if (dto.getCategoryId() != null) {
+      Category category = categoryRepository.findById(dto.getCategoryId())
+          .orElseThrow(() -> new RuntimeException("Category not found with id: " + dto.getCategoryId()));
+      product.setCategory(category);
+    }
+
+    Product saved = productRepository.save(product);
+    return getMapper().toResponseDto(saved);
+  }
+
+  @Override
+  @Transactional
+  public AdminProductResponse update(Long id, AdminProductRequest dto) {
+    Product existing = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+    getMapper().updateEntity(existing, dto);
+
+    // Load category if categoryId is provided
+    if (dto.getCategoryId() != null) {
+      Category category = categoryRepository.findById(dto.getCategoryId())
+          .orElseThrow(() -> new RuntimeException("Category not found with id: " + dto.getCategoryId()));
+      existing.setCategory(category);
+    }
+
+    Product updated = productRepository.save(existing);
+    return getMapper().toResponseDto(updated);
   }
 
   /**

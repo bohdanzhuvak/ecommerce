@@ -9,8 +9,10 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class AdminOrderItemResponse extends AdminResponseDto {
+  private Long id;
   private Long productId;
   private String productName;
-  private int quantity;
+  private Long orderId;
+  private Integer quantity;
   private BigDecimal pricePerUnit;
 }

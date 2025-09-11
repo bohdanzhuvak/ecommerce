@@ -15,10 +15,17 @@ import org.mapstruct.MappingTarget;
 public interface AdminUserMapper extends AdminBaseMapper<User, AdminUserResponseDto, AdminUserRequestDto> {
 
   @Override
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "username", source = "username")
+  @Mapping(target = "email", source = "email")
+  @Mapping(target = "role", source = "role")
+  @Mapping(target = "balance", source = "balance")
   @Mapping(target = "isActive", ignore = true)
   @Mapping(target = "lastLoginAt", ignore = true)
   @Mapping(target = "totalOrders", ignore = true)
   @Mapping(target = "totalSpent", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "metadata", ignore = true)
   @Mapping(target = "editable", ignore = true)
   @Mapping(target = "deletable", ignore = true)
@@ -26,11 +33,19 @@ public interface AdminUserMapper extends AdminBaseMapper<User, AdminUserResponse
   AdminUserResponseDto toResponseDto(User entity);
 
   @Override
+  @Mapping(target = "username", source = "username")
+  @Mapping(target = "email", source = "email")
+  @Mapping(target = "role", source = "role")
+  @Mapping(target = "balance", source = "balance")
   @Mapping(target = "password", ignore = true)
   @Mapping(target = "id", ignore = true)
   User toEntity(AdminUserRequestDto dto);
 
   @Override
+  @Mapping(target = "username", source = "username")
+  @Mapping(target = "email", source = "email")
+  @Mapping(target = "role", source = "role")
+  @Mapping(target = "balance", source = "balance")
   @Mapping(target = "password", ignore = true)
   @Mapping(target = "id", ignore = true)
   void updateEntity(@MappingTarget User entity, AdminUserRequestDto dto);

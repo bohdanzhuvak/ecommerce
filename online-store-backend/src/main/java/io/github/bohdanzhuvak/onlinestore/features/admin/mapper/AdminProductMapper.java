@@ -1,35 +1,61 @@
 package io.github.bohdanzhuvak.onlinestore.features.admin.mapper;
 
 import io.github.bohdanzhuvak.onlinestore.domain.model.Product;
+import io.github.bohdanzhuvak.onlinestore.domain.model.ProductImage;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.AdminProductRequest;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.product.AdminProductResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AdminProductMapper extends AdminBaseMapper<Product, AdminProductResponse, AdminProductRequest> {
-  /*@Mapping(target = "imageUrls", source = "images")
+
+  @Override
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "stock", source = "stock")
+  @Mapping(target = "categoryId", source = "category.id")
+  @Mapping(target = "imageUrls", source = "images", qualifiedByName = "mapImages")
   @Mapping(target = "categoryName", source = "category.name")
-  AdminProductResponse toResponse(Product product);
+  @Mapping(target = "createdAt", source = "createdAt")
+  @Mapping(target = "updatedAt", source = "updatedAt")
+  @Mapping(target = "metadata", ignore = true)
+  @Mapping(target = "editable", ignore = true)
+  @Mapping(target = "deletable", ignore = true)
+  @Mapping(target = "displayName", ignore = true)
+  AdminProductResponse toResponseDto(Product product);
 
-  @Mapping(target = "category.id", source = "categoryId")
+  @Override
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "stock", source = "stock")
+  @Mapping(target = "category", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "images", ignore = true)
-  Product updateProduct(@MappingTarget Product existingProduct, UpdateProductRequest productRequest);
+  Product toEntity(AdminProductRequest dto);
 
-  @Mapping(target = "category.id", source = "categoryId")
+  @Override
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "stock", source = "stock")
+  @Mapping(target = "category", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "images", ignore = true)
-    // Images are handled separately
-  Product createProduct(AdminProductRequest productResponse);
+  void updateEntity(@MappingTarget Product entity, AdminProductRequest dto);
 
-  default Page<AdminProductResponse> toResponsePage(Page<Product> products) {
-    return products.map(this::toResponse);
-  }
-
-  default List<String> map(List<ProductImage> images) {
+  @Named("mapImages")
+  default List<String> mapImages(List<ProductImage> images) {
     if (images == null) return null;
     return images.stream()
         .map(ProductImage::getUrl)
         .toList();
-  }*/
+  }
 }

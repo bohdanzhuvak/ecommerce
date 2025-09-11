@@ -15,6 +15,7 @@ public class AdminProductResponse extends AdminResponseDto {
   private String description;
   private BigDecimal price;
   private int stock;
+  private Long categoryId;
   private String categoryName;
   private List<String> imageUrls;
 }

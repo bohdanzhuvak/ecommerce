@@ -27,7 +27,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "products")
-public class Product extends BaseEntity {
+public class Product extends AuditableEntity {
 
   @NotBlank(message = "Product name is required")
   @Size(max = 100, message = "Product name must not exceed 100 characters")
