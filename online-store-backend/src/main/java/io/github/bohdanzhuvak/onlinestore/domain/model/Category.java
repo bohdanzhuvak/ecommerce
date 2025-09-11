@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "categories")
-public class Category extends BaseEntity {
+public class Category extends AuditableEntity {
 
   @NotBlank(message = "Category name is required")
   @Size(max = 100, message = "Category name must not exceed 100 characters")

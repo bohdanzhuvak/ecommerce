@@ -1,11 +1,14 @@
 package io.github.bohdanzhuvak.onlinestore.features.admin.dto.delivery;
 
-import lombok.Data;
+import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminResponseDto;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
-public class DeliveryAddressResponse {
+@Getter
+@Setter
+public class AdminDeliveryAddressResponse extends AdminResponseDto {
   private Long id;
   private Long userId;
   private String street;
