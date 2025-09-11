@@ -40,7 +40,6 @@ public class BalanceTransaction extends AuditableEntity {
     private TransactionType type;
 
   @NotNull(message = "Amount is required")
-  @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be positive")
   @Digits(integer = 8, fraction = 2, message = "Amount must have at most 8 integer digits and 2 decimal places")
   @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
