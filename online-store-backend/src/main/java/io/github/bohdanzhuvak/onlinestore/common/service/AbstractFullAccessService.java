@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractFullAccessService<T extends BaseEntity, R extends BaseResponseDto, S extends BaseRequestDto, ID> implements FullAccessService<R, S, ID> {
@@ -66,21 +67,21 @@ public abstract class AbstractFullAccessService<T extends BaseEntity, R extends 
 
   @Override
   @Transactional
-  public void delete(ID id) {
-    if (!getRepository().existsById(id)) {
-      throw new NotFoundException("Entity with id " + id + " not found");
-    }
+  public R delete(ID id) {
+    T existing = getRepository().findById(id).orElseThrow(() -> new NotFoundException("Entity with id " + id + " not found"));
     getRepository().deleteById(id);
+    return getMapper().toResponseDto(existing);
   }
 
   @Override
   @Transactional
-  public void deleteAll(Iterable<ID> entities) {
+  public List<ID> deleteByIds(Iterable<ID> entities) {
     for (ID id : entities) {
       if (!getRepository().existsById(id)) {
         throw new NotFoundException("Entity with id " + id + " not found");
       }
     }
     getRepository().deleteAllById(entities);
+    return new ArrayList<>((List<ID>) entities);
   }
 }

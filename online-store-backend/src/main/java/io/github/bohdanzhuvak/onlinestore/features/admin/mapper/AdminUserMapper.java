@@ -15,15 +15,14 @@ import org.mapstruct.MappingTarget;
 public interface AdminUserMapper extends AdminBaseMapper<User, AdminUserResponseDto, AdminUserRequestDto> {
 
   @Override
-  @Mapping(target = "isActive", ignore = true) // Computed field
-  @Mapping(target = "lastLoginAt", ignore = true) // Computed field
-  @Mapping(target = "totalOrders", ignore = true) // Computed field
-  @Mapping(target = "totalSpent", ignore = true) // Computed field
-  @Mapping(target = "metadata", ignore = true) // Set by business logic
-  @Mapping(target = "editable", ignore = true) // Set by business logic
-  @Mapping(target = "deletable", ignore = true) // Set by business logic
+  @Mapping(target = "isActive", ignore = true)
+  @Mapping(target = "lastLoginAt", ignore = true)
+  @Mapping(target = "totalOrders", ignore = true)
+  @Mapping(target = "totalSpent", ignore = true)
+  @Mapping(target = "metadata", ignore = true)
+  @Mapping(target = "editable", ignore = true)
+  @Mapping(target = "deletable", ignore = true)
   @Mapping(target = "displayName", ignore = true)
-    // Computed field
   AdminUserResponseDto toResponseDto(User entity);
 
   @Override

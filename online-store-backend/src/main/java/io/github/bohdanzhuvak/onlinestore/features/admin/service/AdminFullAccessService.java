@@ -5,7 +5,6 @@ import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminRequestDto;
 import io.github.bohdanzhuvak.onlinestore.features.admin.dto.AdminResponseDto;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
@@ -18,25 +17,21 @@ public interface AdminFullAccessService<E extends BaseEntity, R extends AdminRes
     extends FullAccessService<R, S, ID> {
 
   /**
-   * Find all records with react-admin compatible filtering and sorting
+   * Find all records with pagination, sorting, and filtering (react-admin compatible)
    *
-   * @param sort     Field to sort by
-   * @param order    Sort order (ASC/DESC)
-   * @param start    Start index for pagination
-   * @param end      End index for pagination
-   * @param filters  Map of filters to apply
-   * @param pageable Pageable object
-   * @return Page of filtered and sorted DTOs
+   * @param sort    Field to sort by
+   * @param order   Sort order (ASC or DESC)
+   * @param page    Page number (1-based)
+   * @param perPage Records per page
+   * @param filters Map of filter criteria
+   * @return Page of filtered DTOs
    */
-  Page<R> findAllWithFilters(String sort, String order, Integer start, Integer end,
-                             Map<String, String> filters, Pageable pageable);
-
-  /**
-   * Delete multiple records by IDs
-   *
-   * @param ids List of IDs to delete
-   */
-  void deleteByIds(List<ID> ids);
+  Page<R> findAllWithFilters(
+      String sort,
+      String order,
+      int page,
+      int perPage,
+      Map<String, Object> filters);
 
   /**
    * Find records by filter criteria

@@ -49,13 +49,15 @@ public interface FullAccessService<R extends BaseResponseDto, S extends BaseRequ
    * Deletes the entity identified by the given ID.
    *
    * @param id the identifier of the entity to delete
+   * @return the deleted entity represented as a response DTO
    */
-  void delete(ID id);
+  R delete(ID id);
 
   /**
    * Deletes multiple entities identified by the given iterable of IDs.
    *
    * @param ids the identifiers of the entities to delete
+   * @return a list of IDs of the deleted entities
    */
-  void deleteAll(Iterable<ID> ids);
+  List<ID> deleteByIds(Iterable<ID> ids);
 }

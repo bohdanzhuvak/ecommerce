@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Provides full CRUD operations for admin interface.
  */
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("/api/v1/admin/users")
 @RequiredArgsConstructor
 public class AdminUserController extends AdminBaseController<User, AdminUserRequestDto, AdminUserResponseDto, Long> {
 
