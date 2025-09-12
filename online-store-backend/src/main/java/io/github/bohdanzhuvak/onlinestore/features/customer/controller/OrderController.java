@@ -38,8 +38,8 @@ public class OrderController {
   }
 
   @PutMapping("{id}/cancel")
-  public OrderResponse cancelOrder(@PathVariable Long id) {
-    return orderService.cancelOrder(id);
+  public OrderResponse cancelOrder(@CurrentUser UserPrincipal user, @PathVariable Long id) {
+    return orderService.cancelOrder(id, user.getId());
   }
 
   @PostMapping("{id}/pay")

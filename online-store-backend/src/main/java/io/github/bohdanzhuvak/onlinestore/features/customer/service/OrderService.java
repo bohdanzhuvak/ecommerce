@@ -1,12 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.service;
 
 import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
-import io.github.bohdanzhuvak.onlinestore.common.exception.impl.OrderAlreadyCancelledException;
+import io.github.bohdanzhuvak.onlinestore.domain.factory.OrderFactory;
+import io.github.bohdanzhuvak.onlinestore.domain.model.Cart;
 import io.github.bohdanzhuvak.onlinestore.domain.model.DeliveryAddress;
 import io.github.bohdanzhuvak.onlinestore.domain.model.Order;
-import io.github.bohdanzhuvak.onlinestore.domain.model.OrderItem;
-import io.github.bohdanzhuvak.onlinestore.domain.model.OrderStatus;
 import io.github.bohdanzhuvak.onlinestore.domain.model.User;
+import io.github.bohdanzhuvak.onlinestore.domain.policy.OrderPolicy;
+import io.github.bohdanzhuvak.onlinestore.domain.policy.OrderPolicyRegistry;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.CartRepository;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.DeliveryAddressRepository;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.OrderRepository;
@@ -14,8 +15,6 @@ import io.github.bohdanzhuvak.onlinestore.domain.repository.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.order.CreateOrderRequest;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.order.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.features.customer.mapper.OrderMapper;
-import io.github.bohdanzhuvak.onlinestore.features.customer.model.Cart;
-import io.github.bohdanzhuvak.onlinestore.features.customer.model.CartItem;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,7 @@ public class OrderService {
   private final UserRepository userRepository;
   private final DeliveryAddressRepository deliveryAddressRepository;
   private final BalanceService balanceService;
+  private final OrderPolicyRegistry policyRegistry;
 
   public List<OrderResponse> getOrdersByUser(Long userId) {
     List<Order> orders = orderRepository.findAllByUser_Id(userId);
@@ -50,37 +50,15 @@ public class OrderService {
 
   @Transactional
   public OrderResponse createOrder(Long userId, CreateOrderRequest request) {
-    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-    Cart cart = cartRepository.findByUserId(userId)
-        .orElseThrow(() -> new NotFoundException("Cart not found for user with id: " + userId));
+    User user = findUserById(userId);
+    Cart cart = findCartByUserId(userId);
+    DeliveryAddress address = findDeliveryAddress(request.getDeliveryAddressId(), userId);
 
-    DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(request.getDeliveryAddressId())
-        .orElseThrow(() -> new NotFoundException("Delivery address not found"));
-
-    if (!deliveryAddress.getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied to delivery address");
-    }
-
-    Order order = Order.builder()
-        .user(user)
-        .status(OrderStatus.PENDING)
-        .totalPrice(cart.getTotalPrice())
-        .deliveryAddress(deliveryAddress)
-        .build();
-
-    for (CartItem cartItem : cart.getItems()) {
-      OrderItem orderItem = OrderItem.builder()
-          .product(cartItem.getProduct())
-          .quantity(cartItem.getQuantity())
-          .pricePerUnit(cartItem.getProduct().getPrice())
-          .build();
-
-      order.addItem(orderItem);
-    }
-
+    Order order = OrderFactory.create(user, cart, address);
+    executePolicy("INITIAL", order, userId);
     order = orderRepository.save(order);
 
-    cart.getItems().clear();
+    cart.clear();
     cartRepository.save(cart);
 
     return orderMapper.toResponse(order);
@@ -88,45 +66,56 @@ public class OrderService {
 
   @Transactional
   public OrderResponse payOrder(Long orderId, Long userId) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found with id: " + orderId));
+    Order order = findOrderById(orderId);
 
-    if (order.getStatus() == OrderStatus.PAID) {
-      throw new RuntimeException("Order is already paid");
-    }
-
-    if (order.getStatus() == OrderStatus.CANCELLED) {
-      throw new RuntimeException("Cannot pay cancelled order");
-    }
-
-    if (!order.getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied to order");
-    }
-
-    if (!balanceService.hasSufficientFunds(userId, order.getTotalPrice())) {
-      throw new RuntimeException("Insufficient funds to pay for this order");
-    }
+    executePolicy("PAY", order, userId);
+    order = orderRepository.save(order);
 
     balanceService.purchaseOrder(userId, order, order.getTotalPrice());
-
-    order.setStatus(OrderStatus.PAID);
-    order = orderRepository.save(order);
 
     return orderMapper.toResponse(order);
   }
 
   @Transactional
-  public OrderResponse cancelOrder(Long orderId) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found with id: " + orderId));
+  public OrderResponse cancelOrder(Long orderId, Long userId) {
+    Order order = findOrderById(orderId);
 
-    if (order.getStatus() == OrderStatus.CANCELLED) {
-      throw new OrderAlreadyCancelledException("Order is already cancelled");
-    }
-
-    order.setStatus(OrderStatus.CANCELLED);
+    executePolicy("CANCEL", order, userId);
     order = orderRepository.save(order);
 
     return orderMapper.toResponse(order);
+  }
+
+  private void executePolicy(String policyType, Order order, Long userId) {
+    OrderPolicy policy = policyRegistry.getPolicy(policyType);
+    policy.validate(order, userId);
+    policy.apply(order);
+  }
+
+
+  //Helpers
+  private Order findOrderById(Long orderId) {
+    return orderRepository.findById(orderId)
+        .orElseThrow(() -> new NotFoundException("Order not found with id: " + orderId));
+  }
+
+  private User findUserById(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found"));
+  }
+
+  private Cart findCartByUserId(Long userId) {
+    return cartRepository.findByUserId(userId)
+        .orElseThrow(() -> new NotFoundException("Cart not found for user with id: " + userId));
+  }
+
+  private DeliveryAddress findDeliveryAddress(Long addressId, Long userId) {
+    DeliveryAddress address = deliveryAddressRepository.findById(addressId)
+        .orElseThrow(() -> new NotFoundException("Delivery address not found"));
+
+    if (!address.getUser().getId().equals(userId)) {
+      throw new RuntimeException("Access denied to delivery address");
+    }
+    return address;
   }
 }

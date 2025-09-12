@@ -30,31 +30,31 @@ import java.math.BigDecimal;
 public class BalanceTransaction extends AuditableEntity {
 
   @NotNull(message = "User is required")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @NotNull(message = "Transaction type is required")
-    @Enumerated(EnumType.STRING)
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-    private TransactionType type;
+  private TransactionType type;
 
   @NotNull(message = "Amount is required")
   @Digits(integer = 8, fraction = 2, message = "Amount must have at most 8 integer digits and 2 decimal places")
   @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount;
+  private BigDecimal amount;
 
   @NotNull(message = "Balance after is required")
   @DecimalMin(value = "0.0", message = "Balance after must be non-negative")
   @Digits(integer = 8, fraction = 2, message = "Balance after must have at most 8 integer digits and 2 decimal places")
   @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal balanceAfter;
+  private BigDecimal balanceAfter;
 
   @Size(max = 500, message = "Description must not exceed 500 characters")
   @Column(length = 500)
-    private String description;
+  private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Order order;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id")
+  private Order order;
 }

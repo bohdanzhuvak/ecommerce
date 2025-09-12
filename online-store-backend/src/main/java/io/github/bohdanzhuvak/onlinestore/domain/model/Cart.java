@@ -1,8 +1,5 @@
-package io.github.bohdanzhuvak.onlinestore.features.customer.model;
+package io.github.bohdanzhuvak.onlinestore.domain.model;
 
-import io.github.bohdanzhuvak.onlinestore.domain.model.AuditableEntity;
-import io.github.bohdanzhuvak.onlinestore.domain.model.Product;
-import io.github.bohdanzhuvak.onlinestore.domain.model.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -12,9 +9,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,8 +21,8 @@ import java.util.Optional;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 @Builder
 @Table(name = "carts")
 public class Cart extends AuditableEntity {
@@ -61,6 +58,10 @@ public class Cart extends AuditableEntity {
           }
         }
     );
+  }
+
+  public void clear() {
+    items.clear();
   }
 
   private Optional<CartItem> findItemByProduct(Product product) {

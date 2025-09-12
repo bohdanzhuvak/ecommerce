@@ -1,7 +1,5 @@
-package io.github.bohdanzhuvak.onlinestore.features.customer.model;
+package io.github.bohdanzhuvak.onlinestore.domain.model;
 
-import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
-import io.github.bohdanzhuvak.onlinestore.domain.model.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -11,16 +9,16 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 @Table(name = "cart_items")
 public class CartItem extends BaseEntity {
 

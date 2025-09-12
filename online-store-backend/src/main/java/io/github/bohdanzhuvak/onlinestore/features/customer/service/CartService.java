@@ -1,6 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.service;
 
 import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundException;
+import io.github.bohdanzhuvak.onlinestore.domain.factory.CartFactory;
+import io.github.bohdanzhuvak.onlinestore.domain.model.Cart;
 import io.github.bohdanzhuvak.onlinestore.domain.model.Product;
 import io.github.bohdanzhuvak.onlinestore.domain.model.User;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.CartRepository;
@@ -10,60 +12,67 @@ import io.github.bohdanzhuvak.onlinestore.features.customer.dto.cart.AddToCartRe
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.cart.CartResponse;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.cart.UpdateCartItemRequest;
 import io.github.bohdanzhuvak.onlinestore.features.customer.mapper.CartMapper;
-import io.github.bohdanzhuvak.onlinestore.features.customer.model.Cart;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Service
 @RequiredArgsConstructor
 public class CartService {
+
   private final CartRepository cartRepository;
   private final ProductRepository productRepository;
-  private final CartMapper cartMapper;
   private final UserRepository userRepository;
+  private final CartMapper cartMapper;
 
   public CartResponse getCart(Long userId) {
-    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-    Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> Cart.builder().user(user).items(new ArrayList<>()).build());
-    if (cart.getId() == null) {
-      cart = cartRepository.save(cart);
-    }
-
+    Cart cart = findOrCreateCart(userId);
     return cartMapper.toResponse(cart);
   }
 
   @Transactional
   public CartResponse addToCart(Long userId, AddToCartRequest request) {
-    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-    Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> Cart.builder().user(user).items(new ArrayList<>()).build());
-    Product product = productRepository.findById(request.getProductId())
-        .orElseThrow(() -> new NotFoundException("Product not found"));
+    Cart cart = findOrCreateCart(userId);
+    Product product = findProduct(request.getProductId());
 
     cart.addItem(product, request.getQuantity());
     cartRepository.save(cart);
+
     return cartMapper.toResponse(cart);
   }
 
   @Transactional
   public CartResponse updateCart(Long userId, UpdateCartItemRequest request) {
-    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-    Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> Cart.builder().user(user).build());
-    Product product = productRepository.findById(request.getProductId())
-        .orElseThrow(() -> new NotFoundException("Product not found"));
+    Cart cart = findOrCreateCart(userId);
+    Product product = findProduct(request.getProductId());
 
     cart.updateItem(product, request.getQuantity());
     cartRepository.save(cart);
+
     return cartMapper.toResponse(cart);
   }
 
   @Transactional
   public void clearCart(Long userId) {
-    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-    Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> Cart.builder().user(user).build());
-    cart.getItems().clear();
+    Cart cart = findOrCreateCart(userId);
+    cart.clear();
     cartRepository.save(cart);
+  }
+
+  // ------------------- HELPERS -------------------
+  private User findUser(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+  }
+
+  private Cart findOrCreateCart(Long userId) {
+    User user = findUser(userId);
+    return cartRepository.findByUserId(userId)
+        .orElseGet(() -> cartRepository.save(CartFactory.create(user)));
+  }
+
+  private Product findProduct(Long productId) {
+    return productRepository.findById(productId)
+        .orElseThrow(() -> new NotFoundException("Product not found with id: " + productId));
   }
 }

@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.mapper;
 
+import io.github.bohdanzhuvak.onlinestore.domain.model.CartItem;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.cart.CartItemResponse;
-import io.github.bohdanzhuvak.onlinestore.features.customer.model.CartItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

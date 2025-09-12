@@ -6,39 +6,16 @@ import io.github.bohdanzhuvak.onlinestore.common.exception.impl.NotFoundExceptio
 import io.github.bohdanzhuvak.onlinestore.common.mapper.BaseMapper;
 import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.BaseRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractFullAccessService<T extends BaseEntity, R extends BaseResponseDto, S extends BaseRequestDto, ID> implements FullAccessService<R, S, ID> {
+public abstract class AbstractFullAccessService<T extends BaseEntity, R extends BaseResponseDto, S extends BaseRequestDto, ID> extends AbstractReadOnlyService<T, R, S, ID> implements FullAccessService<R, S, ID> {
 
   protected abstract BaseRepository<T, ID> getRepository();
 
   protected abstract BaseMapper<T, R, S> getMapper();
-
-  @Override
-  @Transactional(readOnly = true)
-  public Page<R> findAll(Pageable pageable) {
-    Page<T> entities = getRepository().findAll(pageable);
-    return getMapper().toResponseDtoPage(entities);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public List<R> findAll() {
-    List<T> entities = getRepository().findAll();
-    return getMapper().toResponseDtoList(entities);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public R findById(ID id) {
-    T entity = getRepository().findById(id).orElseThrow(() -> new NotFoundException("Entity with id " + id + " not found"));
-    return getMapper().toResponseDto(entity);
-  }
 
   @Override
   @Transactional
