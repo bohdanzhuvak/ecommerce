@@ -87,7 +87,8 @@ public abstract class AbstractAdminFullAccessService<E extends BaseEntity, R ext
       return getMapper().toResponseDtoPage(entities);
     }
 
-    Page<E> entities = getRepository().findAll(spec, pageable);
+    // Temporarily cast to JPA repository for specification support
+    Page<E> entities = ((org.springframework.data.jpa.repository.JpaSpecificationExecutor<E>) getRepository()).findAll(spec, pageable);
     return getMapper().toResponseDtoPage(entities);
   }
 

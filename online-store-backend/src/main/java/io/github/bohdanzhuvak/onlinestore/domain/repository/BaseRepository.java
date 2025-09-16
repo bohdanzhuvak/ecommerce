@@ -3,15 +3,15 @@ package io.github.bohdanzhuvak.onlinestore.domain.repository;
 import io.github.bohdanzhuvak.onlinestore.domain.model.BaseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 import java.util.Optional;
 
-@NoRepositoryBean
-public interface BaseRepository<T extends BaseEntity, ID> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
+/**
+ * Base repository interface for all domain entities.
+ * This interface defines the contract for basic CRUD operations without depending on Spring Data JPA.
+ */
+public interface BaseRepository<T extends BaseEntity, ID> {
 
   /**
    * Find all records with pagination
@@ -57,6 +57,11 @@ public interface BaseRepository<T extends BaseEntity, ID> extends JpaRepository<
    * Delete multiple records
    */
   void deleteAll(Iterable<? extends T> entities);
+
+  /**
+   * Delete multiple records by IDs
+   */
+  void deleteAllById(Iterable<? extends ID> ids);
 
   /**
    * Delete all records
