@@ -14,6 +14,4 @@ public interface CartMapper {
   default void setTotalPrice(Cart cart, @MappingTarget CartResponse cartResponse) {
     cartResponse.setTotalPrice(cart.getTotalPrice());
   }
-
-  Cart toCart(CartResponse cartDTO);
 }
