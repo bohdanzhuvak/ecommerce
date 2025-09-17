@@ -7,6 +7,7 @@ import io.github.bohdanzhuvak.onlinestore.catalog.application.admin.UpdateProduc
 import io.github.bohdanzhuvak.onlinestore.catalog.application.customer.GetProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.customer.GetProductsUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.customer.SearchProductsUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.ports.CatalogService;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class ProductApplicationService {
+public class InternalCatalogService implements CatalogService {
   private final GetProductsUseCase getProductsUseCase;
   private final GetProductUseCase getProductUseCase;
   private final SearchProductsUseCase searchProductsUseCase;
@@ -28,13 +29,13 @@ public class ProductApplicationService {
   private final UpdateProductUseCase updateProductUseCase;
   private final DeleteProductUseCase deleteProductUseCase;
 
-  public ProductApplicationService(GetProductsUseCase getProductsUseCase,
-                                   GetProductUseCase getProductUseCase,
-                                   SearchProductsUseCase searchProductsUseCase,
-                                   GetAllProductsUseCase getAllProductsUseCase,
-                                   CreateProductUseCase createProductUseCase,
-                                   UpdateProductUseCase updateProductUseCase,
-                                   DeleteProductUseCase deleteProductUseCase) {
+  public InternalCatalogService(GetProductsUseCase getProductsUseCase,
+                                GetProductUseCase getProductUseCase,
+                                SearchProductsUseCase searchProductsUseCase,
+                                GetAllProductsUseCase getAllProductsUseCase,
+                                CreateProductUseCase createProductUseCase,
+                                UpdateProductUseCase updateProductUseCase,
+                                DeleteProductUseCase deleteProductUseCase) {
     this.getProductsUseCase = getProductsUseCase;
     this.getProductUseCase = getProductUseCase;
     this.searchProductsUseCase = searchProductsUseCase;
@@ -44,7 +45,7 @@ public class ProductApplicationService {
     this.deleteProductUseCase = deleteProductUseCase;
   }
 
-  // Клиентские операции
+  // Customer methods
   public List<Product> getActiveProducts() {
     return getProductsUseCase.execute();
   }
@@ -53,6 +54,7 @@ public class ProductApplicationService {
     return getProductsUseCase.execute(offset, limit);
   }
 
+  @Override
   public Optional<Product> getActiveProduct(ProductId productId) {
     return getProductUseCase.execute(productId);
   }
@@ -73,7 +75,7 @@ public class ProductApplicationService {
     return searchProductsUseCase.searchAvailable();
   }
 
-  // Админские операции
+  // Admin methods
   public List<Product> getAllProducts() {
     return getAllProductsUseCase.execute();
   }

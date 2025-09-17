@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.api.admin;
 
-import io.github.bohdanzhuvak.onlinestore.catalog.application.ProductApplicationService;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.InternalCatalogService;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.admin.CreateProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.admin.UpdateProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
@@ -25,24 +25,24 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductAdminController {
-  private final ProductApplicationService productApplicationService;
+  private final InternalCatalogService internalCatalogService;
 
-  public ProductAdminController(ProductApplicationService productApplicationService) {
-    this.productApplicationService = productApplicationService;
+  public ProductAdminController(InternalCatalogService internalCatalogService) {
+    this.internalCatalogService = internalCatalogService;
   }
 
   @GetMapping
   public ResponseEntity<List<Product>> getAllProducts(
       @RequestParam(defaultValue = "0") int offset,
       @RequestParam(defaultValue = "20") int limit) {
-    List<Product> products = productApplicationService.getAllProducts(offset, limit);
+    List<Product> products = internalCatalogService.getAllProducts(offset, limit);
     return ResponseEntity.ok(products);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<Product> getProduct(@PathVariable String id) {
     ProductId productId = ProductId.of(id);
-    Optional<Product> product = productApplicationService.getProduct(productId);
+    Optional<Product> product = internalCatalogService.getProduct(productId);
     return product.map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
@@ -59,7 +59,7 @@ public class ProductAdminController {
           request.getImages()
       );
 
-      Product product = productApplicationService.createProduct(command);
+      Product product = internalCatalogService.createProduct(command);
       return ResponseEntity.status(HttpStatus.CREATED).body(product);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
@@ -79,7 +79,7 @@ public class ProductAdminController {
           request.getCategoryId() != null ? CategoryId.of(request.getCategoryId()) : null
       );
 
-      Product product = productApplicationService.updateProduct(command);
+      Product product = internalCatalogService.updateProduct(command);
       return ResponseEntity.ok(product);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
@@ -90,7 +90,7 @@ public class ProductAdminController {
   public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
     try {
       ProductId productId = ProductId.of(id);
-      productApplicationService.deleteProduct(productId);
+      internalCatalogService.deleteProduct(productId);
       return ResponseEntity.noContent().build();
     } catch (IllegalArgumentException e) {
       return ResponseEntity.notFound().build();
