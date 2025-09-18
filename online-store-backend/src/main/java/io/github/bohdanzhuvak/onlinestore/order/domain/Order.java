@@ -11,10 +11,10 @@ public class Order {
   private final UserId userId;
   private final List<OrderItem> items;
   private final Money totalPrice;
-  private final OrderStatus status;
+  private OrderStatus status;
   private final String deliveryAddressId;
   private final LocalDateTime createdAt;
-  private final LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 
   // Constructor for creating a new order
   public Order(OrderId id, UserId userId, List<OrderItem> items, String deliveryAddressId) {
@@ -69,32 +69,32 @@ public class Order {
     if (!status.canBePaid()) {
       throw new IllegalStateException("Order cannot be paid in current status: " + status);
     }
-    // In a real implementation, this would update the status and set updatedAt
-    // For now, we'll just validate the state
+    this.status = OrderStatus.PAID;
+    this.updatedAt = LocalDateTime.now();
   }
 
   public void cancel() {
     if (!status.canBeCancelled()) {
       throw new IllegalStateException("Order cannot be cancelled in current status: " + status);
     }
-    // In a real implementation, this would update the status and set updatedAt
-    // For now, we'll just validate the state
+    this.status = OrderStatus.CANCELLED;
+    this.updatedAt = LocalDateTime.now();
   }
 
   public void ship() {
     if (!status.canBeShipped()) {
       throw new IllegalStateException("Order cannot be shipped in current status: " + status);
     }
-    // In a real implementation, this would update the status and set updatedAt
-    // For now, we'll just validate the state
+    this.status = OrderStatus.SHIPPED;
+    this.updatedAt = LocalDateTime.now();
   }
 
   public void deliver() {
     if (!status.canBeDelivered()) {
       throw new IllegalStateException("Order cannot be delivered in current status: " + status);
     }
-    // In a real implementation, this would update the status and set updatedAt
-    // For now, we'll just validate the state
+    this.status = OrderStatus.DELIVERED;
+    this.updatedAt = LocalDateTime.now();
   }
 
   private Money calculateTotalPrice() {

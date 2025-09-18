@@ -30,13 +30,13 @@ public class PayOrderUseCase {
       throw new IllegalArgumentException("Insufficient funds");
     }
 
+    // Deduct balance first
+    balanceService.deductBalance(command.userId().getValue(), order.getTotalPrice().getAmount(),
+        "Order payment: " + order.getId());
+
     // Pay order
     order.pay();
     Order savedOrder = orderRepository.save(order);
-
-    // Deduct balance
-    balanceService.deductBalance(command.userId().getValue(), order.getTotalPrice().getAmount(),
-        "Order payment: " + order.getId());
 
     return savedOrder;
   }

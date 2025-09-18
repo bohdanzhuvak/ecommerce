@@ -25,15 +25,15 @@ public class CancelOrderUseCase {
       throw new IllegalArgumentException("Order does not belong to user");
     }
 
-    // Cancel order
-    order.cancel();
-    Order savedOrder = orderRepository.save(order);
-
     // Refund if order was paid
     if (order.getStatus().isPaid()) {
       balanceService.addBalance(command.userId().getValue(), order.getTotalPrice().getAmount(),
           "Order cancellation refund: " + order.getId());
     }
+
+    // Cancel order
+    order.cancel();
+    Order savedOrder = orderRepository.save(order);
 
     return savedOrder;
   }
