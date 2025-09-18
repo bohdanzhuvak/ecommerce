@@ -18,15 +18,15 @@ The online shop supports:
 
 ## 2. Bounded Contexts / Domains
 
-| Context         | Responsibility                   | Main Use Cases                                                | Domain Events                                                         |
-|-----------------|----------------------------------|---------------------------------------------------------------|-----------------------------------------------------------------------|
-| **Catalog**     | Products, categories, attributes | Client: view, filterAdmin: CRUD                               | ProductCreated, ProductUpdated, ProductDeleted                        |
-| **Cart**        | User cart                        | Add/remove items, calculate total, manage quantities          | CartItemAdded, CartItemRemoved, CartItemUpdated, CartCleared          |
-| **User**        | User management, authentication  | Registration, profile management, role management             | UserCreated, UserUpdated, UserActivated, UserDeactivated              |
-| **Order**       | Order placement, statuses        | Client: CreateOrder, PayOrder, CancelOrderAdmin: UpdateStatus | OrderCreated, OrderPaid, OrderCancelled, OrderShipped, OrderDelivered |
-| **Payment**     | Order payments                   | Pay from balance, card payments                               | FundsDebited, PaymentFailed                                           |
-| **UserAccount** | Users, balance, roles            | Registration, manage balance and roles                        | UserRegistered, BalanceChanged                                        |
-| **Delivery**    | Delivery                         | Create shipment, tracking                                     | ShipmentCreated, ShipmentDelivered                                    |
+| Context         | Responsibility                   | Main Use Cases                                                  | Domain Events                                                         |
+|-----------------|----------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------------|
+| **Catalog**     | Products, categories, attributes | Client: view, filterAdmin: CRUD                                 | ProductCreated, ProductUpdated, ProductDeleted                        |
+| **Cart**        | User cart                        | Add/remove items, calculate total, manage quantities            | CartItemAdded, CartItemRemoved, CartItemUpdated, CartCleared          |
+| **User**        | User management, authentication  | Registration, profile management, role management               | UserCreated, UserUpdated, UserActivated, UserDeactivated              |
+| **Order**       | Order placement, statuses        | Client: CreateOrder, PayOrder, CancelOrderAdmin: UpdateStatus   | OrderCreated, OrderPaid, OrderCancelled, OrderShipped, OrderDelivered |
+| **Balance**     | User balance management          | Client: Deposit, Withdraw, ViewTransactionsAdmin: AdjustBalance | BalanceDeposited, BalanceWithdrawn, InsufficientFunds                 |
+| **UserAccount** | Users, balance, roles            | Registration, manage balance and roles                          | UserRegistered, BalanceChanged                                        |
+| **Delivery**    | Delivery                         | Create shipment, tracking                                       | ShipmentCreated, ShipmentDelivered                                    |
 
 ---
 
@@ -56,6 +56,14 @@ The online shop supports:
 - **Value Objects:** OrderId, UserId, ProductId, Money, OrderItem (productId, productName, unitPrice, quantity)
 - **Enum:** OrderStatus {PENDING, PAID, SHIPPED, DELIVERED, CANCELLED}
 - **Domain Events:** OrderCreated, OrderPaid, OrderCancelled, OrderShipped, OrderDelivered
+
+### Balance
+
+- **Entity:** Balance (userId, amount, lastUpdated), Transaction (id, userId, type, amount, balanceAfter, description,
+  orderId, createdAt)
+- **Value Objects:** UserId, TransactionId, Money
+- **Enum:** TransactionType {DEPOSIT, WITHDRAW, PURCHASE, REFUND, ADMIN_ADJUSTMENT}
+- **Domain Events:** BalanceDeposited, BalanceWithdrawn, InsufficientFunds
 
 ### UserAccount
 
@@ -134,19 +142,22 @@ The online shop supports:
 
 ## 7. API Endpoints and Roles
 
-| Role   | Endpoint                         | Domain        | Method              | Description                  |
-|--------|----------------------------------|---------------|---------------------|------------------------------|
-| Client | /api/customer/products           | Catalog       | GET                 | View products                |
-| Client | /api/customer/cart               | Cart          | GET/POST/DELETE     | Manage cart                  |
-| Client | /api/customer/users              | User          | POST/GET/PUT        | Register, profile management |
-| Client | /api/customer/orders             | Order         | POST/GET            | Create order, get orders     |
-| Client | /api/customer/orders/{id}        | Order         | GET                 | Get order details            |
-| Client | /api/customer/orders/{id}/pay    | Order/Payment | POST                | Pay order                    |
-| Client | /api/customer/orders/{id}/cancel | Order         | PUT                 | Cancel order                 |
-| Admin  | /api/admin/products              | Catalog       | GET/POST/PUT/DELETE | CRUD for react-admin         |
-| Admin  | /api/admin/users                 | User          | GET/POST/PUT        | User management              |
-| Admin  | /api/admin/orders                | Order         | GET/PUT             | Manage orders                |
-| Admin  | /api/admin/user-accounts         | UserAccount   | GET/PUT             | Manage balance and roles     |
+| Role   | Endpoint                           | Domain        | Method              | Description                       |
+|--------|------------------------------------|---------------|---------------------|-----------------------------------|
+| Client | /api/customer/products             | Catalog       | GET                 | View products                     |
+| Client | /api/customer/cart                 | Cart          | GET/POST/DELETE     | Manage cart                       |
+| Client | /api/customer/users                | User          | POST/GET/PUT        | Register, profile management      |
+| Client | /api/customer/orders               | Order         | POST/GET            | Create order, get orders          |
+| Client | /api/customer/orders/{id}          | Order         | GET                 | Get order details                 |
+| Client | /api/customer/orders/{id}/pay      | Order/Payment | POST                | Pay order                         |
+| Client | /api/customer/orders/{id}/cancel   | Order         | PUT                 | Cancel order                      |
+| Client | /api/customer/balance              | Balance       | GET/POST            | Get balance, deposit/withdraw     |
+| Client | /api/customer/balance/transactions | Balance       | GET                 | Get transaction history           |
+| Admin  | /api/admin/products                | Catalog       | GET/POST/PUT/DELETE | CRUD for react-admin              |
+| Admin  | /api/admin/users                   | User          | GET/POST/PUT        | User management                   |
+| Admin  | /api/admin/orders                  | Order         | GET/PUT             | Manage orders                     |
+| Admin  | /api/admin/balance                 | Balance       | POST/GET            | Adjust balance, view transactions |
+| Admin  | /api/admin/user-accounts           | UserAccount   | GET/PUT             | Manage balance and roles          |
 
 ---
 
