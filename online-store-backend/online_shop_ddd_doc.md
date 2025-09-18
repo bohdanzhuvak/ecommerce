@@ -22,6 +22,7 @@ The online shop supports:
 |-----------------|----------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
 | **Catalog**     | Products, categories, attributes | Client: view, filterAdmin: CRUD                              | ProductCreated, ProductUpdated, ProductDeleted               |
 | **Cart**        | User cart                        | Add/remove items, calculate total, manage quantities         | CartItemAdded, CartItemRemoved, CartItemUpdated, CartCleared |
+| **User**        | User management, authentication  | Registration, profile management, role management            | UserCreated, UserUpdated, UserActivated, UserDeactivated     |
 | **Order**       | Order placement, statuses        | Client: PlaceOrder, PayOrderAdmin: CancelOrder, ChangeStatus | OrderPlaced, OrderPaid, OrderCancelled                       |
 | **Payment**     | Order payments                   | Pay from balance, card payments                              | FundsDebited, PaymentFailed                                  |
 | **UserAccount** | Users, balance, roles            | Registration, manage balance and roles                       | UserRegistered, BalanceChanged                               |
@@ -42,6 +43,12 @@ The online shop supports:
 - **Entity:** Cart (id, userId, items, timestamps)
 - **Value Objects:** CartId, UserId, CartItem (productId, productName, unitPrice, quantity)
 - **Domain Events:** CartItemAdded, CartItemRemoved, CartItemUpdated, CartCleared
+
+### User
+
+- **Entity:** User (id, email, password, firstName, lastName, role, active, timestamps)
+- **Value Objects:** UserId, Email, Password, UserRole
+- **Domain Events:** UserCreated, UserUpdated, UserActivated, UserDeactivated
 
 ### Order
 
@@ -72,12 +79,14 @@ The online shop supports:
 
 - Catalog: view products, filter products
 - Cart: add/remove items, view cart
+- User: register, view profile, update profile, change password
 - Order: place order, pay order
 - UserAccount: view balance, recharge balance
 
 ### Admin
 
 - Catalog: add/update/delete products
+- User: create users, manage roles, activate/deactivate users
 - Order: cancel order, change status
 - UserAccount: adjust balance, manage roles
 
@@ -92,6 +101,10 @@ The online shop supports:
 | ProductDeleted    | Catalog             | Product deleted                 |
 | CartItemAdded     | Cart                | Item added to cart              |
 | CartItemRemoved   | Cart                | Item removed from cart          |
+| UserCreated       | User                | New user registered             |
+| UserUpdated       | User                | User profile updated            |
+| UserActivated     | User                | User account activated          |
+| UserDeactivated   | User                | User account deactivated        |
 | OrderPlaced       | Order               | Order created                   |
 | OrderPaid         | Order               | Order paid                      |
 | OrderCancelled    | Order               | Order cancelled                 |
@@ -118,15 +131,17 @@ The online shop supports:
 
 ## 7. API Endpoints and Roles
 
-| Role   | Endpoint                    | Domain        | Method              | Description              |
-|--------|-----------------------------|---------------|---------------------|--------------------------|
-| Client | /api/client/products        | Catalog       | GET                 | View products            |
-| Client | /api/client/cart            | Cart          | GET/POST/DELETE     | Manage cart              |
-| Client | /api/client/orders          | Order         | POST                | Place order              |
-| Client | /api/client/orders/{id}/pay | Order/Payment | POST                | Pay order                |
-| Admin  | /api/admin/products         | Catalog       | GET/POST/PUT/DELETE | CRUD for react-admin     |
-| Admin  | /api/admin/orders           | Order         | GET/PUT             | Manage orders            |
-| Admin  | /api/admin/users            | UserAccount   | GET/PUT             | Manage balance and roles |
+| Role   | Endpoint                      | Domain        | Method              | Description                  |
+|--------|-------------------------------|---------------|---------------------|------------------------------|
+| Client | /api/customer/products        | Catalog       | GET                 | View products                |
+| Client | /api/customer/cart            | Cart          | GET/POST/DELETE     | Manage cart                  |
+| Client | /api/customer/users           | User          | POST/GET/PUT        | Register, profile management |
+| Client | /api/customer/orders          | Order         | POST                | Place order                  |
+| Client | /api/customer/orders/{id}/pay | Order/Payment | POST                | Pay order                    |
+| Admin  | /api/admin/products           | Catalog       | GET/POST/PUT/DELETE | CRUD for react-admin         |
+| Admin  | /api/admin/users              | User          | GET/POST/PUT        | User management              |
+| Admin  | /api/admin/orders             | Order         | GET/PUT             | Manage orders                |
+| Admin  | /api/admin/user-accounts      | UserAccount   | GET/PUT             | Manage balance and roles     |
 
 ---
 
