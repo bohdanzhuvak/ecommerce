@@ -1,7 +1,5 @@
 package io.github.bohdanzhuvak.onlinestore.auth.controller;
 
-import io.github.bohdanzhuvak.onlinestore.auth.CurrentUser;
-import io.github.bohdanzhuvak.onlinestore.auth.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.auth.dto.AuthResponse;
 import io.github.bohdanzhuvak.onlinestore.auth.dto.LoginRequest;
 import io.github.bohdanzhuvak.onlinestore.auth.dto.RegisterRequest;
@@ -10,6 +8,8 @@ import io.github.bohdanzhuvak.onlinestore.auth.service.RefreshTokenService;
 import io.github.bohdanzhuvak.onlinestore.domain.model.Role;
 import io.github.bohdanzhuvak.onlinestore.domain.model.User;
 import io.github.bohdanzhuvak.onlinestore.domain.repository.UserRepository;
+import io.github.bohdanzhuvak.onlinestore.shared.auth.CurrentUser;
+import io.github.bohdanzhuvak.onlinestore.shared.auth.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

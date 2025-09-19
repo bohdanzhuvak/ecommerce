@@ -22,14 +22,21 @@ The online shop supports:
 |--------------|----------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------------|
 | **Catalog**  | Products, categories, attributes | Client: view, filterAdmin: CRUD                                 | ProductCreated, ProductUpdated, ProductDeleted                        |
 | **Cart**     | User cart                        | Add/remove items, calculate total, manage quantities            | CartItemAdded, CartItemRemoved, CartItemUpdated, CartCleared          |
-| **User**     | User management, authentication  | Registration, profile management, role management               | UserCreated, UserUpdated, UserActivated, UserDeactivated              |
+| **User**     | User management, profiles        | Profile management, user information                            | UserCreated, UserUpdated, UserActivated, UserDeactivated              |
 | **Order**    | Order placement, statuses        | Client: CreateOrder, PayOrder, CancelOrderAdmin: UpdateStatus   | OrderCreated, OrderPaid, OrderCancelled, OrderShipped, OrderDelivered |
 | **Balance**  | User balance management          | Client: Deposit, Withdraw, ViewTransactionsAdmin: AdjustBalance | BalanceDeposited, BalanceWithdrawn, InsufficientFunds                 |
 | **Delivery** | Order delivery management        | Client: CreateDelivery, TrackDeliveryAdmin: UpdateStatus        | DeliveryCreated, DeliveryStatusUpdated, DeliveryDelivered             |
 
+## 3. Shared Components
+
+| Component        | Responsibility                   | Usage                              |
+|------------------|----------------------------------|------------------------------------|
+| **Auth**         | Authentication and authorization | Used by all contexts for security  |
+| **ValueObjects** | Shared value objects             | Money, UserId used across contexts |
+
 ---
 
-## 3. Entities and Value Objects
+## 4. Entities and Value Objects
 
 ### Catalog
 
@@ -70,6 +77,20 @@ The online shop supports:
 - **Value Objects:** DeliveryId, OrderId, UserId, DeliveryAddress, TrackingNumber
 - **Enum:** DeliveryStatus {PENDING, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, FAILED, RETURNED}
 - **Domain Events:** DeliveryCreated, DeliveryStatusUpdated, DeliveryDelivered
+
+### Shared Components
+
+#### Auth (Shared)
+
+- **Entity:** User (id, username, email, password, role, timestamps, active)
+- **Value Objects:** UserId, Username, Email, Password, AccessToken, RefreshToken
+- **Enum:** UserRole {USER, ADMIN}
+- **Domain Events:** UserRegistered, UserLoggedIn, UserLoggedOut, UserActivated, UserDeactivated
+
+#### ValueObjects (Shared)
+
+- **Money:** Immutable value object for monetary amounts with currency
+- **UserId:** Immutable value object for user identification
 
 ### Payment
 
@@ -157,11 +178,17 @@ The online shop supports:
 | Client | /api/customer/deliveries                        | Delivery      | POST/GET            | Create delivery, get deliveries   |
 | Client | /api/customer/deliveries/{id}                   | Delivery      | GET                 | Get delivery details              |
 | Client | /api/customer/deliveries/track/{trackingNumber} | Delivery      | GET                 | Track delivery by tracking number |
+| Client | /api/v1/auth/login                              | Shared/Auth   | POST                | User login                        |
+| Client | /api/v1/auth/register                           | Shared/Auth   | POST                | User registration                 |
+| Client | /api/v1/auth/refresh                            | Shared/Auth   | POST                | Refresh access token              |
+| Client | /api/v1/auth/me                                 | Shared/Auth   | GET                 | Get current user info             |
+| Client | /api/v1/auth/logout                             | Shared/Auth   | POST                | User logout                       |
 | Admin  | /api/admin/products                             | Catalog       | GET/POST/PUT/DELETE | CRUD for react-admin              |
 | Admin  | /api/admin/users                                | User          | GET/POST/PUT        | User management                   |
 | Admin  | /api/admin/orders                               | Order         | GET/PUT             | Manage orders                     |
 | Admin  | /api/admin/balance                              | Balance       | POST/GET            | Adjust balance, view transactions |
 | Admin  | /api/admin/deliveries                           | Delivery      | GET/PUT             | Manage deliveries, update status  |
+| Admin  | /api/admin/users                                | Shared/Auth   | GET/POST            | Manage users, activate/deactivate |
 
 ---
 
