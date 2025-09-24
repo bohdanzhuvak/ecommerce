@@ -1,10 +1,10 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.controller;
 
-import io.github.bohdanzhuvak.onlinestore.auth.CurrentUser;
-import io.github.bohdanzhuvak.onlinestore.auth.UserPrincipal;
+import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.balance.BalanceResponse;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.balance.DepositRequest;
 import io.github.bohdanzhuvak.onlinestore.features.customer.service.BalanceService;
+import io.github.bohdanzhuvak.onlinestore.shared.security.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +25,14 @@ public class BalanceController {
 
   @GetMapping
   public ResponseEntity<BalanceResponse> getUserBalance(@CurrentUser UserPrincipal user) {
-    BalanceResponse response = balanceService.getUserBalance(user.getId());
+    BalanceResponse response = balanceService.getUserBalance(user.id());
     return ResponseEntity.ok(response);
   }
 
   @PostMapping("/deposit")
   public ResponseEntity<Void> deposit(@CurrentUser UserPrincipal user,
                                       @Valid @RequestBody DepositRequest request) {
-    balanceService.deposit(user.getId(), request);
+    balanceService.deposit(user.id(), request);
     return ResponseEntity.ok().build();
   }
 }

@@ -1,10 +1,10 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.controller;
 
-import io.github.bohdanzhuvak.onlinestore.auth.CurrentUser;
-import io.github.bohdanzhuvak.onlinestore.auth.UserPrincipal;
+import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.order.CreateOrderRequest;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.order.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.features.customer.service.OrderService;
+import io.github.bohdanzhuvak.onlinestore.shared.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,26 +24,26 @@ public class OrderController {
 
   @GetMapping
   public List<OrderResponse> getOrders(@CurrentUser UserPrincipal user) {
-    return orderService.getOrdersByUser(user.getId());
+    return orderService.getOrdersByUser(user.id());
   }
 
   @GetMapping("{id}")
   public OrderResponse getOrder(@PathVariable Long id, @CurrentUser UserPrincipal user) {
-    return orderService.getOrderById(id, user.getId());
+    return orderService.getOrderById(id, user.id());
   }
 
   @PostMapping
   public OrderResponse createOrderFromCart(@CurrentUser UserPrincipal user, @RequestBody CreateOrderRequest request) {
-    return orderService.createOrder(user.getId(), request);
+    return orderService.createOrder(user.id(), request);
   }
 
   @PutMapping("{id}/cancel")
   public OrderResponse cancelOrder(@CurrentUser UserPrincipal user, @PathVariable Long id) {
-    return orderService.cancelOrder(id, user.getId());
+    return orderService.cancelOrder(id, user.id());
   }
 
   @PostMapping("{id}/pay")
   public OrderResponse payOrder(@PathVariable Long id, @CurrentUser UserPrincipal user) {
-    return orderService.payOrder(id, user.getId());
+    return orderService.payOrder(id, user.id());
   }
 }

@@ -1,25 +1,19 @@
 package io.github.bohdanzhuvak.onlinestore.auth.domain;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class User {
   private final UserId id;
-  private final Username username;
   private final Email email;
   private final Password password;
   private final UserRole role;
-  private final LocalDateTime createdAt;
-  private final LocalDateTime updatedAt;
   private boolean active;
+  private String firstName;
+  private String lastName;
 
-  private User(UserId id, Username username, Email email, Password password, UserRole role,
-               LocalDateTime createdAt, LocalDateTime updatedAt, boolean active) {
+  private User(UserId id, Email email, Password password, UserRole role, String firstName, String lastName, boolean active) {
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
-    }
-    if (username == null) {
-      throw new IllegalArgumentException("Username cannot be null");
     }
     if (email == null) {
       throw new IllegalArgumentException("Email cannot be null");
@@ -30,41 +24,35 @@ public class User {
     if (role == null) {
       throw new IllegalArgumentException("Role cannot be null");
     }
-    if (createdAt == null) {
-      throw new IllegalArgumentException("Created at cannot be null");
+    if (firstName == null) {
+      throw new IllegalArgumentException("First name cannot be null");
     }
-    if (updatedAt == null) {
-      throw new IllegalArgumentException("Updated at cannot be null");
+    if (lastName == null) {
+      throw new IllegalArgumentException("Last name cannot be null");
     }
 
     this.id = id;
-    this.username = username;
     this.email = email;
     this.password = password;
     this.role = role;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
     this.active = active;
   }
 
-  public static User create(Username username, Email email, Password password, UserRole role) {
-    LocalDateTime now = LocalDateTime.now();
+  public static User create(Email email, Password password, UserRole role, String firstName, String lastName) {
     return new User(
         UserId.generate(),
-        username,
         email,
         password,
         role,
-        now,
-        now,
+        firstName,
+        lastName,
         true
     );
   }
 
-  public static User restore(UserId id, Username username, Email email, Password password,
-                             UserRole role, LocalDateTime createdAt, LocalDateTime updatedAt,
-                             boolean active) {
-    return new User(id, username, email, password, role, createdAt, updatedAt, active);
+  public static User restore(UserId id, Email email, Password password,
+                             UserRole role, String firstName, String lastName, boolean active) {
+    return new User(id, email, password, role, firstName, lastName, active);
   }
 
   // Business methods
@@ -121,10 +109,6 @@ public class User {
     return id;
   }
 
-  public Username getUsername() {
-    return username;
-  }
-
   public Email getEmail() {
     return email;
   }
@@ -135,14 +119,6 @@ public class User {
 
   public UserRole getRole() {
     return role;
-  }
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
   }
 
   @Override
@@ -162,7 +138,6 @@ public class User {
   public String toString() {
     return "User{" +
         "id=" + id +
-        ", username=" + username +
         ", email=" + email +
         ", role=" + role +
         ", active=" + active +

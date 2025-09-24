@@ -70,7 +70,7 @@ Follows Domain-Driven Design (DDD) principles with clear layer separation:
 
 ```java
 // Product info is loaded from catalog service
-ProductInfo productInfo = catalogService.getProductInfo(productId);
+ProductInfo productInfo = productInfoPort.getProductInfo(productId);
 cart.
 
 addItem(productId, productInfo, quantity);

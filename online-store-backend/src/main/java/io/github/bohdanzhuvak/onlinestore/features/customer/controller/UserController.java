@@ -1,10 +1,10 @@
 package io.github.bohdanzhuvak.onlinestore.features.customer.controller;
 
-import io.github.bohdanzhuvak.onlinestore.auth.CurrentUser;
-import io.github.bohdanzhuvak.onlinestore.auth.UserPrincipal;
+import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.UserPrincipal;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.user.UpdateUserRequest;
 import io.github.bohdanzhuvak.onlinestore.features.customer.dto.user.UserResponse;
 import io.github.bohdanzhuvak.onlinestore.features.customer.service.UserService;
+import io.github.bohdanzhuvak.onlinestore.shared.security.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,16 +22,16 @@ public class UserController {
 
   @GetMapping
   public UserResponse getCurrentUser(@CurrentUser UserPrincipal user) {
-    return userService.getUser(user.getId());
+    return userService.getUser(user.id());
   }
 
   @PutMapping
   public UserResponse updateCurrentUser(@CurrentUser UserPrincipal user, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-    return userService.updateUser(user.getId(), updateUserRequest);
+    return userService.updateUser(user.id(), updateUserRequest);
   }
 
   @DeleteMapping
   public void deleteCurrentUser(@CurrentUser UserPrincipal user) {
-    userService.deleteUser(user.getId());
+    userService.deleteUser(user.id());
   }
 }

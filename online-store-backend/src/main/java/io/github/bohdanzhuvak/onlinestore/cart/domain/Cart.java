@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.cart.domain;
 
-import io.github.bohdanzhuvak.onlinestore.cart.application.ports.CatalogService;
+import io.github.bohdanzhuvak.onlinestore.cart.application.ports.ProductInfoPort;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class Cart {
   }
 
   // Business methods
-  public void addItem(ProductId productId, CatalogService.ProductInfo productInfo, int quantity) {
+  public void addItem(ProductId productId, ProductInfoPort.ProductInfo productInfo, int quantity) {
     if (productId == null) {
       throw new IllegalArgumentException("Product ID cannot be null");
     }

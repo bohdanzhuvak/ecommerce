@@ -29,10 +29,8 @@ public class Password {
     return hashedValue;
   }
 
-  public boolean matches(String plainText) {
-    // In real implementation, this would compare hashed values
-    // For now, we'll do simple string comparison (NOT RECOMMENDED FOR PRODUCTION)
-    return hashedValue.equals(plainText);
+  public boolean matches(Password password) {
+    return hashedValue.equals(password.hashedValue);
   }
 
   @Override

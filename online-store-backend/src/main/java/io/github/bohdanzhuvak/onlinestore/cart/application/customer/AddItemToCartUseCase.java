@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.cart.application.customer;
 
-import io.github.bohdanzhuvak.onlinestore.cart.application.ports.CatalogService;
+import io.github.bohdanzhuvak.onlinestore.cart.application.ports.ProductInfoPort;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.Cart;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.CartId;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.CartRepository;
@@ -11,17 +11,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class AddItemToCartUseCase {
   private final CartRepository cartRepository;
-  private final CatalogService catalogService;
+  private final ProductInfoPort productInfoPort;
 
-  public AddItemToCartUseCase(CartRepository cartRepository, CatalogService catalogService) {
+  public AddItemToCartUseCase(CartRepository cartRepository, ProductInfoPort productInfoPort) {
     this.cartRepository = cartRepository;
-    this.catalogService = catalogService;
+    this.productInfoPort = productInfoPort;
   }
 
   public Cart execute(AddItemToCartCommand command) {
     // Get product information from catalog
-    CatalogService.ProductInfo productInfo = catalogService.getProductInfo(command.productId())
-        .orElseThrow(() -> new IllegalArgumentException("Product not found: " + command.productId()));
+    ProductInfoPort.ProductInfo productInfo = productInfoPort.getProductInfo(command.productId());
 
     // Find existing cart or create new one
     Cart cart = cartRepository.findByUserId(command.userId())

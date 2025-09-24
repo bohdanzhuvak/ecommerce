@@ -1,8 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.api.admin;
 
-import io.github.bohdanzhuvak.onlinestore.catalog.application.InternalCatalogService;
-import io.github.bohdanzhuvak.onlinestore.catalog.application.admin.CreateProductUseCase;
-import io.github.bohdanzhuvak.onlinestore.catalog.application.admin.UpdateProductUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.services.CatalogApplicationService;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateProductUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.UpdateProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
@@ -25,9 +25,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductAdminController {
-  private final InternalCatalogService internalCatalogService;
+  private final CatalogApplicationService internalCatalogService;
 
-  public ProductAdminController(InternalCatalogService internalCatalogService) {
+  public ProductAdminController(CatalogApplicationService internalCatalogService) {
     this.internalCatalogService = internalCatalogService;
   }
 

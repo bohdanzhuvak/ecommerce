@@ -3,7 +3,10 @@ package io.github.bohdanzhuvak.onlinestore.auth.domain;
 import java.time.Instant;
 import java.util.Objects;
 
-public class AccessToken {
+/**
+ * Value Object representing an access token
+ */
+public final class AccessToken {
   private final String value;
   private final Instant expiresAt;
 

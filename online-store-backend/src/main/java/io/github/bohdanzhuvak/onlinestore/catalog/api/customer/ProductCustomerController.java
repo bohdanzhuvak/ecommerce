@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.catalog.application.InternalCatalogService;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.services.CatalogApplicationService;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customer/products")
 public class ProductCustomerController {
-  private final InternalCatalogService internalCatalogService;
+  private final CatalogApplicationService internalCatalogService;
 
-  public ProductCustomerController(InternalCatalogService internalCatalogService) {
+  public ProductCustomerController(CatalogApplicationService internalCatalogService) {
     this.internalCatalogService = internalCatalogService;
   }
 
@@ -35,9 +34,8 @@ public class ProductCustomerController {
   @GetMapping("/{id}")
   public ResponseEntity<Product> getProduct(@PathVariable String id) {
     ProductId productId = ProductId.of(id);
-    Optional<Product> product = internalCatalogService.getActiveProduct(productId);
-    return product.map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    Product product = internalCatalogService.getActiveProduct(productId);
+    return ResponseEntity.ok(product);
   }
 
   @GetMapping("/search")

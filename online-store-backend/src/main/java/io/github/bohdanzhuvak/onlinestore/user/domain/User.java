@@ -173,4 +173,8 @@ public class User {
         ", active=" + active +
         '}';
   }
+
+  public boolean isPasswordValid(Password password) {
+    return this.password.equals(password);
+  }
 }
