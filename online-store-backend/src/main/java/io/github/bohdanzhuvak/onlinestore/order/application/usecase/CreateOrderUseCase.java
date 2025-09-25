@@ -1,9 +1,11 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.usecase;
 
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.CartPort;
-import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.DeliveryPort;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.OrderRepository;
-import io.github.bohdanzhuvak.onlinestore.order.domain.Money;
+import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.UserPort;
+import io.github.bohdanzhuvak.onlinestore.order.domain.CartItemSnapshot;
+import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressId;
+import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressSnapshot;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderItem;
@@ -15,24 +17,22 @@ import java.util.List;
 public class CreateOrderUseCase {
   private final OrderRepository orderRepository;
   private final CartPort cartPort;
-  private final DeliveryPort deliveryPort;
+  private final UserPort userPort;
 
   public CreateOrderUseCase(OrderRepository orderRepository,
                             CartPort cartPort,
-                            DeliveryPort deliveryPort) {
+                            UserPort userPort) {
     this.orderRepository = orderRepository;
     this.cartPort = cartPort;
-    this.deliveryPort = deliveryPort;
+    this.userPort = userPort;
   }
 
   public Order execute(CreateOrderCommand command) {
     // Validate delivery address exists and belongs to user
-    if (!deliveryPort.existsAndBelongsToUser(command.deliveryAddressId(), command.userId().getValue())) {
-      throw new IllegalArgumentException("Delivery address not found or does not belong to user");
-    }
+    DeliveryAddressSnapshot deliveryAddressSnapshot = userPort.getDeliveryAddressById(command.userId(), command.deliveryAddressId());
 
     // Get cart items
-    List<CartPort.CartItem> cartItems = cartPort.getCartItems(command.userId().getValue());
+    List<CartItemSnapshot> cartItems = cartPort.getCartItems(command.userId());
     if (cartItems.isEmpty()) {
       throw new IllegalArgumentException("Cart is empty");
     }
@@ -47,30 +47,30 @@ public class CreateOrderUseCase {
         OrderId.generate(),
         command.userId(),
         orderItems,
-        command.deliveryAddressId()
+        deliveryAddressSnapshot
     );
 
     // Save order
     Order savedOrder = orderRepository.save(order);
 
     // Clear cart
-    cartPort.clearCart(command.userId().getValue());
+    cartPort.clearCart(command.userId());
 
     return savedOrder;
   }
 
-  private OrderItem toOrderItem(CartPort.CartItem cartItem) {
+  private OrderItem toOrderItem(CartItemSnapshot cartItem) {
     return new OrderItem(
-        ProductId.of(cartItem.productId()),
-        cartItem.productName(),
-        Money.of(cartItem.unitPriceAmount(), cartItem.unitPriceCurrency()),
-        cartItem.quantity()
+        ProductId.of(cartItem.getProductId()),
+        cartItem.getProductName(),
+        cartItem.getPricePerUnit(),
+        cartItem.getQuantity()
     );
   }
 
   public record CreateOrderCommand(
       UserId userId,
-      String deliveryAddressId
+      DeliveryAddressId deliveryAddressId
   ) {
   }
 }

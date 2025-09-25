@@ -3,6 +3,8 @@ package io.github.bohdanzhuvak.onlinestore.order.infrastructure.persistence;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,8 +36,8 @@ public class OrderEntity {
   @Column(nullable = false, length = 20)
   private OrderStatus status;
 
-  @Column(nullable = false)
-  private String deliveryAddressId;
+  @Embedded
+  private DeliveryAddressSnapshotEmbeddable deliveryAddressSnapshot;
 
   @Column(nullable = false)
   private LocalDateTime createdAt;
@@ -52,14 +54,14 @@ public class OrderEntity {
 
   // Constructor for creating new entity
   public OrderEntity(String id, String userId, BigDecimal totalPriceAmount, String totalPriceCurrency,
-                     OrderStatus status, String deliveryAddressId,
+                     OrderStatus status, DeliveryAddressSnapshotEmbeddable deliveryAddressSnapshot,
                      LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.userId = userId;
     this.totalPriceAmount = totalPriceAmount;
     this.totalPriceCurrency = totalPriceCurrency;
     this.status = status;
-    this.deliveryAddressId = deliveryAddressId;
+    this.deliveryAddressSnapshot = deliveryAddressSnapshot;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -105,12 +107,12 @@ public class OrderEntity {
     this.status = status;
   }
 
-  public String getDeliveryAddressId() {
-    return deliveryAddressId;
+  public DeliveryAddressSnapshotEmbeddable getDeliveryAddressSnapshot() {
+    return deliveryAddressSnapshot;
   }
 
-  public void setDeliveryAddressId(String deliveryAddressId) {
-    this.deliveryAddressId = deliveryAddressId;
+  public void setDeliveryAddressSnapshot(DeliveryAddressSnapshotEmbeddable deliveryAddressSnapshot) {
+    this.deliveryAddressSnapshot = deliveryAddressSnapshot;
   }
 
   public LocalDateTime getCreatedAt() {
@@ -135,5 +137,73 @@ public class OrderEntity {
 
   public void setItems(List<OrderItemEntity> items) {
     this.items = items;
+  }
+
+  @Embeddable
+  public class DeliveryAddressSnapshotEmbeddable {
+
+    @Column(nullable = false)
+    private String id;
+
+    @Column(nullable = false)
+    private String street;
+
+    @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
+    private String state;
+
+    @Column(nullable = false)
+    private String postalCode;
+
+    @Column(nullable = false)
+    private String country;
+
+    @Column(nullable = false)
+    private String recipientName;
+
+    protected DeliveryAddressSnapshotEmbeddable() {
+    }
+
+    public DeliveryAddressSnapshotEmbeddable(String id, String street, String city,
+                                             String state, String postalCode,
+                                             String country, String recipientName) {
+      this.id = id;
+      this.street = street;
+      this.city = city;
+      this.state = state;
+      this.postalCode = postalCode;
+      this.country = country;
+      this.recipientName = recipientName;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public String getStreet() {
+      return street;
+    }
+
+    public String getCity() {
+      return city;
+    }
+
+    public String getState() {
+      return state;
+    }
+
+    public String getPostalCode() {
+      return postalCode;
+    }
+
+    public String getCountry() {
+      return country;
+    }
+
+    public String getRecipientName() {
+      return recipientName;
+    }
   }
 }

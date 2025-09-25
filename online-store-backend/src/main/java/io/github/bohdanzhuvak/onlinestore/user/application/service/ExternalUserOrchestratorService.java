@@ -2,9 +2,12 @@ package io.github.bohdanzhuvak.onlinestore.user.application.service;
 
 import io.github.bohdanzhuvak.onlinestore.user.application.port.in.ExternalUserOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByEmailUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByIdUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ValidateCredentialsUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddress;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
@@ -15,12 +18,20 @@ import org.springframework.stereotype.Service;
 public class ExternalUserOrchestratorService implements ExternalUserOrchestrator {
   private final CreateUserUseCase createUserUseCase;
   private final ValidateCredentialsUseCase validateCredentialsUseCase;
-  GetUserProfileByEmailUseCase getUserProfileByEmailUseCase;
-  GetUserProfileByIdUseCase getUserProfileByIdUseCase;
+  private final GetUserProfileByEmailUseCase getUserProfileByEmailUseCase;
+  private final GetUserProfileByIdUseCase getUserProfileByIdUseCase;
+  private final GetDeliveryAddressUseCase getDeliveryAddressUseCase;
 
-  public ExternalUserOrchestratorService(CreateUserUseCase createUserUseCase, ValidateCredentialsUseCase validateCredentialsUseCase) {
+  public ExternalUserOrchestratorService(CreateUserUseCase createUserUseCase,
+                                         ValidateCredentialsUseCase validateCredentialsUseCase,
+                                         GetUserProfileByEmailUseCase getUserProfileByEmailUseCase,
+                                         GetUserProfileByIdUseCase getUserProfileByIdUseCase,
+                                         GetDeliveryAddressUseCase getDeliveryAddressUseCase) {
     this.createUserUseCase = createUserUseCase;
     this.validateCredentialsUseCase = validateCredentialsUseCase;
+    this.getUserProfileByEmailUseCase = getUserProfileByEmailUseCase;
+    this.getUserProfileByIdUseCase = getUserProfileByIdUseCase;
+    this.getDeliveryAddressUseCase = getDeliveryAddressUseCase;
   }
 
   @Override
@@ -46,6 +57,12 @@ public class ExternalUserOrchestratorService implements ExternalUserOrchestrator
   @Override
   public boolean validateCredentials(Email email, Password password) {
     return validateCredentialsUseCase.execute(email, password);
+  }
+
+  @Override
+  public DeliveryAddress getDeliveryAddressById(UserId userId, DeliveryAddressId addressId) {
+    GetDeliveryAddressUseCase.GetDeliveryAddressCommand command = new GetDeliveryAddressUseCase.GetDeliveryAddressCommand(userId, addressId);
+    return getDeliveryAddressUseCase.execute(command);
   }
 
   private UserInfo toUserInfo(User user) {

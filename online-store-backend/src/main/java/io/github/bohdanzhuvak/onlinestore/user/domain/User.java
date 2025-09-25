@@ -1,6 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.user.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -9,6 +10,8 @@ public class User {
   private final Password password;
   private final String firstName;
   private final String lastName;
+  private List<DeliveryAddress> addresses;
+  private DeliveryAddressId defaultAddressId;
   private final UserRole role;
   private final boolean active;
   private final LocalDateTime createdAt;
@@ -98,6 +101,39 @@ public class User {
       // In a real implementation, this would set active to false and update updatedAt
       // For now, we'll just validate the state
     }
+  }
+
+  public void addAddress(DeliveryAddress address) {
+    if (address == null) {
+      throw new IllegalArgumentException("Address cannot be null");
+    }
+    addresses.add(address);
+  }
+
+  public void removeAddress(DeliveryAddressId id) {
+    if (id == null) {
+      throw new IllegalArgumentException("Address ID cannot be null");
+    }
+    addresses.removeIf(address -> address.id().equals(id));
+  }
+
+  public void setDefaultAddress(DeliveryAddressId id) {
+    if (id == null) {
+      throw new IllegalArgumentException("Address ID cannot be null");
+    }
+    boolean found = addresses.stream().anyMatch(address -> address.id().equals(id));
+    if (!found) {
+      throw new IllegalArgumentException("Address ID not found in user's addresses");
+    }
+    defaultAddressId = id;
+  }
+
+  public List<DeliveryAddress> getAddresses() {
+    return List.copyOf(addresses);
+  }
+
+  public DeliveryAddressId getDefaultAddressId() {
+    return defaultAddressId;
   }
 
   public boolean isActive() {

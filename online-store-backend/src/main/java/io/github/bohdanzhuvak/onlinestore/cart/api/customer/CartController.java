@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.cart.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.cart.application.CartApplicationService;
+import io.github.bohdanzhuvak.onlinestore.cart.application.port.in.WebCartOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.Cart;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.ProductId;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.UserId;
@@ -20,16 +20,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/customer/cart")
 public class CartController {
-  private final CartApplicationService cartApplicationService;
+  private final WebCartOrchestrator webCartOrchestrator;
 
-  public CartController(CartApplicationService cartApplicationService) {
-    this.cartApplicationService = cartApplicationService;
+  public CartController(WebCartOrchestrator webCartOrchestrator) {
+    this.webCartOrchestrator = webCartOrchestrator;
   }
 
   @GetMapping
   public ResponseEntity<Cart> getCart(@RequestParam String userId) {
     UserId userIdObj = UserId.of(userId);
-    Optional<Cart> cart = cartApplicationService.getCart(userIdObj);
+    Optional<Cart> cart = webCartOrchestrator.getCart(userIdObj);
     return cart.map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
@@ -37,7 +37,7 @@ public class CartController {
   @PostMapping("/items")
   public ResponseEntity<Cart> addItem(@RequestBody AddItemRequest request) {
     try {
-      Cart cart = cartApplicationService.addItemToCart(
+      Cart cart = webCartOrchestrator.addItemToCart(
           UserId.of(request.getUserId()),
           ProductId.of(request.getProductId()),
           request.getQuantity()
@@ -52,7 +52,7 @@ public class CartController {
   public ResponseEntity<Cart> updateItem(@PathVariable String productId,
                                          @RequestBody UpdateItemRequest request) {
     try {
-      Cart cart = cartApplicationService.updateCartItem(
+      Cart cart = webCartOrchestrator.updateCartItem(
           UserId.of(request.getUserId()),
           ProductId.of(productId),
           request.getQuantity()
@@ -67,7 +67,7 @@ public class CartController {
   public ResponseEntity<Cart> removeItem(@PathVariable String productId,
                                          @RequestParam String userId) {
     try {
-      Cart cart = cartApplicationService.removeItemFromCart(
+      Cart cart = webCartOrchestrator.removeItemFromCart(
           UserId.of(userId),
           ProductId.of(productId)
       );
@@ -80,7 +80,7 @@ public class CartController {
   @DeleteMapping
   public ResponseEntity<Cart> clearCart(@RequestParam String userId) {
     try {
-      Cart cart = cartApplicationService.clearCart(UserId.of(userId));
+      Cart cart = webCartOrchestrator.clearCart(UserId.of(userId));
       return ResponseEntity.ok(cart);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();

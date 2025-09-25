@@ -1,6 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.port.in;
 
 
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddress;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
@@ -51,6 +53,8 @@ public interface ExternalUserOrchestrator {
    * @return true if credentials are valid, false otherwise
    */
   boolean validateCredentials(Email email, Password password);
+
+  DeliveryAddress getDeliveryAddressById(UserId userId, DeliveryAddressId addressId);
 
   record UserInfo(
       UserId id,

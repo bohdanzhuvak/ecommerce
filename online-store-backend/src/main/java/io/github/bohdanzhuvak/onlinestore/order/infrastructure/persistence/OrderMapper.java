@@ -1,5 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.order.infrastructure.persistence;
 
+import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressId;
+import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressSnapshot;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
@@ -19,13 +21,15 @@ public class OrderMapper {
         .map(this::toDomainOrderItem)
         .collect(Collectors.toList());
 
+    DeliveryAddressSnapshot deliveryAddressSnapshot = toDomainDeliveryAddressSnapshot(entity.getDeliveryAddressSnapshot());
+
     return Order.restore(
         OrderId.of(entity.getId()),
         UserId.of(entity.getUserId()),
         orderItems,
         Money.of(entity.getTotalPriceAmount(), entity.getTotalPriceCurrency()),
         entity.getStatus(),
-        entity.getDeliveryAddressId(),
+        deliveryAddressSnapshot,
         entity.getCreatedAt(),
         entity.getUpdatedAt()
     );
@@ -38,10 +42,20 @@ public class OrderMapper {
         order.getTotalPrice().getAmount(),
         order.getTotalPrice().getCurrency(),
         order.getStatus(),
-        order.getDeliveryAddressId(),
+        null,
         order.getCreatedAt(),
         order.getUpdatedAt()
     );
+
+    entity.setDeliveryAddressSnapshot(entity.new DeliveryAddressSnapshotEmbeddable(
+        order.getDeliveryAddressSnapshot().id().getValue(),
+        order.getDeliveryAddressSnapshot().street(),
+        order.getDeliveryAddressSnapshot().city(),
+        order.getDeliveryAddressSnapshot().state(),
+        order.getDeliveryAddressSnapshot().postalCode(),
+        order.getDeliveryAddressSnapshot().country(),
+        order.getDeliveryAddressSnapshot().recipientName()
+    ));
 
     List<OrderItemEntity> orderItemEntities = order.getItems().stream()
         .map(item -> toEntityOrderItem(item, entity))
@@ -49,6 +63,21 @@ public class OrderMapper {
     entity.setItems(orderItemEntities);
 
     return entity;
+  }
+
+  public DeliveryAddressSnapshot toDomainDeliveryAddressSnapshot(OrderEntity.DeliveryAddressSnapshotEmbeddable entity) {
+    if (entity == null) {
+      return null;
+    }
+    return new DeliveryAddressSnapshot(
+        DeliveryAddressId.of(entity.getId()),
+        entity.getCountry(),
+        entity.getCity(),
+        entity.getStreet(),
+        entity.getPostalCode(),
+        entity.getState(),
+        entity.getRecipientName()
+    );
   }
 
   public List<Order> toDomainList(List<OrderEntity> entities) {

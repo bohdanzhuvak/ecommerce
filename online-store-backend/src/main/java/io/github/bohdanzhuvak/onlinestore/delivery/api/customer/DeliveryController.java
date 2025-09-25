@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.delivery.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.delivery.application.DeliveryApplicationService;
+import io.github.bohdanzhuvak.onlinestore.delivery.application.port.in.WebDeliveryOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.Delivery;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryAddress;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryId;
@@ -22,10 +22,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/customer/deliveries")
 public class DeliveryController {
-  private final DeliveryApplicationService deliveryApplicationService;
+  private final WebDeliveryOrchestrator webDeliveryOrchestrator;
 
-  public DeliveryController(DeliveryApplicationService deliveryApplicationService) {
-    this.deliveryApplicationService = deliveryApplicationService;
+  public DeliveryController(WebDeliveryOrchestrator webDeliveryOrchestrator) {
+    this.webDeliveryOrchestrator = webDeliveryOrchestrator;
   }
 
   @PostMapping
@@ -41,7 +41,7 @@ public class DeliveryController {
           request.getPhoneNumber()
       );
 
-      Delivery delivery = deliveryApplicationService.createDelivery(
+      Delivery delivery = webDeliveryOrchestrator.createDelivery(
           OrderId.of(request.getOrderId()),
           UserId.of(request.getUserId()),
           address
@@ -54,7 +54,7 @@ public class DeliveryController {
 
   @GetMapping("/{deliveryId}")
   public ResponseEntity<Delivery> getDelivery(@PathVariable String deliveryId, @RequestParam String userId) {
-    Optional<Delivery> delivery = deliveryApplicationService.getDelivery(
+    Optional<Delivery> delivery = webDeliveryOrchestrator.getDelivery(
         DeliveryId.of(deliveryId), UserId.of(userId));
     return delivery.map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -64,14 +64,14 @@ public class DeliveryController {
   public ResponseEntity<List<Delivery>> getDeliveries(@RequestParam String userId,
                                                       @RequestParam(defaultValue = "0") int offset,
                                                       @RequestParam(defaultValue = "20") int limit) {
-    List<Delivery> deliveries = deliveryApplicationService.getDeliveries(
+    List<Delivery> deliveries = webDeliveryOrchestrator.getDeliveries(
         UserId.of(userId), offset, limit);
     return ResponseEntity.ok(deliveries);
   }
 
   @GetMapping("/track/{trackingNumber}")
   public ResponseEntity<Delivery> trackDelivery(@PathVariable String trackingNumber, @RequestParam String userId) {
-    Optional<Delivery> delivery = deliveryApplicationService.trackDelivery(
+    Optional<Delivery> delivery = webDeliveryOrchestrator.trackDelivery(
         TrackingNumber.of(trackingNumber), UserId.of(userId));
     return delivery.map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());

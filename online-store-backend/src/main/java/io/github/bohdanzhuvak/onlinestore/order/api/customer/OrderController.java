@@ -1,6 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.order.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.order.application.service.WebOrderOrchestratorService;
+import io.github.bohdanzhuvak.onlinestore.order.application.ports.in.WebOrderOrchestrator;
+import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.UserId;
@@ -20,18 +21,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/customer/orders")
 public class OrderController {
-  private final WebOrderOrchestratorService webOrderOrchestratorService;
+  private final WebOrderOrchestrator webOrderOrchestrator;
 
-  public OrderController(WebOrderOrchestratorService webOrderOrchestratorService) {
-    this.webOrderOrchestratorService = webOrderOrchestratorService;
+  public OrderController(WebOrderOrchestrator webOrderOrchestrator) {
+    this.webOrderOrchestrator = webOrderOrchestrator;
   }
 
   @PostMapping
   public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
     try {
-      Order order = webOrderOrchestratorService.createOrder(
+      Order order = webOrderOrchestrator.createOrder(
           UserId.of(request.getUserId()),
-          request.getDeliveryAddressId()
+          DeliveryAddressId.of(request.getDeliveryAddressId())
       );
       return ResponseEntity.ok(order);
     } catch (IllegalArgumentException e) {
@@ -41,13 +42,13 @@ public class OrderController {
 
   @GetMapping
   public ResponseEntity<List<Order>> getOrders(@RequestParam String userId) {
-    List<Order> orders = webOrderOrchestratorService.getOrders(UserId.of(userId));
+    List<Order> orders = webOrderOrchestrator.getOrders(UserId.of(userId));
     return ResponseEntity.ok(orders);
   }
 
   @GetMapping("/{orderId}")
   public ResponseEntity<Order> getOrder(@PathVariable String orderId, @RequestParam String userId) {
-    Optional<Order> order = webOrderOrchestratorService.getOrder(OrderId.of(orderId), UserId.of(userId));
+    Optional<Order> order = webOrderOrchestrator.getOrder(OrderId.of(orderId), UserId.of(userId));
     return order.map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
@@ -55,7 +56,7 @@ public class OrderController {
   @PostMapping("/{orderId}/pay")
   public ResponseEntity<Order> payOrder(@PathVariable String orderId, @RequestParam String userId) {
     try {
-      Order order = webOrderOrchestratorService.payOrder(OrderId.of(orderId), UserId.of(userId));
+      Order order = webOrderOrchestrator.payOrder(OrderId.of(orderId), UserId.of(userId));
       return ResponseEntity.ok(order);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
@@ -65,7 +66,7 @@ public class OrderController {
   @PutMapping("/{orderId}/cancel")
   public ResponseEntity<Order> cancelOrder(@PathVariable String orderId, @RequestParam String userId) {
     try {
-      Order order = webOrderOrchestratorService.cancelOrder(OrderId.of(orderId), UserId.of(userId));
+      Order order = webOrderOrchestrator.cancelOrder(OrderId.of(orderId), UserId.of(userId));
       return ResponseEntity.ok(order);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();

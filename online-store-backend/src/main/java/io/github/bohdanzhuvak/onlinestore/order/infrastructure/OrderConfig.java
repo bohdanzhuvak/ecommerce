@@ -3,8 +3,8 @@ package io.github.bohdanzhuvak.onlinestore.order.infrastructure;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.in.WebOrderOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.BalancePort;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.CartPort;
-import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.DeliveryPort;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.OrderRepository;
+import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.UserPort;
 import io.github.bohdanzhuvak.onlinestore.order.application.service.WebOrderOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.CancelOrderUseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.CreateOrderUseCase;
@@ -24,8 +24,8 @@ public class OrderConfig {
   }
 
   @Bean
-  public CreateOrderUseCase createOrderUseCase(OrderRepository orderRepository, CartPort cartPort, DeliveryPort deliveryPort) {
-    return new CreateOrderUseCase(orderRepository, cartPort, deliveryPort);
+  public CreateOrderUseCase createOrderUseCase(OrderRepository orderRepository, CartPort cartPort, UserPort userPort) {
+    return new CreateOrderUseCase(orderRepository, cartPort, userPort);
   }
 
   @Bean

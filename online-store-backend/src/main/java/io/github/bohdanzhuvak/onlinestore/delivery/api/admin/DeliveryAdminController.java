@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.delivery.api.admin;
 
-import io.github.bohdanzhuvak.onlinestore.delivery.application.DeliveryApplicationService;
+import io.github.bohdanzhuvak.onlinestore.delivery.application.port.in.WebDeliveryOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.Delivery;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryId;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryStatus;
@@ -19,10 +19,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/deliveries")
 public class DeliveryAdminController {
-  private final DeliveryApplicationService deliveryApplicationService;
+  private final WebDeliveryOrchestrator webDeliveryOrchestrator;
 
-  public DeliveryAdminController(DeliveryApplicationService deliveryApplicationService) {
-    this.deliveryApplicationService = deliveryApplicationService;
+  public DeliveryAdminController(WebDeliveryOrchestrator webDeliveryOrchestrator) {
+    this.webDeliveryOrchestrator = webDeliveryOrchestrator;
   }
 
   @GetMapping
@@ -35,7 +35,7 @@ public class DeliveryAdminController {
       UserId userIdObj = userId != null ? UserId.of(userId) : null;
       DeliveryStatus statusObj = status != null ? DeliveryStatus.fromString(status) : null;
 
-      List<Delivery> deliveries = deliveryApplicationService.getAllDeliveries(
+      List<Delivery> deliveries = webDeliveryOrchestrator.getAllDeliveries(
           userIdObj, statusObj, offset, limit);
       return ResponseEntity.ok(deliveries);
     } catch (IllegalArgumentException e) {
@@ -47,7 +47,7 @@ public class DeliveryAdminController {
   public ResponseEntity<Delivery> updateDeliveryStatus(@PathVariable String deliveryId,
                                                        @RequestBody UpdateDeliveryStatusRequest request) {
     try {
-      Delivery delivery = deliveryApplicationService.updateDeliveryStatus(
+      Delivery delivery = webDeliveryOrchestrator.updateDeliveryStatus(
           DeliveryId.of(deliveryId),
           DeliveryStatus.fromString(request.getStatus()),
           request.getNotes()

@@ -8,6 +8,7 @@ import io.github.bohdanzhuvak.onlinestore.order.application.usecase.GetOrderUseC
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.GetOrdersUseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.PayOrderUseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.UpdateOrderStatusUseCase;
+import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
@@ -43,7 +44,7 @@ public class WebOrderOrchestratorService implements WebOrderOrchestrator {
 
   // Customer operations
   @Override
-  public Order createOrder(UserId userId, String deliveryAddressId) {
+  public Order createOrder(UserId userId, DeliveryAddressId deliveryAddressId) {
     CreateOrderUseCase.CreateOrderCommand command = new CreateOrderUseCase.CreateOrderCommand(
         userId, deliveryAddressId);
     return createOrderUseCase.execute(command);

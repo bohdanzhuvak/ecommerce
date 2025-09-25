@@ -1,7 +1,5 @@
 package io.github.bohdanzhuvak.onlinestore.cart.domain;
 
-import io.github.bohdanzhuvak.onlinestore.cart.application.ports.ProductInfoPort;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,11 +45,11 @@ public class Cart {
   }
 
   // Business methods
-  public void addItem(ProductId productId, ProductInfoPort.ProductInfo productInfo, int quantity) {
+  public void addItem(ProductId productId, ProductSnapshot productSnapshot, int quantity) {
     if (productId == null) {
       throw new IllegalArgumentException("Product ID cannot be null");
     }
-    if (productInfo == null) {
+    if (productSnapshot == null) {
       throw new IllegalArgumentException("Product info cannot be null");
     }
     if (quantity <= 0) {
@@ -63,8 +61,8 @@ public class Cart {
       existingItem.get().addQuantity(quantity);
     } else {
       // Convert primitive types to domain Value Objects
-      Money unitPrice = productInfo.unitPrice();
-      items.add(new CartItem(productId, productInfo.productName(), unitPrice, quantity));
+      Money unitPrice = productSnapshot.getPrice();
+      items.add(new CartItem(productId, productSnapshot.getName(), unitPrice, quantity));
     }
     this.updatedAt = LocalDateTime.now();
   }

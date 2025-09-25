@@ -12,12 +12,12 @@ public class Order {
   private final List<OrderItem> items;
   private final Money totalPrice;
   private OrderStatus status;
-  private final String deliveryAddressId;
+  private final DeliveryAddressSnapshot deliveryAddressSnapshot;
   private final LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
   // Constructor for creating a new order
-  public Order(OrderId id, UserId userId, List<OrderItem> items, String deliveryAddressId) {
+  public Order(OrderId id, UserId userId, List<OrderItem> items, DeliveryAddressSnapshot deliveryAddressSnapshot) {
     if (id == null) {
       throw new IllegalArgumentException("Order ID cannot be null");
     }
@@ -27,14 +27,14 @@ public class Order {
     if (items == null || items.isEmpty()) {
       throw new IllegalArgumentException("Order must have at least one item");
     }
-    if (deliveryAddressId == null || deliveryAddressId.trim().isEmpty()) {
+    if (deliveryAddressSnapshot == null) {
       throw new IllegalArgumentException("Delivery address ID cannot be null or empty");
     }
 
     this.id = id;
     this.userId = userId;
     this.items = new ArrayList<>(items);
-    this.deliveryAddressId = deliveryAddressId.trim();
+    this.deliveryAddressSnapshot = deliveryAddressSnapshot;
     this.status = OrderStatus.PENDING;
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
@@ -45,23 +45,23 @@ public class Order {
 
   // Constructor for restoring from database
   private Order(OrderId id, UserId userId, List<OrderItem> items, Money totalPrice,
-                OrderStatus status, String deliveryAddressId,
+                OrderStatus status, DeliveryAddressSnapshot deliveryAddressSnapshot,
                 LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.userId = userId;
     this.items = new ArrayList<>(items);
     this.totalPrice = totalPrice;
     this.status = status;
-    this.deliveryAddressId = deliveryAddressId;
+    this.deliveryAddressSnapshot = deliveryAddressSnapshot;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
 
   // Factory method for restoring from database
   public static Order restore(OrderId id, UserId userId, List<OrderItem> items, Money totalPrice,
-                              OrderStatus status, String deliveryAddressId,
+                              OrderStatus status, DeliveryAddressSnapshot deliveryAddressSnapshot,
                               LocalDateTime createdAt, LocalDateTime updatedAt) {
-    return new Order(id, userId, items, totalPrice, status, deliveryAddressId, createdAt, updatedAt);
+    return new Order(id, userId, items, totalPrice, status, deliveryAddressSnapshot, createdAt, updatedAt);
   }
 
   // Business methods
@@ -134,8 +134,8 @@ public class Order {
     return status;
   }
 
-  public String getDeliveryAddressId() {
-    return deliveryAddressId;
+  public DeliveryAddressSnapshot getDeliveryAddressSnapshot() {
+    return deliveryAddressSnapshot;
   }
 
   public LocalDateTime getCreatedAt() {
