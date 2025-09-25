@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.balance.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.balance.application.BalanceApplicationService;
+import io.github.bohdanzhuvak.onlinestore.balance.application.port.in.WebBalanceOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Balance;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Transaction;
@@ -19,22 +19,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/customer/balance")
 public class BalanceController {
-  private final BalanceApplicationService balanceApplicationService;
+  private final WebBalanceOrchestrator webBalanceOrchestrator;
 
-  public BalanceController(BalanceApplicationService balanceApplicationService) {
-    this.balanceApplicationService = balanceApplicationService;
+  public BalanceController(WebBalanceOrchestrator webBalanceOrchestrator) {
+    this.webBalanceOrchestrator = webBalanceOrchestrator;
   }
 
   @GetMapping
   public ResponseEntity<Balance> getBalance(@RequestParam String userId) {
-    Balance balance = balanceApplicationService.getBalance(UserId.of(userId));
+    Balance balance = webBalanceOrchestrator.getBalance(UserId.of(userId));
     return ResponseEntity.ok(balance);
   }
 
   @PostMapping("/deposit")
   public ResponseEntity<Balance> deposit(@RequestBody DepositRequest request) {
     try {
-      Balance balance = balanceApplicationService.deposit(
+      Balance balance = webBalanceOrchestrator.deposit(
           UserId.of(request.getUserId()),
           Money.of(request.getAmount(), request.getCurrency()),
           request.getDescription()
@@ -48,7 +48,7 @@ public class BalanceController {
   @PostMapping("/withdraw")
   public ResponseEntity<Balance> withdraw(@RequestBody WithdrawRequest request) {
     try {
-      Balance balance = balanceApplicationService.withdraw(
+      Balance balance = webBalanceOrchestrator.withdraw(
           UserId.of(request.getUserId()),
           Money.of(request.getAmount(), request.getCurrency()),
           request.getDescription()
@@ -63,7 +63,7 @@ public class BalanceController {
   public ResponseEntity<List<Transaction>> getTransactions(@RequestParam String userId,
                                                            @RequestParam(defaultValue = "0") int offset,
                                                            @RequestParam(defaultValue = "20") int limit) {
-    List<Transaction> transactions = balanceApplicationService.getTransactions(
+    List<Transaction> transactions = webBalanceOrchestrator.getTransactions(
         UserId.of(userId), offset, limit);
     return ResponseEntity.ok(transactions);
   }

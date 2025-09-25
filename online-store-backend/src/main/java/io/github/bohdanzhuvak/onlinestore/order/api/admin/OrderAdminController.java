@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.order.api.admin;
 
-import io.github.bohdanzhuvak.onlinestore.order.application.OrderApplicationService;
+import io.github.bohdanzhuvak.onlinestore.order.application.service.WebOrderOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
@@ -18,10 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/orders")
 public class OrderAdminController {
-  private final OrderApplicationService orderApplicationService;
+  private final WebOrderOrchestratorService webOrderOrchestratorService;
 
-  public OrderAdminController(OrderApplicationService orderApplicationService) {
-    this.orderApplicationService = orderApplicationService;
+  public OrderAdminController(WebOrderOrchestratorService webOrderOrchestratorService) {
+    this.webOrderOrchestratorService = webOrderOrchestratorService;
   }
 
   @GetMapping
@@ -31,7 +31,7 @@ public class OrderAdminController {
       @RequestParam(defaultValue = "20") int limit) {
     try {
       OrderStatus orderStatus = status != null ? OrderStatus.fromString(status) : null;
-      List<Order> orders = orderApplicationService.getAllOrders(orderStatus, offset, limit);
+      List<Order> orders = webOrderOrchestratorService.getAllOrders(orderStatus, offset, limit);
       return ResponseEntity.ok(orders);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
@@ -42,7 +42,7 @@ public class OrderAdminController {
   public ResponseEntity<Order> updateOrderStatus(@PathVariable String orderId,
                                                  @RequestBody UpdateOrderStatusRequest request) {
     try {
-      Order order = orderApplicationService.updateOrderStatus(
+      Order order = webOrderOrchestratorService.updateOrderStatus(
           OrderId.of(orderId),
           OrderStatus.fromString(request.getStatus())
       );

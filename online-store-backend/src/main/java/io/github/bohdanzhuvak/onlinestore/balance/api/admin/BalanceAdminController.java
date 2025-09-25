@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.balance.api.admin;
 
-import io.github.bohdanzhuvak.onlinestore.balance.application.BalanceApplicationService;
+import io.github.bohdanzhuvak.onlinestore.balance.application.port.in.WebBalanceOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Balance;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Transaction;
@@ -20,16 +20,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/balance")
 public class BalanceAdminController {
-  private final BalanceApplicationService balanceApplicationService;
+  private final WebBalanceOrchestrator webBalanceOrchestrator;
 
-  public BalanceAdminController(BalanceApplicationService balanceApplicationService) {
-    this.balanceApplicationService = balanceApplicationService;
+  public BalanceAdminController(WebBalanceOrchestrator webBalanceOrchestrator) {
+    this.webBalanceOrchestrator = webBalanceOrchestrator;
   }
 
   @PostMapping("/adjust")
   public ResponseEntity<Balance> adjustBalance(@RequestBody AdjustBalanceRequest request) {
     try {
-      Balance balance = balanceApplicationService.adjustBalance(
+      Balance balance = webBalanceOrchestrator.adjustBalance(
           UserId.of(request.getUserId()),
           Money.of(request.getAmount(), request.getCurrency()),
           request.getDescription()
@@ -50,7 +50,7 @@ public class BalanceAdminController {
       UserId userIdObj = userId != null ? UserId.of(userId) : null;
       TransactionType typeObj = type != null ? TransactionType.fromString(type) : null;
 
-      List<Transaction> transactions = balanceApplicationService.getAllTransactions(
+      List<Transaction> transactions = webBalanceOrchestrator.getAllTransactions(
           userIdObj, typeObj, offset, limit);
       return ResponseEntity.ok(transactions);
     } catch (IllegalArgumentException e) {

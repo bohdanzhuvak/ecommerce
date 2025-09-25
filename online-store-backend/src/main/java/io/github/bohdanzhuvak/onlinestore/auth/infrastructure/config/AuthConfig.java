@@ -1,17 +1,17 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.config;
 
-import io.github.bohdanzhuvak.onlinestore.auth.application.ports.UserInfoPort;
-import io.github.bohdanzhuvak.onlinestore.auth.application.services.AuthApplicationService;
-import io.github.bohdanzhuvak.onlinestore.auth.application.usecases.LoginUseCase;
-import io.github.bohdanzhuvak.onlinestore.auth.application.usecases.LogoutUseCase;
-import io.github.bohdanzhuvak.onlinestore.auth.application.usecases.RefreshTokenUseCase;
-import io.github.bohdanzhuvak.onlinestore.auth.application.usecases.RegisterUseCase;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.AuthRepository;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.PasswordHasher;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.TokenService;
-import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.adapters.external.UserInfoAdapter;
-import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.adapters.persistence.RedisAuthRepository;
-import io.github.bohdanzhuvak.onlinestore.user.application.ports.UserQuery;
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.AuthRepository;
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.PasswordHasher;
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService;
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.UserInfoPort;
+import io.github.bohdanzhuvak.onlinestore.auth.application.service.AuthApplicationService;
+import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.LoginUseCase;
+import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.LogoutUseCase;
+import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.RefreshTokenUseCase;
+import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.RegisterUseCase;
+import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.persistence.RedisAuthRepository;
+import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.user.UserInfoAdapter;
+import io.github.bohdanzhuvak.onlinestore.user.application.port.in.ExternalUserOrchestrator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,8 +23,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 public class AuthConfig {
 
   @Bean
-  public UserInfoPort userService(UserQuery userQuery) {
-    return new UserInfoAdapter(userQuery);
+  public UserInfoPort userService(ExternalUserOrchestrator externalUserOrchestrator) {
+    return new UserInfoAdapter(externalUserOrchestrator);
   }
 
   @Bean

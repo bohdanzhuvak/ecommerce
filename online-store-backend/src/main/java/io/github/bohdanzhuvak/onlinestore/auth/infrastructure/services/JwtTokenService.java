@@ -1,10 +1,10 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.services;
 
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.AccessToken;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.RefreshToken;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.TokenPair;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.TokenService;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.UserRole;

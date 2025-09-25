@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.order.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.order.application.OrderApplicationService;
+import io.github.bohdanzhuvak.onlinestore.order.application.service.WebOrderOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.UserId;
@@ -20,16 +20,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/customer/orders")
 public class OrderController {
-  private final OrderApplicationService orderApplicationService;
+  private final WebOrderOrchestratorService webOrderOrchestratorService;
 
-  public OrderController(OrderApplicationService orderApplicationService) {
-    this.orderApplicationService = orderApplicationService;
+  public OrderController(WebOrderOrchestratorService webOrderOrchestratorService) {
+    this.webOrderOrchestratorService = webOrderOrchestratorService;
   }
 
   @PostMapping
   public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
     try {
-      Order order = orderApplicationService.createOrder(
+      Order order = webOrderOrchestratorService.createOrder(
           UserId.of(request.getUserId()),
           request.getDeliveryAddressId()
       );
@@ -41,13 +41,13 @@ public class OrderController {
 
   @GetMapping
   public ResponseEntity<List<Order>> getOrders(@RequestParam String userId) {
-    List<Order> orders = orderApplicationService.getOrders(UserId.of(userId));
+    List<Order> orders = webOrderOrchestratorService.getOrders(UserId.of(userId));
     return ResponseEntity.ok(orders);
   }
 
   @GetMapping("/{orderId}")
   public ResponseEntity<Order> getOrder(@PathVariable String orderId, @RequestParam String userId) {
-    Optional<Order> order = orderApplicationService.getOrder(OrderId.of(orderId), UserId.of(userId));
+    Optional<Order> order = webOrderOrchestratorService.getOrder(OrderId.of(orderId), UserId.of(userId));
     return order.map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
@@ -55,7 +55,7 @@ public class OrderController {
   @PostMapping("/{orderId}/pay")
   public ResponseEntity<Order> payOrder(@PathVariable String orderId, @RequestParam String userId) {
     try {
-      Order order = orderApplicationService.payOrder(OrderId.of(orderId), UserId.of(userId));
+      Order order = webOrderOrchestratorService.payOrder(OrderId.of(orderId), UserId.of(userId));
       return ResponseEntity.ok(order);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
@@ -65,7 +65,7 @@ public class OrderController {
   @PutMapping("/{orderId}/cancel")
   public ResponseEntity<Order> cancelOrder(@PathVariable String orderId, @RequestParam String userId) {
     try {
-      Order order = orderApplicationService.cancelOrder(OrderId.of(orderId), UserId.of(userId));
+      Order order = webOrderOrchestratorService.cancelOrder(OrderId.of(orderId), UserId.of(userId));
       return ResponseEntity.ok(order);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();

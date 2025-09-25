@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.api.dto;
 
-import io.github.bohdanzhuvak.onlinestore.auth.application.results.AuthenticationResult;
+import io.github.bohdanzhuvak.onlinestore.auth.application.result.AuthenticationResult;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.TokenPair;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 

@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication;
 
-import io.github.bohdanzhuvak.onlinestore.auth.application.ports.UserInfoPort;
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.UserInfoPort;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.UserPrincipal;

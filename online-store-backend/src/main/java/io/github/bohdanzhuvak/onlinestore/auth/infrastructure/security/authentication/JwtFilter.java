@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication;
 
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.AccessToken;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

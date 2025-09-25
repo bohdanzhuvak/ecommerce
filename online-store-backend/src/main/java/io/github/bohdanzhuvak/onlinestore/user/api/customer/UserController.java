@@ -1,6 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.user.api.customer;
 
-import io.github.bohdanzhuvak.onlinestore.user.application.services.UserApplicationService;
+import io.github.bohdanzhuvak.onlinestore.user.application.service.UserApplicationService;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import org.springframework.http.ResponseEntity;

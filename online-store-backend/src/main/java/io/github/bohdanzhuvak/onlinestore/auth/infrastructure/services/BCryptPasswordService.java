@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.services;
 
+import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.PasswordHasher;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Password;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.PasswordHasher;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 

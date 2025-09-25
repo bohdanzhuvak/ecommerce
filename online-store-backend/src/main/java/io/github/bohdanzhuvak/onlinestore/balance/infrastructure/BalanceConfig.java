@@ -1,0 +1,86 @@
+package io.github.bohdanzhuvak.onlinestore.balance.infrastructure;
+
+import io.github.bohdanzhuvak.onlinestore.balance.application.port.in.ExternalBalanceOrchestrator;
+import io.github.bohdanzhuvak.onlinestore.balance.application.port.in.WebBalanceOrchestrator;
+import io.github.bohdanzhuvak.onlinestore.balance.application.port.out.BalanceRepository;
+import io.github.bohdanzhuvak.onlinestore.balance.application.port.out.TransactionRepository;
+import io.github.bohdanzhuvak.onlinestore.balance.application.service.ExternalBalanceOrchestratorService;
+import io.github.bohdanzhuvak.onlinestore.balance.application.service.WebBalanceOrchestratorService;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.AdjustBalanceUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.CreditBalanceForRefundUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.DebitBalanceForPurchaseUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.DepositUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.GetAllTransactionsUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.GetBalanceUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.GetTransactionsUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.HasSufficientFundsUseCase;
+import io.github.bohdanzhuvak.onlinestore.balance.application.usecase.WithdrawUseCase;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class BalanceConfig {
+
+  @Bean
+  public GetBalanceUseCase getBalanceUseCase(BalanceRepository balanceRepository) {
+    return new GetBalanceUseCase(balanceRepository);
+  }
+
+  @Bean
+  public DepositUseCase depositUseCase(BalanceRepository balanceRepository, TransactionRepository transactionRepository) {
+    return new DepositUseCase(balanceRepository, transactionRepository);
+  }
+
+  @Bean
+  public WithdrawUseCase withdrawUseCase(BalanceRepository balanceRepository, TransactionRepository transactionRepository) {
+    return new WithdrawUseCase(balanceRepository, transactionRepository);
+  }
+
+  @Bean
+  public GetTransactionsUseCase getTransactionsUseCase(TransactionRepository transactionRepository) {
+    return new GetTransactionsUseCase(transactionRepository);
+  }
+
+  @Bean
+  public AdjustBalanceUseCase adjustBalanceUseCase(BalanceRepository balanceRepository, TransactionRepository transactionRepository) {
+    return new AdjustBalanceUseCase(balanceRepository, transactionRepository);
+  }
+
+  @Bean
+  public GetAllTransactionsUseCase getAllTransactionsUseCase(TransactionRepository transactionRepository) {
+    return new GetAllTransactionsUseCase(transactionRepository);
+  }
+
+  @Bean
+  public HasSufficientFundsUseCase hasSufficientFundsUseCase(BalanceRepository balanceRepository) {
+    return new HasSufficientFundsUseCase(balanceRepository);
+  }
+
+  @Bean
+  public DebitBalanceForPurchaseUseCase debitBalanceForPurchaseUseCase(BalanceRepository balanceRepository, TransactionRepository transactionRepository) {
+    return new DebitBalanceForPurchaseUseCase(balanceRepository, transactionRepository);
+  }
+
+  @Bean
+  public CreditBalanceForRefundUseCase creditBalanceForRefundUseCase(BalanceRepository balanceRepository, TransactionRepository transactionRepository) {
+    return new CreditBalanceForRefundUseCase(balanceRepository, transactionRepository);
+  }
+
+  @Bean
+  public WebBalanceOrchestrator webBalanceOrchestrator(GetBalanceUseCase getBalanceUseCase,
+                                                       DepositUseCase depositUseCase,
+                                                       WithdrawUseCase withdrawUseCase,
+                                                       GetTransactionsUseCase getTransactionsUseCase,
+                                                       AdjustBalanceUseCase adjustBalanceUseCase,
+                                                       GetAllTransactionsUseCase getAllTransactionsUseCase) {
+    return new WebBalanceOrchestratorService(getBalanceUseCase, depositUseCase, withdrawUseCase,
+        getTransactionsUseCase, adjustBalanceUseCase, getAllTransactionsUseCase);
+  }
+
+  @Bean
+  public ExternalBalanceOrchestrator externalBalanceOrchestrator(HasSufficientFundsUseCase hasSufficientFundsUseCase,
+                                                                 DebitBalanceForPurchaseUseCase debitBalanceForPurchaseUseCase,
+                                                                 CreditBalanceForRefundUseCase creditBalanceForRefundUseCase) {
+    return new ExternalBalanceOrchestratorService(hasSufficientFundsUseCase, debitBalanceForPurchaseUseCase, creditBalanceForRefundUseCase);
+  }
+}
