@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.AuthRepository;
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService;
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.UserInfoPort;
@@ -14,6 +15,7 @@ import java.util.Optional;
 /**
  * Use case for refreshing access tokens
  */
+@UseCase
 public class RefreshTokenUseCase {
 
   private final TokenService tokenService;

@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.AuthRepository;
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.PasswordHasher;
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService;
@@ -15,6 +16,7 @@ import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 /**
  * Use case for user login
  */
+@UseCase
 public class LoginUseCase {
 
   private final UserInfoPort userInfoPort;

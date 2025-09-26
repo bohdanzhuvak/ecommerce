@@ -1,11 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.delivery.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.delivery.application.port.out.DeliveryRepository;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.Delivery;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryAddress;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.UserId;
 
+@UseCase
 public class CreateDeliveryUseCase {
   private final DeliveryRepository deliveryRepository;
 

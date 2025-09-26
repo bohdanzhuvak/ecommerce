@@ -1,9 +1,11 @@
 package io.github.bohdanzhuvak.onlinestore.cart.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.cart.application.port.out.CartRepository;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.Cart;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.UserId;
 
+@UseCase
 public class ClearCartUseCase {
   private final CartRepository cartRepository;
 

@@ -1,11 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.cart.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.cart.application.port.out.CartRepository;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.CartItem;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.UserId;
 
 import java.util.List;
 
+@UseCase
 public class GetCartItemsUseCase {
   private final CartRepository cartRepository;
 

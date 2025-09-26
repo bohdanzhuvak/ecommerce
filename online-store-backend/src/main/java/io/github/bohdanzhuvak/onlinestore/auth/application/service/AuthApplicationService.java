@@ -5,15 +5,11 @@ import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.LoginUseCase;
 import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.LogoutUseCase;
 import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.RefreshTokenUseCase;
 import io.github.bohdanzhuvak.onlinestore.auth.application.usecase.RegisterUseCase;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Application service for authentication operations
  * Orchestrates use cases and provides a unified interface
  */
-@Service
-@Transactional
 public class AuthApplicationService {
 
   private final LoginUseCase loginUseCase;

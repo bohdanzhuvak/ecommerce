@@ -1,11 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.balance.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.balance.application.port.out.TransactionRepository;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Transaction;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.UserId;
 
 import java.util.List;
 
+@UseCase
 public class GetTransactionsUseCase {
   private final TransactionRepository transactionRepository;
 

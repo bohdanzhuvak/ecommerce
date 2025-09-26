@@ -1,11 +1,11 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.application.usecases;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductRepository;
-import org.springframework.stereotype.Service;
 
-@Service
+@UseCase
 public class GetActiveProductUseCase {
   private final ProductRepository productRepository;
 

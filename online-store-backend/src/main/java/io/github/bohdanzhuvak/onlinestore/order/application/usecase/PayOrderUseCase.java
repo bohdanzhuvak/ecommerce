@@ -1,11 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.BalancePort;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.OrderRepository;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.UserId;
 
+@UseCase
 public class PayOrderUseCase {
   private final OrderRepository orderRepository;
   private final BalancePort balancePort;

@@ -1,13 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.out.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserRole;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@UseCase
 public class GetAllUsersUseCase {
   private final UserRepository userRepository;
 

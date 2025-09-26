@@ -12,9 +12,7 @@ import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ExternalUserOrchestratorService implements ExternalUserOrchestrator {
   private final CreateUserUseCase createUserUseCase;
   private final ValidateCredentialsUseCase validateCredentialsUseCase;

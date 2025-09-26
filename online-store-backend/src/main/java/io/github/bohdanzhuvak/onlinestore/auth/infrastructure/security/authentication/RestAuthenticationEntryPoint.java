@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.bohdanzhuvak.onlinestore.common.exception.ErrorResponse;
+import io.github.bohdanzhuvak.onlinestore.legacy.common.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

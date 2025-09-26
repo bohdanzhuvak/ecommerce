@@ -1,11 +1,11 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.out.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
-import org.springframework.stereotype.Service;
 
-@Service
+@UseCase
 public class UpdateUserProfileUseCase {
   private final UserRepository userRepository;
 

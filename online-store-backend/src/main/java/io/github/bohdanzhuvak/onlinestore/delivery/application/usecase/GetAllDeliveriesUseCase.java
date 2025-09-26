@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.delivery.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.delivery.application.port.out.DeliveryRepository;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.Delivery;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryStatus;
@@ -7,6 +8,7 @@ import io.github.bohdanzhuvak.onlinestore.delivery.domain.UserId;
 
 import java.util.List;
 
+@UseCase
 public class GetAllDeliveriesUseCase {
   private final DeliveryRepository deliveryRepository;
 

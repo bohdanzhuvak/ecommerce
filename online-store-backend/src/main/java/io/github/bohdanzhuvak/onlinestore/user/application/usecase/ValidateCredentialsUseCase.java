@@ -1,11 +1,11 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.out.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
-import org.springframework.stereotype.Service;
 
-@Service
+@UseCase
 public class ValidateCredentialsUseCase {
   private final UserRepository userRepository;
 

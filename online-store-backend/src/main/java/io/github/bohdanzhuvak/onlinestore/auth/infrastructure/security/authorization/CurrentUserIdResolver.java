@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authorization;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.CurrentUserId;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.UserPrincipal;
-import io.github.bohdanzhuvak.onlinestore.shared.security.CurrentUserId;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +29,6 @@ public class CurrentUserIdResolver implements HandlerMethodArgumentResolver {
     if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userPrincipal)) {
       throw new IllegalStateException("No authenticated user");
     }
-    return userPrincipal.id();
+    return userPrincipal.id().getValue();
   }
 }

@@ -8,10 +8,12 @@ import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.UserRole;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.in.ExternalUserOrchestrator;
+import org.springframework.stereotype.Service;
 
 /**
  * Anti-corruption layer between Auth context and User context
  */
+@Service
 public class UserInfoAdapter implements UserInfoPort {
 
   private final ExternalUserOrchestrator externalUserOrchestrator;

@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.balance.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.balance.application.port.out.BalanceRepository;
 import io.github.bohdanzhuvak.onlinestore.balance.application.port.out.TransactionRepository;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Balance;
@@ -8,6 +9,7 @@ import io.github.bohdanzhuvak.onlinestore.balance.domain.Transaction;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.TransactionType;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.UserId;
 
+@UseCase
 public class AdjustBalanceUseCase {
   private final BalanceRepository balanceRepository;
   private final TransactionRepository transactionRepository;

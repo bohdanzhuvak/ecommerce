@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.CartPort;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.OrderRepository;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.UserPort;
@@ -14,6 +15,7 @@ import io.github.bohdanzhuvak.onlinestore.order.domain.UserId;
 
 import java.util.List;
 
+@UseCase
 public class CreateOrderUseCase {
   private final OrderRepository orderRepository;
   private final CartPort cartPort;

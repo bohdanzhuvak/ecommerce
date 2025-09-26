@@ -1,11 +1,13 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.OrderRepository;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
 
 import java.util.List;
 
+@UseCase
 public class GetAllOrdersUseCase {
   private final OrderRepository orderRepository;
 
