@@ -5,6 +5,7 @@ import io.github.bohdanzhuvak.onlinestore.delivery.domain.Delivery;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryId;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryStatus;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.UserId;
+import io.github.bohdanzhuvak.onlinestore.delivery.infrastructure.adapter.in.rest.resource.DeliveryResponse;
 import io.github.bohdanzhuvak.onlinestore.delivery.infrastructure.adapter.in.rest.resource.UpdateDeliveryStatusRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class DeliveryAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Delivery>> getAllDeliveries(
+  public ResponseEntity<List<DeliveryResponse>> getAllDeliveries(
       @RequestParam(required = false) String userId,
       @RequestParam(required = false) String status,
       @RequestParam(defaultValue = "0") int offset,
@@ -38,14 +39,14 @@ public class DeliveryAdminController {
 
       List<Delivery> deliveries = webDeliveryOrchestrator.getAllDeliveries(
           userIdObj, statusObj, offset, limit);
-      return ResponseEntity.ok(deliveries);
+      return ResponseEntity.ok(DeliveryResponse.from(deliveries));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/{deliveryId}/status")
-  public ResponseEntity<Delivery> updateDeliveryStatus(@PathVariable String deliveryId,
+  public ResponseEntity<DeliveryResponse> updateDeliveryStatus(@PathVariable String deliveryId,
                                                        @RequestBody UpdateDeliveryStatusRequest request) {
     try {
       Delivery delivery = webDeliveryOrchestrator.updateDeliveryStatus(
@@ -53,7 +54,7 @@ public class DeliveryAdminController {
           DeliveryStatus.fromString(request.status()),
           request.notes()
       );
-      return ResponseEntity.ok(delivery);
+      return ResponseEntity.ok(DeliveryResponse.from(delivery));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

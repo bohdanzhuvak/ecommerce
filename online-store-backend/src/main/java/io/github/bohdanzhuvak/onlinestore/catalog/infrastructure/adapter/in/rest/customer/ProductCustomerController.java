@@ -5,6 +5,7 @@ import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductId;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.ProductResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,22 +25,22 @@ public class ProductCustomerController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Product>> getProducts(
+  public ResponseEntity<List<ProductResponse>> getProducts(
       @RequestParam(defaultValue = "0") int offset,
       @RequestParam(defaultValue = "20") int limit) {
     List<Product> products = internalCatalogService.getActiveProducts(offset, limit);
-    return ResponseEntity.ok(products);
+    return ResponseEntity.ok(ProductResponse.from(products));
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Product> getProduct(@PathVariable String id) {
+  public ResponseEntity<ProductResponse> getProduct(@PathVariable String id) {
     ProductId productId = ProductId.of(id);
     Product product = internalCatalogService.getActiveProduct(productId);
-    return ResponseEntity.ok(product);
+    return ResponseEntity.ok(ProductResponse.from(product));
   }
 
   @GetMapping("/search")
-  public ResponseEntity<List<Product>> searchProducts(
+  public ResponseEntity<List<ProductResponse>> searchProducts(
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String categoryId,
       @RequestParam(required = false) String minPrice,
@@ -60,12 +61,12 @@ public class ProductCustomerController {
       products = internalCatalogService.getActiveProducts();
     }
 
-    return ResponseEntity.ok(products);
+    return ResponseEntity.ok(ProductResponse.from(products));
   }
 
   @GetMapping("/available")
-  public ResponseEntity<List<Product>> getAvailableProducts() {
+  public ResponseEntity<List<ProductResponse>> getAvailableProducts() {
     List<Product> products = internalCatalogService.searchAvailableProducts();
-    return ResponseEntity.ok(products);
+    return ResponseEntity.ok(ProductResponse.from(products));
   }
 }

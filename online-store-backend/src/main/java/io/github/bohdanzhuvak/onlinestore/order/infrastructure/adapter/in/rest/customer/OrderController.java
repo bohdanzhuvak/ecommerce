@@ -7,6 +7,7 @@ import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.CreateOrderRequest;
+import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,46 +30,46 @@ public class OrderController {
   }
 
   @PostMapping
-  public ResponseEntity<Order> createOrder(@CurrentUserId String userId, @RequestBody CreateOrderRequest request) {
+  public ResponseEntity<OrderResponse> createOrder(@CurrentUserId String userId, @RequestBody CreateOrderRequest request) {
     try {
       Order order = webOrderOrchestrator.createOrder(
           UserId.of(userId),
           DeliveryAddressId.of(request.deliveryAddressId())
       );
-      return ResponseEntity.ok(order);
+      return ResponseEntity.ok(OrderResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @GetMapping
-  public ResponseEntity<List<Order>> getOrders(@CurrentUserId String userId) {
+  public ResponseEntity<List<OrderResponse>> getOrders(@CurrentUserId String userId) {
     List<Order> orders = webOrderOrchestrator.getOrders(UserId.of(userId));
-    return ResponseEntity.ok(orders);
+    return ResponseEntity.ok(OrderResponse.from(orders));
   }
 
   @GetMapping("/{orderId}")
-  public ResponseEntity<Order> getOrder(@PathVariable String orderId, @CurrentUserId String userId) {
+  public ResponseEntity<OrderResponse> getOrder(@PathVariable String orderId, @CurrentUserId String userId) {
     Optional<Order> order = webOrderOrchestrator.getOrder(OrderId.of(orderId), UserId.of(userId));
-    return order.map(ResponseEntity::ok)
+    return order.map(o -> ResponseEntity.ok(OrderResponse.from(o)))
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping("/{orderId}/pay")
-  public ResponseEntity<Order> payOrder(@PathVariable String orderId, @CurrentUserId String userId) {
+  public ResponseEntity<OrderResponse> payOrder(@PathVariable String orderId, @CurrentUserId String userId) {
     try {
       Order order = webOrderOrchestrator.payOrder(OrderId.of(orderId), UserId.of(userId));
-      return ResponseEntity.ok(order);
+      return ResponseEntity.ok(OrderResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/{orderId}/cancel")
-  public ResponseEntity<Order> cancelOrder(@PathVariable String orderId, @CurrentUserId String userId) {
+  public ResponseEntity<OrderResponse> cancelOrder(@PathVariable String orderId, @CurrentUserId String userId) {
     try {
       Order order = webOrderOrchestrator.cancelOrder(OrderId.of(orderId), UserId.of(userId));
-      return ResponseEntity.ok(order);
+      return ResponseEntity.ok(OrderResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

@@ -6,6 +6,7 @@ import io.github.bohdanzhuvak.onlinestore.cart.domain.Cart;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.ProductId;
 import io.github.bohdanzhuvak.onlinestore.cart.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.cart.infrastructure.adapter.in.rest.resource.AddItemRequest;
+import io.github.bohdanzhuvak.onlinestore.cart.infrastructure.adapter.in.rest.resource.CartResponse;
 import io.github.bohdanzhuvak.onlinestore.cart.infrastructure.adapter.in.rest.resource.UpdateItemRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,29 +30,29 @@ public class CartController {
   }
 
   @GetMapping
-  public ResponseEntity<Cart> getCart(@CurrentUserId String userId) {
+  public ResponseEntity<CartResponse> getCart(@CurrentUserId String userId) {
     UserId userIdObj = UserId.of(userId);
     Optional<Cart> cart = webCartOrchestrator.getCart(userIdObj);
-    return cart.map(ResponseEntity::ok)
+    return cart.map(c -> ResponseEntity.ok(CartResponse.from(c)))
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping("/items")
-  public ResponseEntity<Cart> addItem(@CurrentUserId String userId, @RequestBody AddItemRequest request) {
+  public ResponseEntity<CartResponse> addItem(@CurrentUserId String userId, @RequestBody AddItemRequest request) {
     try {
       Cart cart = webCartOrchestrator.addItemToCart(
           UserId.of(userId),
           ProductId.of(request.productId()),
           request.quantity()
       );
-      return ResponseEntity.ok(cart);
+      return ResponseEntity.ok(CartResponse.from(cart));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/items/{productId}")
-  public ResponseEntity<Cart> updateItem(@CurrentUserId String userId,
+  public ResponseEntity<CartResponse> updateItem(@CurrentUserId String userId,
                                          @PathVariable String productId,
                                          @RequestBody UpdateItemRequest request) {
     try {
@@ -60,30 +61,30 @@ public class CartController {
           ProductId.of(productId),
           request.quantity()
       );
-      return ResponseEntity.ok(cart);
+      return ResponseEntity.ok(CartResponse.from(cart));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @DeleteMapping("/items/{productId}")
-  public ResponseEntity<Cart> removeItem(@CurrentUserId String userId, @PathVariable String productId) {
+  public ResponseEntity<CartResponse> removeItem(@CurrentUserId String userId, @PathVariable String productId) {
     try {
       Cart cart = webCartOrchestrator.removeItemFromCart(
           UserId.of(userId),
           ProductId.of(productId)
       );
-      return ResponseEntity.ok(cart);
+      return ResponseEntity.ok(CartResponse.from(cart));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @DeleteMapping
-  public ResponseEntity<Cart> clearCart(@CurrentUserId String userId) {
+  public ResponseEntity<CartResponse> clearCart(@CurrentUserId String userId) {
     try {
       Cart cart = webCartOrchestrator.clearCart(UserId.of(userId));
-      return ResponseEntity.ok(cart);
+      return ResponseEntity.ok(CartResponse.from(cart));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

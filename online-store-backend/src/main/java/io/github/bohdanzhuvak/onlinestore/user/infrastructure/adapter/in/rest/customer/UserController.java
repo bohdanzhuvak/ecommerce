@@ -5,6 +5,7 @@ import io.github.bohdanzhuvak.onlinestore.user.application.service.WebUserOrches
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UpdateProfileRequest;
+import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,13 +23,13 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<User> getUserProfile(@CurrentUserId String userId) {
+  public ResponseEntity<UserResponse> getUserProfile(@CurrentUserId String userId) {
     User user = webUserOrchestratorService.getUserProfile(UserId.of(userId));
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(UserResponse.from(user));
   }
 
   @PutMapping("profile")
-  public ResponseEntity<User> updateProfile(@CurrentUserId String userId,
+  public ResponseEntity<UserResponse> updateProfile(@CurrentUserId String userId,
                                             @RequestBody UpdateProfileRequest request) {
     try {
       User user = webUserOrchestratorService.updateUserProfile(
@@ -36,7 +37,7 @@ public class UserController {
           request.firstName(),
           request.lastName()
       );
-      return ResponseEntity.ok(user);
+      return ResponseEntity.ok(UserResponse.from(user));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

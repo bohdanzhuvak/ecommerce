@@ -4,6 +4,7 @@ import io.github.bohdanzhuvak.onlinestore.user.application.service.WebUserOrches
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserRole;
+import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public class UserAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<User>> getAllUsers(
+  public ResponseEntity<List<UserResponse>> getAllUsers(
       @RequestParam(required = false) String role,
       @RequestParam(defaultValue = "false") boolean activeOnly,
       @RequestParam(defaultValue = "0") int offset,
@@ -32,27 +33,27 @@ public class UserAdminController {
     try {
       UserRole userRole = role != null ? UserRole.fromString(role) : null;
       List<User> users = webUserOrchestratorService.getAllUsers(userRole, activeOnly, offset, limit);
-      return ResponseEntity.ok(users);
+      return ResponseEntity.ok(UserResponse.from(users));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/{userId}/activate")
-  public ResponseEntity<User> activateUser(@PathVariable String userId) {
+  public ResponseEntity<UserResponse> activateUser(@PathVariable String userId) {
     try {
       User user = webUserOrchestratorService.activateUser(UserId.of(userId));
-      return ResponseEntity.ok(user);
+      return ResponseEntity.ok(UserResponse.from(user));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/{userId}/deactivate")
-  public ResponseEntity<User> deactivateUser(@PathVariable String userId) {
+  public ResponseEntity<UserResponse> deactivateUser(@PathVariable String userId) {
     try {
       User user = webUserOrchestratorService.deactivateUser(UserId.of(userId));
-      return ResponseEntity.ok(user);
+      return ResponseEntity.ok(UserResponse.from(user));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

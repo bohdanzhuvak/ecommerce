@@ -9,6 +9,7 @@ import io.github.bohdanzhuvak.onlinestore.delivery.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.TrackingNumber;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.delivery.infrastructure.adapter.in.rest.resource.CreateDeliveryRequest;
+import io.github.bohdanzhuvak.onlinestore.delivery.infrastructure.adapter.in.rest.resource.DeliveryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class DeliveryController {
   }
 
   @PostMapping
-  public ResponseEntity<Delivery> createDelivery(@CurrentUserId String userId, @RequestBody CreateDeliveryRequest request) {
+  public ResponseEntity<DeliveryResponse> createDelivery(@CurrentUserId String userId, @RequestBody CreateDeliveryRequest request) {
     try {
       DeliveryAddress address = new DeliveryAddress(
           request.street(),
@@ -48,34 +49,34 @@ public class DeliveryController {
           UserId.of(userId),
           address
       );
-      return ResponseEntity.ok(delivery);
+      return ResponseEntity.ok(DeliveryResponse.from(delivery));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @GetMapping("/{deliveryId}")
-  public ResponseEntity<Delivery> getDelivery(@PathVariable String deliveryId, @CurrentUserId String userId) {
+  public ResponseEntity<DeliveryResponse> getDelivery(@PathVariable String deliveryId, @CurrentUserId String userId) {
     Optional<Delivery> delivery = webDeliveryOrchestrator.getDelivery(
         DeliveryId.of(deliveryId), UserId.of(userId));
-    return delivery.map(ResponseEntity::ok)
+    return delivery.map(d -> ResponseEntity.ok(DeliveryResponse.from(d)))
         .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping
-  public ResponseEntity<List<Delivery>> getDeliveries(@CurrentUserId String userId,
+  public ResponseEntity<List<DeliveryResponse>> getDeliveries(@CurrentUserId String userId,
                                                       @RequestParam(defaultValue = "0") int offset,
                                                       @RequestParam(defaultValue = "20") int limit) {
     List<Delivery> deliveries = webDeliveryOrchestrator.getDeliveries(
         UserId.of(userId), offset, limit);
-    return ResponseEntity.ok(deliveries);
+    return ResponseEntity.ok(DeliveryResponse.from(deliveries));
   }
 
   @GetMapping("/track/{trackingNumber}")
-  public ResponseEntity<Delivery> trackDelivery(@PathVariable String trackingNumber, @CurrentUserId String userId) {
+  public ResponseEntity<DeliveryResponse> trackDelivery(@PathVariable String trackingNumber, @CurrentUserId String userId) {
     Optional<Delivery> delivery = webDeliveryOrchestrator.trackDelivery(
         TrackingNumber.of(trackingNumber), UserId.of(userId));
-    return delivery.map(ResponseEntity::ok)
+    return delivery.map(d -> ResponseEntity.ok(DeliveryResponse.from(d)))
         .orElse(ResponseEntity.notFound().build());
   }
 }

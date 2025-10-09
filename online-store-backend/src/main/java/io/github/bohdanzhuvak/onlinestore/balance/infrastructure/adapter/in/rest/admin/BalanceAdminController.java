@@ -7,6 +7,8 @@ import io.github.bohdanzhuvak.onlinestore.balance.domain.Transaction;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.TransactionType;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.balance.infrastructure.adapter.in.rest.resource.AdjustBalanceRequest;
+import io.github.bohdanzhuvak.onlinestore.balance.infrastructure.adapter.in.rest.resource.BalanceResponse;
+import io.github.bohdanzhuvak.onlinestore.balance.infrastructure.adapter.in.rest.resource.TransactionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,17 +29,17 @@ public class BalanceAdminController {
   }
 
   @PostMapping("/adjust")
-  public ResponseEntity<Balance> adjustBalance(@RequestBody AdjustBalanceRequest request) {
+  public ResponseEntity<BalanceResponse> adjustBalance(@RequestBody AdjustBalanceRequest request) {
     Balance balance = webBalanceOrchestrator.adjustBalance(
         UserId.of(request.userId()),
         Money.of(request.amount(), request.currency()),
         request.description()
     );
-    return ResponseEntity.ok(balance);
+    return ResponseEntity.ok(BalanceResponse.from(balance));
   }
 
   @GetMapping("/transactions")
-  public ResponseEntity<List<Transaction>> getAllTransactions(
+  public ResponseEntity<List<TransactionResponse>> getAllTransactions(
       @RequestParam(required = false) String userId,
       @RequestParam(required = false) String type,
       @RequestParam(defaultValue = "0") int offset,
@@ -48,7 +50,7 @@ public class BalanceAdminController {
 
       List<Transaction> transactions = webBalanceOrchestrator.getAllTransactions(
           userIdObj, typeObj, offset, limit);
-      return ResponseEntity.ok(transactions);
+      return ResponseEntity.ok(TransactionResponse.from(transactions));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

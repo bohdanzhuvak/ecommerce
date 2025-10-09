@@ -4,6 +4,7 @@ import io.github.bohdanzhuvak.onlinestore.order.application.ports.in.WebOrderOrc
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
+import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.UpdateOrderStatusRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,28 +27,28 @@ public class OrderAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Order>> getAllOrders(
+  public ResponseEntity<List<OrderResponse>> getAllOrders(
       @RequestParam(required = false) String status,
       @RequestParam(defaultValue = "0") int offset,
       @RequestParam(defaultValue = "20") int limit) {
     try {
       OrderStatus orderStatus = status != null ? OrderStatus.fromString(status) : null;
       List<Order> orders = webOrderOrchestrator.getAllOrders(orderStatus, offset, limit);
-      return ResponseEntity.ok(orders);
+      return ResponseEntity.ok(OrderResponse.from(orders));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/{orderId}/status")
-  public ResponseEntity<Order> updateOrderStatus(@PathVariable String orderId,
+  public ResponseEntity<OrderResponse> updateOrderStatus(@PathVariable String orderId,
                                                  @RequestBody UpdateOrderStatusRequest request) {
     try {
       Order order = webOrderOrchestrator.updateOrderStatus(
           OrderId.of(orderId),
           OrderStatus.fromString(request.status())
       );
-      return ResponseEntity.ok(order);
+      return ResponseEntity.ok(OrderResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

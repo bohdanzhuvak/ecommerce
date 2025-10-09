@@ -8,6 +8,7 @@ import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductId;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CreateProductRequest;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.ProductResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.UpdateProductRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,23 +35,23 @@ public class ProductAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Product>> getAllProducts(
+  public ResponseEntity<List<ProductResponse>> getAllProducts(
       @RequestParam(defaultValue = "0") int offset,
       @RequestParam(defaultValue = "20") int limit) {
     List<Product> products = internalCatalogService.getAllProducts(offset, limit);
-    return ResponseEntity.ok(products);
+    return ResponseEntity.ok(ProductResponse.from(products));
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Product> getProduct(@PathVariable String id) {
+  public ResponseEntity<ProductResponse> getProduct(@PathVariable String id) {
     ProductId productId = ProductId.of(id);
     Optional<Product> product = internalCatalogService.getProduct(productId);
-    return product.map(ResponseEntity::ok)
+    return product.map(p -> ResponseEntity.ok(ProductResponse.from(p)))
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest request) {
+  public ResponseEntity<ProductResponse> createProduct(@RequestBody CreateProductRequest request) {
     try {
       CreateProductUseCase.CreateProductCommand command = new CreateProductUseCase.CreateProductCommand(
           request.name(),
@@ -62,14 +63,14 @@ public class ProductAdminController {
       );
 
       Product product = internalCatalogService.createProduct(command);
-      return ResponseEntity.status(HttpStatus.CREATED).body(product);
+      return ResponseEntity.status(HttpStatus.CREATED).body(ProductResponse.from(product));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody UpdateProductRequest request) {
+  public ResponseEntity<ProductResponse> updateProduct(@PathVariable String id, @RequestBody UpdateProductRequest request) {
     try {
       ProductId productId = ProductId.of(id);
       UpdateProductUseCase.UpdateProductCommand command = new UpdateProductUseCase.UpdateProductCommand(
@@ -82,7 +83,7 @@ public class ProductAdminController {
       );
 
       Product product = internalCatalogService.updateProduct(command);
-      return ResponseEntity.ok(product);
+      return ResponseEntity.ok(ProductResponse.from(product));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
