@@ -4,7 +4,7 @@ import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductRepository;
-import io.github.bohdanzhuvak.onlinestore.legacy.common.exception.impl.NotFoundException;
+import io.github.bohdanzhuvak.onlinestore.user.application.exception.NotFoundException;
 
 @UseCase
 public class GetProductUseCase {

@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.auth.domain;
 
 public enum UserRole {
-  USER("USER"),
+  CUSTOMER("CUSTOMER"),
   ADMIN("ADMIN");
 
   private final String value;
@@ -27,7 +27,7 @@ public enum UserRole {
   }
 
   public boolean isUser() {
-    return this == USER;
+    return this == CUSTOMER;
   }
 
   public boolean isAdmin() {

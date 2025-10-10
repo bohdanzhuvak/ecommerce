@@ -1,4 +1,4 @@
-package io.github.bohdanzhuvak.onlinestore.legacy.config;
+package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.config;
 
 import lombok.Getter;
 import lombok.Setter;

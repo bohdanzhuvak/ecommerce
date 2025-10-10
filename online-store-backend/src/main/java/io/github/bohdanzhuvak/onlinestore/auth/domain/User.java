@@ -5,21 +5,17 @@ import java.util.Objects;
 public class User {
   private final UserId id;
   private final Email email;
-  private final Password password;
   private final UserRole role;
   private boolean active;
   private String firstName;
   private String lastName;
 
-  private User(UserId id, Email email, Password password, UserRole role, String firstName, String lastName, boolean active) {
+  private User(UserId id, Email email, UserRole role, String firstName, String lastName, boolean active) {
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
     }
     if (email == null) {
       throw new IllegalArgumentException("Email cannot be null");
-    }
-    if (password == null) {
-      throw new IllegalArgumentException("Password cannot be null");
     }
     if (role == null) {
       throw new IllegalArgumentException("Role cannot be null");
@@ -33,16 +29,14 @@ public class User {
 
     this.id = id;
     this.email = email;
-    this.password = password;
     this.role = role;
     this.active = active;
   }
 
-  public static User create(Email email, Password password, UserRole role, String firstName, String lastName) {
+  public static User create(Email email, UserRole role, String firstName, String lastName) {
     return new User(
         UserId.generate(),
         email,
-        password,
         role,
         firstName,
         lastName,
@@ -50,9 +44,9 @@ public class User {
     );
   }
 
-  public static User restore(UserId id, Email email, Password password,
+  public static User restore(UserId id, Email email,
                              UserRole role, String firstName, String lastName, boolean active) {
-    return new User(id, email, password, role, firstName, lastName, active);
+    return new User(id, email, role, firstName, lastName, active);
   }
 
   // Business methods
@@ -111,10 +105,6 @@ public class User {
 
   public Email getEmail() {
     return email;
-  }
-
-  public Password getPassword() {
-    return password;
   }
 
   public UserRole getRole() {

@@ -72,7 +72,6 @@ public class UserInfoAdapter implements UserInfoPort {
     return User.restore(
         UserId.of(userInfo.id().getValue()),
         Email.of(userInfo.email().getValue()),
-        null,
         UserRole.fromString(userInfo.role().getValue()),
         userInfo.firstName(),
         userInfo.lastName(),

@@ -162,7 +162,7 @@ public class JwtTokenService implements TokenService {
       UserInfo userInfo = new UserInfo(
           UserId.of(claims.getSubject()),
           Email.of(claims.get("email", String.class)),
-          UserRole.USER
+          UserRole.CUSTOMER
       );
 
       return Optional.of(userInfo);

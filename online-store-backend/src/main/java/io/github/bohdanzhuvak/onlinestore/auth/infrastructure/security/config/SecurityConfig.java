@@ -1,8 +1,8 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.config;
 
+import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.config.CorsProperties;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication.JwtFilter;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication.RestAuthenticationEntryPoint;
-import io.github.bohdanzhuvak.onlinestore.legacy.config.CorsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -142,7 +142,7 @@ public class OrderEntity {
   @Embeddable
   public class DeliveryAddressSnapshotEmbeddable {
 
-    @Column(nullable = false)
+    @Column(nullable = false, insertable = false, updatable = false)
     private String id;
 
     @Column(nullable = false)

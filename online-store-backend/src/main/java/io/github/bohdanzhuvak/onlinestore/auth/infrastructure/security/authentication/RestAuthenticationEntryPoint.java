@@ -1,7 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.bohdanzhuvak.onlinestore.legacy.common.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -31,5 +31,19 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType("application/json");
     response.getWriter().write(objectMapper.writeValueAsString(body));
+  }
+
+  public record ErrorResponse(
+      int status,
+      String error,
+      String message,
+      String path,
+      LocalDateTime timestamp,
+      Map<String, String> details
+  ) {
+
+    public ErrorResponse(int status, String error, String message, String path, LocalDateTime timestamp) {
+      this(status, error, message, path, timestamp, null);
+    }
   }
 }

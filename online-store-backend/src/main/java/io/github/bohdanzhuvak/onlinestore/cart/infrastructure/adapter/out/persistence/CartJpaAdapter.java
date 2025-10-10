@@ -56,6 +56,6 @@ public class CartJpaAdapter implements CartRepository {
 
   @Override
   public List<CartItem> getCartItems(UserId userId) {
-    return cartMapper.toDomainCartItem(jpaCartRepository.findCartItems(userId.getValue()));
+    return cartMapper.toDomainCartItem(jpaCartRepository.findItemsByUserId(userId.getValue()));
   }
 }
