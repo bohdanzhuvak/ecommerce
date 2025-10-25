@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.out.OrderRepository;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
@@ -15,18 +16,27 @@ public class GetAllOrdersUseCase {
     this.orderRepository = orderRepository;
   }
 
-  public List<Order> execute(GetAllOrdersCommand command) {
+  public PageResult<Order> execute(GetAllOrdersCommand command) {
+    // React-admin sends 1-based page numbers, convert to 0-based offset
+    int offset = (command.page() - 1) * command.pageSize();
+    List<Order> orders;
+    long total;
+
     if (command.status() != null) {
-      return orderRepository.findByStatus(command.status(), command.offset(), command.limit());
+      orders = orderRepository.findByStatus(command.status(), offset, command.pageSize());
+      total = orderRepository.countByStatus(command.status());
     } else {
-      return orderRepository.findAll(command.offset(), command.limit());
+      orders = orderRepository.findAll(offset, command.pageSize());
+      total = orderRepository.count();
     }
+
+    return PageResult.of(orders, total, command.page(), command.pageSize());
   }
 
   public record GetAllOrdersCommand(
       OrderStatus status,
-      int offset,
-      int limit
+      int page,
+      int pageSize
   ) {
   }
 }

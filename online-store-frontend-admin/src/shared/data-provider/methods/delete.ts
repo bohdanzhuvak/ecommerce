@@ -9,8 +9,13 @@ export const deleteOne =
     params: DeleteParams<RecordType>,
   ): Promise<DeleteResult<RecordType>> => {
     const url = `${endpoints.delete(resource, params.id)}`;
-    const { json } = await httpClient<{ data: RecordType }>(url, {
+
+    // Backend returns 204 No Content, so we ignore the response
+    await httpClient<void>(url, {
       method: 'DELETE',
     });
-    return json;
+
+    // React-admin expects { data: ... } with the deleted record
+    // Since backend returns no content, we return the previousData from params
+    return { data: params.previousData as RecordType };
   };

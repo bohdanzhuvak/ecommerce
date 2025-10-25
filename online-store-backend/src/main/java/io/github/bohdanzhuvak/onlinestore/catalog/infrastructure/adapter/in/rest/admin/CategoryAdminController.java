@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.admin;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.services.WebCatalogOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateCategoryUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.UpdateCategoryUseCase;
@@ -7,6 +8,7 @@ import io.github.bohdanzhuvak.onlinestore.catalog.domain.Category;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CategoryResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CreateCategoryRequest;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.PagedResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.UpdateCategoryRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,13 +34,12 @@ public class CategoryAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<CategoryResponse>> getAllCategories(
-      @RequestParam(defaultValue = "0") int offset,
-      @RequestParam(defaultValue = "20") int limit) {
-    List<Category> categories = catalogService.getAllCategories(offset, limit);
-    return ResponseEntity.ok()
-        .header("X-Total-Count", String.valueOf(catalogService.getAllCategories().size()))
-        .body(CategoryResponse.from(categories));
+  public ResponseEntity<PagedResponse<CategoryResponse>> getAllCategories(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int perPage) {
+    PageResult<Category> pageResult = catalogService.getAllCategoriesPaged(page, perPage);
+    PagedResponse<CategoryResponse> response = PagedResponse.from(pageResult, CategoryResponse::from);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")

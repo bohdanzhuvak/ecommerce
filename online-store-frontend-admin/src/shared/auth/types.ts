@@ -4,7 +4,7 @@ export interface LoginParams {
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   role: string;
 }

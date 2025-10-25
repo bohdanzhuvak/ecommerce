@@ -9,9 +9,11 @@ export const update =
     params: UpdateParams<RecordType>,
   ): Promise<UpdateResult<RecordType>> => {
     const url = `${endpoints.update(resource, params.id)}`;
-    const { json } = await httpClient<{ data: RecordType }>(url, {
+    const { json } = await httpClient<RecordType>(url, {
       method: 'PUT',
       body: JSON.stringify(params.data),
     });
-    return json;
+
+    // Wrap the response in { data: ... } format expected by react-admin
+    return { data: json };
   };

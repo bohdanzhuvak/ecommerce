@@ -3,9 +3,10 @@ package io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.res
 public record UpdateProductRequest(
     String name,
     String description,
-    Double price,
-    String currency,
+    Money price,
     Integer stock,
     String categoryId
 ) {
+  public record Money(Double amount, String currency) {
+  }
 }

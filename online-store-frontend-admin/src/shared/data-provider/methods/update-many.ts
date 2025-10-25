@@ -15,14 +15,15 @@ export const updateMany =
   ): Promise<UpdateManyResult<RecordType>> => {
     const responses = await Promise.all(
       params.ids.map((id: Identifier) =>
-        httpClient<{ data: RecordType }>(`${endpoints.update(resource, id)}`, {
+        httpClient<RecordType>(`${endpoints.update(resource, id)}`, {
           method: 'PUT',
           body: JSON.stringify(params.data),
         }),
       ),
     );
 
+    // Extract IDs from the updated records
     return {
-      data: responses.map(({ json }) => json.data.id),
+      data: responses.map(({ json }) => json.id),
     };
   };

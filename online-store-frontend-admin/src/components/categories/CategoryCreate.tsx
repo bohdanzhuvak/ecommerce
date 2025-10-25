@@ -4,6 +4,7 @@ export const CategoryCreate = () => (
   <Create>
     <SimpleForm>
       <TextInput source="name" label="Name" validate={[required()]} />
+      <TextInput source="description" label="Description" multiline rows={3} />
     </SimpleForm>
   </Create>
 );

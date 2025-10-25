@@ -13,10 +13,15 @@ export const deleteMany =
     resource: string,
     params: DeleteManyParams<RecordType>,
   ): Promise<DeleteManyResult<RecordType>> => {
-    const url = `${endpoints.delete(resource, '')}`.replace(/\/$/, ''); // Убираем последний слеш
-    const { json } = await httpClient<{ data: Identifier[] }>(url, {
-      method: 'DELETE',
-      body: JSON.stringify(params.ids),
-    });
-    return json;
+    // Backend doesn't support batch delete, so delete one by one
+    await Promise.all(
+      params.ids.map((id: Identifier) =>
+        httpClient<void>(`${endpoints.delete(resource, id)}`, {
+          method: 'DELETE',
+        }),
+      ),
+    );
+
+    // React-admin expects { data: Identifier[] } with deleted IDs
+    return { data: params.ids };
   };

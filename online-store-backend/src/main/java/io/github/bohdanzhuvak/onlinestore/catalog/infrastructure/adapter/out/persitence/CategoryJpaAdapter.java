@@ -55,6 +55,11 @@ public class CategoryJpaAdapter implements CategoryRepository {
   }
 
   @Override
+  public long count() {
+    return jpaCategoryRepository.count();
+  }
+
+  @Override
   public boolean existsById(CategoryId categoryId) {
     return jpaCategoryRepository.existsById(categoryId.getValue());
   }

@@ -9,8 +9,10 @@ export const getOne =
     params: GetOneParams<RecordType>,
   ): Promise<GetOneResult<RecordType>> => {
     const url = `${endpoints.one(resource, params.id)}`;
-    const { json } = await httpClient<{ data: RecordType }>(url, {
+    const { json } = await httpClient<RecordType>(url, {
       signal: params?.signal,
     });
-    return json;
+
+    // Wrap the response in { data: ... } format expected by react-admin
+    return { data: json };
   };

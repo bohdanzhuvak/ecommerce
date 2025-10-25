@@ -12,9 +12,11 @@ export const create =
     params: CreateParams<RecordType>,
   ): Promise<CreateResult<ResultRecordType>> => {
     const url = `${endpoints.create(resource)}`;
-    const { json } = await httpClient<{ data: ResultRecordType }>(url, {
+    const { json } = await httpClient<ResultRecordType>(url, {
       method: 'POST',
       body: JSON.stringify(params.data),
     });
-    return json;
+
+    // Wrap the response in { data: ... } format expected by react-admin
+    return { data: json };
   };

@@ -1,5 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.admin;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.PagedResponse;
 import io.github.bohdanzhuvak.onlinestore.user.application.service.WebUserOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
@@ -13,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/admin/users")
 public class UserAdminController {
@@ -25,15 +25,16 @@ public class UserAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<UserResponse>> getAllUsers(
+  public ResponseEntity<PagedResponse<UserResponse>> getAllUsers(
       @RequestParam(required = false) String role,
       @RequestParam(defaultValue = "false") boolean activeOnly,
-      @RequestParam(defaultValue = "0") int offset,
-      @RequestParam(defaultValue = "20") int limit) {
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int perPage) {
     try {
       UserRole userRole = role != null ? UserRole.fromString(role) : null;
-      List<User> users = webUserOrchestratorService.getAllUsers(userRole, activeOnly, offset, limit);
-      return ResponseEntity.ok(UserResponse.from(users));
+      PageResult<User> pageResult = webUserOrchestratorService.getAllUsers(userRole, activeOnly, page, perPage);
+      PagedResponse<UserResponse> response = PagedResponse.from(pageResult, UserResponse::from);
+      return ResponseEntity.ok(response);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

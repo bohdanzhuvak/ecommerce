@@ -22,15 +22,26 @@ export const ProductCreate = () => (
         validate={[required(), minValue(0)]}
         step="0.01"
       />
+      <SelectInput
+        source="currency"
+        label="Currency"
+        choices={[
+          { id: 'USD', name: 'USD' },
+          { id: 'EUR', name: 'EUR' },
+          { id: 'UAH', name: 'UAH' },
+        ]}
+        defaultValue="USD"
+        validate={[required()]}
+      />
       <NumberInput
         source="stock"
         label="Stock"
         validate={[required(), minValue(0)]}
       />
       <ReferenceInput source="categoryId" reference="categories">
-        <SelectInput optionText="name" />
+        <SelectInput optionText="name" validate={[required()]} />
       </ReferenceInput>
-      <ArrayInput source="imageUrls" label="Image URLs">
+      <ArrayInput source="images" label="Image URLs">
         <SimpleFormIterator>
           <TextInput source="" label="URL" />
         </SimpleFormIterator>

@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.service;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.in.WebOrderOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.CancelOrderUseCase;
 import io.github.bohdanzhuvak.onlinestore.order.application.usecase.CreateOrderUseCase;
@@ -76,9 +77,9 @@ public class WebOrderOrchestratorService implements WebOrderOrchestrator {
 
   // Admin operations
   @Override
-  public List<Order> getAllOrders(OrderStatus status, int offset, int limit) {
+  public PageResult<Order> getAllOrders(OrderStatus status, int page, int pageSize) {
     GetAllOrdersUseCase.GetAllOrdersCommand command = new GetAllOrdersUseCase.GetAllOrdersCommand(
-        status, offset, limit);
+        status, page, pageSize);
     return getAllOrdersUseCase.execute(command);
   }
 

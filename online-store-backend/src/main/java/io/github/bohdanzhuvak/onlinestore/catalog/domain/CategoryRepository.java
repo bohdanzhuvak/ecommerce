@@ -12,6 +12,8 @@ public interface CategoryRepository {
 
   List<Category> findAll(int offset, int limit);
 
+  long count();
+
   void deleteById(CategoryId categoryId);
 
   boolean existsById(CategoryId categoryId);

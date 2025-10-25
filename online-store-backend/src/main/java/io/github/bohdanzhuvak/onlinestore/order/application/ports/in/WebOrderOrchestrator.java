@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.order.application.ports.in;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
@@ -20,7 +21,7 @@ public interface WebOrderOrchestrator {
 
   Order cancelOrder(OrderId orderId, UserId userId);
 
-  List<Order> getAllOrders(OrderStatus status, int offset, int limit);
+  PageResult<Order> getAllOrders(OrderStatus status, int page, int pageSize);
 
   Order updateOrderStatus(OrderId orderId, OrderStatus newStatus);
 }

@@ -1,4 +1,3 @@
-import { fetchUtils } from 'ra-core';
 import { endpoints } from '../../api/endpoints.ts';
 import { HttpClient } from '../../../types/data-provider.ts';
 import { GetManyParams, GetManyResult, RaRecord } from 'react-admin';
@@ -9,20 +8,16 @@ export const getMany =
     resource: string,
     params: GetManyParams<RecordType>,
   ): Promise<GetManyResult<RecordType>> => {
-    const query = {
-      filter: JSON.stringify({ id: params.ids }),
-    };
+    // Backend doesn't support filtering by IDs in list endpoint
+    // So we fetch each resource individually using getOne
+    const responses = await Promise.all(
+      params.ids.map((id) =>
+        httpClient<RecordType>(`${endpoints.one(resource, id)}`, {
+          signal: params?.signal,
+        }),
+      ),
+    );
 
-    const url = `${endpoints.list(resource, fetchUtils.queryParameters(query))}`;
-    const { json } = await httpClient<
-      { data: RecordType[]; total: number } | RecordType[]
-    >(url, {
-      signal: params?.signal,
-    });
-
-    if (json && typeof json === 'object' && 'data' in json) {
-      return { data: json.data };
-    }
-
-    return { data: Array.isArray(json) ? json : [json] };
+    // Extract the data from responses
+    return { data: responses.map(({ json }) => json) };
   };

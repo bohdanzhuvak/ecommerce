@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.application.services;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateCategoryUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.DeleteCategoryUseCase;
@@ -95,8 +96,8 @@ public class WebCatalogOrchestratorService {
     return getAllProductsUseCase.execute();
   }
 
-  public List<Product> getAllProducts(int offset, int limit) {
-    return getAllProductsUseCase.execute(offset, limit);
+  public PageResult<Product> getAllProductsPaged(int page, int pageSize) {
+    return getAllProductsUseCase.execute(page, pageSize);
   }
 
   public Optional<Product> getProduct(ProductId productId) {
@@ -120,8 +121,8 @@ public class WebCatalogOrchestratorService {
     return getAllCategoriesUseCase.execute();
   }
 
-  public List<Category> getAllCategories(int offset, int limit) {
-    return getAllCategoriesUseCase.execute(offset, limit);
+  public PageResult<Category> getAllCategoriesPaged(int page, int pageSize) {
+    return getAllCategoriesUseCase.execute(page, pageSize);
   }
 
   public Optional<Category> getCategory(CategoryId categoryId) {

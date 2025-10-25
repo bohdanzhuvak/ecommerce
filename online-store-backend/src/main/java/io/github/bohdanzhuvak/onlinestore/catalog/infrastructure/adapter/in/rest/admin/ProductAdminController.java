@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.admin;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.services.WebCatalogOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.UpdateProductUseCase;
@@ -8,6 +9,7 @@ import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.ProductId;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CreateProductRequest;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.PagedResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.ProductResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.UpdateProductRequest;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -35,11 +36,12 @@ public class ProductAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ProductResponse>> getAllProducts(
-      @RequestParam(defaultValue = "0") int offset,
-      @RequestParam(defaultValue = "20") int limit) {
-    List<Product> products = internalCatalogService.getAllProducts(offset, limit);
-    return ResponseEntity.ok(ProductResponse.from(products));
+  public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int perPage) {
+    PageResult<Product> pageResult = internalCatalogService.getAllProductsPaged(page, perPage);
+    PagedResponse<ProductResponse> response = PagedResponse.from(pageResult, ProductResponse::from);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")
@@ -77,7 +79,7 @@ public class ProductAdminController {
           productId,
           request.name(),
           request.description(),
-          request.price() != null ? Money.of(request.price(), request.currency()) : null,
+          request.price() != null ? Money.of(request.price().amount(), request.price().currency()) : null,
           request.stock(),
           request.categoryId() != null ? CategoryId.of(request.categoryId()) : null
       );

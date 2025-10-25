@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.out.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
@@ -15,21 +16,31 @@ public class GetAllUsersUseCase {
     this.userRepository = userRepository;
   }
 
-  public List<User> execute(GetAllUsersCommand command) {
+  public PageResult<User> execute(GetAllUsersCommand command) {
+    // React-admin sends 1-based page numbers, convert to 0-based offset
+    int offset = (command.page() - 1) * command.pageSize();
+    List<User> users;
+    long total;
+
     if (command.role() != null) {
-      return userRepository.findByRole(command.role(), command.offset(), command.limit());
+      users = userRepository.findByRole(command.role(), offset, command.pageSize());
+      total = userRepository.countByRole(command.role());
     } else if (command.activeOnly()) {
-      return userRepository.findActiveUsers(command.offset(), command.limit());
+      users = userRepository.findActiveUsers(offset, command.pageSize());
+      total = userRepository.countActiveUsers();
     } else {
-      return userRepository.findAll(command.offset(), command.limit());
+      users = userRepository.findAll(offset, command.pageSize());
+      total = userRepository.count();
     }
+
+    return PageResult.of(users, total, command.page(), command.pageSize());
   }
 
   public record GetAllUsersCommand(
       UserRole role,
       boolean activeOnly,
-      int offset,
-      int limit
+      int page,
+      int pageSize
   ) {
   }
 }

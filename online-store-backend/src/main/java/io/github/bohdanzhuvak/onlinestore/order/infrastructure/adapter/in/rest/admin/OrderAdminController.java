@@ -1,5 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.admin;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.PagedResponse;
 import io.github.bohdanzhuvak.onlinestore.order.application.ports.in.WebOrderOrchestrator;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
@@ -15,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class OrderAdminController {
@@ -27,14 +27,15 @@ public class OrderAdminController {
   }
 
   @GetMapping
-  public ResponseEntity<List<OrderResponse>> getAllOrders(
+  public ResponseEntity<PagedResponse<OrderResponse>> getAllOrders(
       @RequestParam(required = false) String status,
-      @RequestParam(defaultValue = "0") int offset,
-      @RequestParam(defaultValue = "20") int limit) {
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int perPage) {
     try {
       OrderStatus orderStatus = status != null ? OrderStatus.fromString(status) : null;
-      List<Order> orders = webOrderOrchestrator.getAllOrders(orderStatus, offset, limit);
-      return ResponseEntity.ok(OrderResponse.from(orders));
+      PageResult<Order> pageResult = webOrderOrchestrator.getAllOrders(orderStatus, page, perPage);
+      PagedResponse<OrderResponse> response = PagedResponse.from(pageResult, OrderResponse::from);
+      return ResponseEntity.ok(response);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

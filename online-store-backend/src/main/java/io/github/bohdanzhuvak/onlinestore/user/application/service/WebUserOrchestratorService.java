@@ -1,5 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.service;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ActivateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ChangePasswordUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
@@ -12,8 +13,6 @@ import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserRole;
-
-import java.util.List;
 
 public class WebUserOrchestratorService {
   private final CreateUserUseCase createUserUseCase;
@@ -70,9 +69,9 @@ public class WebUserOrchestratorService {
     return createUserUseCase.execute(command);
   }
 
-  public List<User> getAllUsers(UserRole role, boolean activeOnly, int offset, int limit) {
+  public PageResult<User> getAllUsers(UserRole role, boolean activeOnly, int page, int pageSize) {
     GetAllUsersUseCase.GetAllUsersCommand command = new GetAllUsersUseCase.GetAllUsersCommand(
-        role, activeOnly, offset, limit);
+        role, activeOnly, page, pageSize);
     return getAllUsersUseCase.execute(command);
   }
 
