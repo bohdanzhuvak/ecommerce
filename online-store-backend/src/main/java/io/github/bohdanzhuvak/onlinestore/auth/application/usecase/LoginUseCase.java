@@ -7,9 +7,7 @@ import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.UserInfoPort;
 import io.github.bohdanzhuvak.onlinestore.auth.application.result.AuthenticationResult;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.AuthenticationSession;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.Credentials;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Email;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.TokenPair;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 
@@ -36,10 +34,9 @@ public class LoginUseCase {
 
   public AuthenticationResult execute(LoginCommand command) {
     Email email = Email.of(command.email);
-    Password password = passwordHasher.hash(command.password);
-    Credentials credentials = Credentials.of(email, password);
-    // Validate credentials
-    if (!userInfoPort.validateCredentials(credentials)) {
+
+    // Validate credentials (password is validated in user module)
+    if (!userInfoPort.validateCredentials(email, command.password)) {
       throw new IllegalArgumentException("Invalid credentials");
     }
 

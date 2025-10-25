@@ -48,11 +48,11 @@ public interface ExternalUserOrchestrator {
   /**
    * Validates user credentials
    *
-   * @param email    the user email
-   * @param password the plain password
+   * @param email       the user email
+   * @param rawPassword the raw (plain text) password
    * @return true if credentials are valid, false otherwise
    */
-  boolean validateCredentials(Email email, Password password);
+  boolean validateCredentials(Email email, String rawPassword);
 
   DeliveryAddress getDeliveryAddressById(UserId userId, DeliveryAddressId addressId);
 

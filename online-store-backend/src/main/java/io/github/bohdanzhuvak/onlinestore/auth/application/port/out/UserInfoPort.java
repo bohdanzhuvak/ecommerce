@@ -1,6 +1,5 @@
 package io.github.bohdanzhuvak.onlinestore.auth.application.port.out;
 
-import io.github.bohdanzhuvak.onlinestore.auth.domain.Credentials;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
@@ -48,7 +47,9 @@ public interface UserInfoPort {
   /**
    * Validates user credentials
    *
-   * @param credentials@return true if credentials are valid, false otherwise
+   * @param email the user email
+   * @param rawPassword the raw (plain text) password
+   * @return true if credentials are valid, false otherwise
    */
-  boolean validateCredentials(Credentials credentials);
+  boolean validateCredentials(Email email, String rawPassword);
 }

@@ -3,19 +3,21 @@ package io.github.bohdanzhuvak.onlinestore.user.application.usecase;
 import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.out.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
-import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @UseCase
 public class ValidateCredentialsUseCase {
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-  public ValidateCredentialsUseCase(UserRepository userRepository) {
+  public ValidateCredentialsUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
-  public boolean execute(Email email, Password password) {
+  public boolean execute(Email email, String rawPassword) {
     return userRepository.findByEmail(email)
-        .map(user -> user.isPasswordValid(password))
+        .map(user -> passwordEncoder.matches(rawPassword, user.getPassword().getHashedValue()))
         .orElse(false);
   }
 }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customer/products")
+@RequestMapping("/api/v1/customer/products")
 public class ProductCustomerController {
   private final WebCatalogOrchestratorService internalCatalogService;
 

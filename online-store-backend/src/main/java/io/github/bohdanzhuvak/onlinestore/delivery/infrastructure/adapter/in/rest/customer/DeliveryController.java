@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/customer/deliveries")
+@RequestMapping("/api/v1/customer/deliveries")
 public class DeliveryController {
   private final WebDeliveryOrchestrator webDeliveryOrchestrator;
 

@@ -53,8 +53,8 @@ public class ExternalUserOrchestratorService implements ExternalUserOrchestrator
   }
 
   @Override
-  public boolean validateCredentials(Email email, Password password) {
-    return validateCredentialsUseCase.execute(email, password);
+  public boolean validateCredentials(Email email, String rawPassword) {
+    return validateCredentialsUseCase.execute(email, rawPassword);
   }
 
   @Override

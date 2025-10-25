@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/customer/cart")
+@RequestMapping("/api/v1/customer/cart")
 public class CartController {
   private final WebCartOrchestrator webCartOrchestrator;
 

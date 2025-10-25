@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/deliveries")
+@RequestMapping("/api/v1/admin/deliveries")
 public class DeliveryAdminController {
   private final WebDeliveryOrchestrator webDeliveryOrchestrator;
 

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/balance")
+@RequestMapping("/api/v1/admin/balance")
 public class BalanceAdminController {
   private final WebBalanceOrchestrator webBalanceOrchestrator;
 

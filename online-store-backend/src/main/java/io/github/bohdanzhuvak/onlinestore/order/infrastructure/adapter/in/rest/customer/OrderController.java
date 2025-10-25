@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/customer/orders")
+@RequestMapping("/api/v1/customer/orders")
 public class OrderController {
   private final WebOrderOrchestrator webOrderOrchestrator;
 

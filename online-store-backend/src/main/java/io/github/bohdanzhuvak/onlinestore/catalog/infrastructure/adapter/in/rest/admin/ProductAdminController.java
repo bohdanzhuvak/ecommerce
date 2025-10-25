@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/admin/products")
+@RequestMapping("/api/v1/admin/products")
 public class ProductAdminController {
   private final WebCatalogOrchestratorService internalCatalogService;
 

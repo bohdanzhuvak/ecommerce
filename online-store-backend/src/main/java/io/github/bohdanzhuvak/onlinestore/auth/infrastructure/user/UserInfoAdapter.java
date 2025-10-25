@@ -1,7 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.user;
 
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.UserInfoPort;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.Credentials;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
@@ -48,8 +47,8 @@ public class UserInfoAdapter implements UserInfoPort {
   }
 
   @Override
-  public boolean validateCredentials(Credentials credentials) {
-    return externalUserOrchestrator.validateCredentials(toUserEmail(credentials.getEmail()), toUserPassword(credentials.getPassword()));
+  public boolean validateCredentials(Email email, String rawPassword) {
+    return externalUserOrchestrator.validateCredentials(toUserEmail(email), rawPassword);
   }
 
   // ============================
