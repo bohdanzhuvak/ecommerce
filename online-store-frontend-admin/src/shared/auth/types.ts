@@ -5,7 +5,6 @@ export interface LoginParams {
 
 export interface User {
   id: number;
-  username: string;
   email: string;
   role: string;
 }
@@ -18,7 +17,6 @@ export interface TokenInfo {
 
 export interface AuthResponse {
   token: string;
-  role: string;
   user: User;
   tokenInfo: TokenInfo;
 }

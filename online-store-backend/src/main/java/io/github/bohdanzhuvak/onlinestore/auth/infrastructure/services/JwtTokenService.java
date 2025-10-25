@@ -100,6 +100,11 @@ public class JwtTokenService implements TokenService {
   }
 
   @Override
+  public boolean isAccessTokenValid(String tokenValue) {
+    return isTokenValid(tokenValue, accessTokenSecretKey);
+  }
+
+  @Override
   public boolean isRefreshTokenValid(RefreshToken token) {
     return isTokenValid(token.getValue(), refreshTokenSecretKey);
   }
@@ -131,8 +136,13 @@ public class JwtTokenService implements TokenService {
 
   @Override
   public Optional<UserInfo> extractUserInfo(AccessToken token) {
+    return extractUserInfo(token.getValue());
+  }
+
+  @Override
+  public Optional<UserInfo> extractUserInfo(String tokenValue) {
     try {
-      Claims claims = parseClaims(token.getValue(), accessTokenSecretKey);
+      Claims claims = parseClaims(tokenValue, accessTokenSecretKey);
 
       if ("refresh".equals(claims.get("type"))) {
         return Optional.empty();

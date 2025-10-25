@@ -1,7 +1,6 @@
 package io.github.bohdanzhuvak.onlinestore.auth.infrastructure.security.authentication;
 
 import io.github.bohdanzhuvak.onlinestore.auth.application.port.out.TokenService;
-import io.github.bohdanzhuvak.onlinestore.auth.domain.AccessToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +29,9 @@ public class JwtFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
-      AccessToken token = AccessToken.of(authHeader.substring(7), null);
-      if (jwtService.isAccessTokenValid(token)) {
-        String email = jwtService.extractUserInfo(token)
+      String tokenValue = authHeader.substring(7);
+      if (jwtService.isAccessTokenValid(tokenValue)) {
+        String email = jwtService.extractUserInfo(tokenValue)
             .orElseThrow(() -> new IllegalArgumentException("Invalid token"))
             .email().getValue();
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);

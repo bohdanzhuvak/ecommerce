@@ -8,7 +8,7 @@ export const authProvider: AuthProvider = {
   async login(params: LoginParams) {
     const data = await authService.login(params);
 
-    if (data.role !== USER_ROLES.ADMIN) {
+    if (data.user.role !== USER_ROLES.ADMIN) {
       throw new Error(ERROR_MESSAGES.ACCESS_DENIED);
     }
 

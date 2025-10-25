@@ -26,6 +26,14 @@ public interface TokenService {
   boolean isAccessTokenValid(AccessToken token);
 
   /**
+   * Validates an access token string
+   *
+   * @param tokenValue the access token string
+   * @return true if valid, false otherwise
+   */
+  boolean isAccessTokenValid(String tokenValue);
+
+  /**
    * Validates a refresh token
    *
    * @param token the refresh token
@@ -40,6 +48,14 @@ public interface TokenService {
    * @return user information if token is valid, empty otherwise
    */
   Optional<UserInfo> extractUserInfo(AccessToken token);
+
+  /**
+   * Extracts user information from an access token string
+   *
+   * @param tokenValue the access token string
+   * @return user information if token is valid, empty otherwise
+   */
+  Optional<UserInfo> extractUserInfo(String tokenValue);
 
   /**
    * Extracts user information from a refresh token
