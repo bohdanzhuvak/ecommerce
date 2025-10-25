@@ -1,0 +1,95 @@
+package io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.admin;
+
+import io.github.bohdanzhuvak.onlinestore.catalog.application.services.WebCatalogOrchestratorService;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateCategoryUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.UpdateCategoryUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.domain.Category;
+import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CategoryResponse;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CreateCategoryRequest;
+import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.UpdateCategoryRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/admin/categories")
+public class CategoryAdminController {
+  private final WebCatalogOrchestratorService catalogService;
+
+  public CategoryAdminController(WebCatalogOrchestratorService catalogService) {
+    this.catalogService = catalogService;
+  }
+
+  @GetMapping
+  public ResponseEntity<List<CategoryResponse>> getAllCategories(
+      @RequestParam(defaultValue = "0") int offset,
+      @RequestParam(defaultValue = "20") int limit) {
+    List<Category> categories = catalogService.getAllCategories(offset, limit);
+    return ResponseEntity.ok()
+        .header("X-Total-Count", String.valueOf(catalogService.getAllCategories().size()))
+        .body(CategoryResponse.from(categories));
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<CategoryResponse> getCategory(@PathVariable String id) {
+    CategoryId categoryId = CategoryId.of(id);
+    Optional<Category> category = catalogService.getCategory(categoryId);
+    return category.map(c -> ResponseEntity.ok(CategoryResponse.from(c)))
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @PostMapping
+  public ResponseEntity<CategoryResponse> createCategory(@RequestBody CreateCategoryRequest request) {
+    try {
+      CreateCategoryUseCase.CreateCategoryCommand command = new CreateCategoryUseCase.CreateCategoryCommand(
+          request.name(),
+          request.description()
+      );
+
+      Category category = catalogService.createCategory(command);
+      return ResponseEntity.status(HttpStatus.CREATED).body(CategoryResponse.from(category));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().build();
+    }
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<CategoryResponse> updateCategory(@PathVariable String id, @RequestBody UpdateCategoryRequest request) {
+    try {
+      CategoryId categoryId = CategoryId.of(id);
+      UpdateCategoryUseCase.UpdateCategoryCommand command = new UpdateCategoryUseCase.UpdateCategoryCommand(
+          categoryId,
+          request.name(),
+          request.description()
+      );
+
+      Category category = catalogService.updateCategory(command);
+      return ResponseEntity.ok(CategoryResponse.from(category));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().build();
+    }
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
+    try {
+      CategoryId categoryId = CategoryId.of(id);
+      catalogService.deleteCategory(categoryId);
+      return ResponseEntity.noContent().build();
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
+}

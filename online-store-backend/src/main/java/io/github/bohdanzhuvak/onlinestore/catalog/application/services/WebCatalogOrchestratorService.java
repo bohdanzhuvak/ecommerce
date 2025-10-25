@@ -1,12 +1,18 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.application.services;
 
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateCategoryUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.CreateProductUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.DeleteCategoryUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.DeleteProductUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.GetAllCategoriesUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.GetAllProductsUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.GetCategoryUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.GetProductUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.GetProductsUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.SearchProductsUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.UpdateCategoryUseCase;
 import io.github.bohdanzhuvak.onlinestore.catalog.application.usecases.UpdateProductUseCase;
+import io.github.bohdanzhuvak.onlinestore.catalog.domain.Category;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.CategoryId;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.catalog.domain.Product;
@@ -23,6 +29,11 @@ public class WebCatalogOrchestratorService {
   private final CreateProductUseCase createProductUseCase;
   private final UpdateProductUseCase updateProductUseCase;
   private final DeleteProductUseCase deleteProductUseCase;
+  private final GetAllCategoriesUseCase getAllCategoriesUseCase;
+  private final GetCategoryUseCase getCategoryUseCase;
+  private final CreateCategoryUseCase createCategoryUseCase;
+  private final UpdateCategoryUseCase updateCategoryUseCase;
+  private final DeleteCategoryUseCase deleteCategoryUseCase;
 
   public WebCatalogOrchestratorService(GetProductsUseCase getProductsUseCase,
                                        GetProductUseCase getProductUseCase,
@@ -30,7 +41,12 @@ public class WebCatalogOrchestratorService {
                                        GetAllProductsUseCase getAllProductsUseCase,
                                        CreateProductUseCase createProductUseCase,
                                        UpdateProductUseCase updateProductUseCase,
-                                       DeleteProductUseCase deleteProductUseCase) {
+                                       DeleteProductUseCase deleteProductUseCase,
+                                       GetAllCategoriesUseCase getAllCategoriesUseCase,
+                                       GetCategoryUseCase getCategoryUseCase,
+                                       CreateCategoryUseCase createCategoryUseCase,
+                                       UpdateCategoryUseCase updateCategoryUseCase,
+                                       DeleteCategoryUseCase deleteCategoryUseCase) {
     this.getProductsUseCase = getProductsUseCase;
     this.getProductUseCase = getProductUseCase;
     this.searchProductsUseCase = searchProductsUseCase;
@@ -38,6 +54,11 @@ public class WebCatalogOrchestratorService {
     this.createProductUseCase = createProductUseCase;
     this.updateProductUseCase = updateProductUseCase;
     this.deleteProductUseCase = deleteProductUseCase;
+    this.getAllCategoriesUseCase = getAllCategoriesUseCase;
+    this.getCategoryUseCase = getCategoryUseCase;
+    this.createCategoryUseCase = createCategoryUseCase;
+    this.updateCategoryUseCase = updateCategoryUseCase;
+    this.deleteCategoryUseCase = deleteCategoryUseCase;
   }
 
   // Customer methods
@@ -92,5 +113,30 @@ public class WebCatalogOrchestratorService {
 
   public void deleteProduct(ProductId productId) {
     deleteProductUseCase.execute(productId);
+  }
+
+  // Category methods
+  public List<Category> getAllCategories() {
+    return getAllCategoriesUseCase.execute();
+  }
+
+  public List<Category> getAllCategories(int offset, int limit) {
+    return getAllCategoriesUseCase.execute(offset, limit);
+  }
+
+  public Optional<Category> getCategory(CategoryId categoryId) {
+    return getCategoryUseCase.execute(categoryId);
+  }
+
+  public Category createCategory(CreateCategoryUseCase.CreateCategoryCommand command) {
+    return createCategoryUseCase.execute(command);
+  }
+
+  public Category updateCategory(UpdateCategoryUseCase.UpdateCategoryCommand command) {
+    return updateCategoryUseCase.execute(command);
+  }
+
+  public void deleteCategory(CategoryId categoryId) {
+    deleteCategoryUseCase.execute(categoryId);
   }
 }
