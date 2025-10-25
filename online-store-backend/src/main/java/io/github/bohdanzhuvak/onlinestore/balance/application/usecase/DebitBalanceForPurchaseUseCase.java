@@ -8,6 +8,7 @@ import io.github.bohdanzhuvak.onlinestore.balance.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Transaction;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.TransactionType;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.UserId;
+import io.github.bohdanzhuvak.onlinestore.balance.domain.exception.BalanceNotFoundException;
 
 @UseCase
 public class DebitBalanceForPurchaseUseCase {
@@ -20,7 +21,10 @@ public class DebitBalanceForPurchaseUseCase {
   }
 
   public void execute(DebitBalanceForPurchaseCommand command) {
-    Balance currentBalance = balanceRepository.findByUserId(command.userId()).orElseThrow(() -> new RuntimeException("Balance not found for user: " + command.userId()));
+    Balance currentBalance = balanceRepository
+        .findByUserId(command.userId())
+        .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
+
     Balance newBalance = currentBalance.subtract(command.amount());
 
     Balance savedBalance = balanceRepository.save(newBalance);

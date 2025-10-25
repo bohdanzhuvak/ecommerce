@@ -192,6 +192,29 @@ When adding new functionality to an existing module:
 - Do NOT add `@Transactional` to use case classes (handled by AOP)
 - Orchestrator services coordinate multiple use cases but should not contain business logic
 
+### Exception Handling
+
+The application uses a unified exception handling architecture aligned with DDD and Hexagonal Architecture principles:
+
+- **Domain Exceptions**: All business exceptions extend `DomainException` (abstract base in `architecture` package)
+- **Exception Hierarchy**:
+  - `ResourceNotFoundException`: For missing resources (HTTP 404)
+  - `BusinessRuleViolationException`: For business rule violations (HTTP 422)
+  - Module-specific exceptions (e.g., `BalanceNotFoundException`, `InsufficientFundsException`)
+- **Global Exception Handler**: Located in `infrastructure.exception.GlobalExceptionHandler`
+  - Automatically catches all exceptions across controllers
+  - Returns standardized JSON error responses with error codes
+  - Maps exceptions to appropriate HTTP status codes
+- **Error Response Format**: Consistent structure with `errorCode`, `message`, `details`, and `timestamp`
+
+**Best Practices**:
+- NEVER throw `RuntimeException` directly - always use or create domain-specific exceptions
+- Throw exceptions from domain entities or use cases, not controllers
+- Let the Global Exception Handler handle all exceptions (don't catch in controllers)
+- Each exception must define a unique `errorCode` for client-side handling
+
+See `EXCEPTION_HANDLING.md` for detailed documentation and examples.
+
 ### Authentication & Security
 
 - JWT-based authentication configured in `application.yml`

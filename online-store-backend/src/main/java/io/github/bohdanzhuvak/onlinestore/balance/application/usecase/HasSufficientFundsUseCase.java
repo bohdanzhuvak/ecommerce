@@ -5,6 +5,7 @@ import io.github.bohdanzhuvak.onlinestore.balance.application.port.out.BalanceRe
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Balance;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.Money;
 import io.github.bohdanzhuvak.onlinestore.balance.domain.UserId;
+import io.github.bohdanzhuvak.onlinestore.balance.domain.exception.BalanceNotFoundException;
 
 @UseCase
 public class HasSufficientFundsUseCase {
@@ -15,7 +16,9 @@ public class HasSufficientFundsUseCase {
   }
 
   public boolean execute(HasSufficientFundsCommand command) {
-    Balance balance = balanceRepository.findByUserId(command.userId()).orElseThrow(() -> new RuntimeException("Balance not found for user: " + command.userId()));
+    Balance balance = balanceRepository
+        .findByUserId(command.userId())
+        .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
     return balance.hasSufficientFunds(command.amount());
   }
 
