@@ -9,6 +9,8 @@ import io.github.bohdanzhuvak.onlinestore.balance.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.balance.infrastructure.adapter.in.rest.resource.AdjustBalanceRequest;
 import io.github.bohdanzhuvak.onlinestore.balance.infrastructure.adapter.in.rest.resource.BalanceResponse;
 import io.github.bohdanzhuvak.onlinestore.balance.infrastructure.adapter.in.rest.resource.TransactionResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "balance-admin", description = "Administrator balance and transaction management")
 @RestController
 @RequestMapping("/api/v1/admin/balance")
 public class BalanceAdminController {
@@ -28,6 +31,7 @@ public class BalanceAdminController {
     this.webBalanceOrchestrator = webBalanceOrchestrator;
   }
 
+  @Operation(operationId = "adjustBalance", summary = "Adjust user balance", description = "Manually adjust user balance (admin only)")
   @PostMapping("/adjust")
   public ResponseEntity<BalanceResponse> adjustBalance(@RequestBody AdjustBalanceRequest request) {
     Balance balance = webBalanceOrchestrator.adjustBalance(
@@ -38,6 +42,7 @@ public class BalanceAdminController {
     return ResponseEntity.ok(BalanceResponse.from(balance));
   }
 
+  @Operation(operationId = "getAllTransactions", summary = "Get all transactions", description = "Get all balance transactions with optional filters (admin only)")
   @GetMapping("/transactions")
   public ResponseEntity<List<TransactionResponse>> getAllTransactions(
       @RequestParam(required = false) String userId,

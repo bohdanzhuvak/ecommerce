@@ -8,6 +8,8 @@ import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
 import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderResponse;
 import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.UpdateOrderStatusRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "orders-admin", description = "Order management operations for administrators")
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class OrderAdminController {
@@ -26,6 +29,7 @@ public class OrderAdminController {
     this.webOrderOrchestrator = webOrderOrchestrator;
   }
 
+  @Operation(operationId = "getAllOrders", summary = "Get all orders", description = "Get all orders with optional status filter (admin only)")
   @GetMapping
   public ResponseEntity<PagedResponse<OrderResponse>> getAllOrders(
       @RequestParam(required = false) String status,
@@ -41,6 +45,7 @@ public class OrderAdminController {
     }
   }
 
+  @Operation(operationId = "updateOrderStatus", summary = "Update order status", description = "Update the status of an order (admin only)")
   @PutMapping("/{orderId}/status")
   public ResponseEntity<OrderResponse> updateOrderStatus(@PathVariable String orderId,
                                                  @RequestBody UpdateOrderStatusRequest request) {

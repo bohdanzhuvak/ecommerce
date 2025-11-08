@@ -8,6 +8,8 @@ import io.github.bohdanzhuvak.onlinestore.auth.domain.User;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.adapter.in.rest.resource.AuthResponse;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.adapter.in.rest.resource.LoginRequest;
 import io.github.bohdanzhuvak.onlinestore.auth.infrastructure.adapter.in.rest.resource.RegisterRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * REST controller for authentication operations
  */
+@Tag(name = "authentication", description = "User authentication and authorization operations")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -31,6 +34,7 @@ public class AuthController {
     this.authApplicationService = authApplicationService;
   }
 
+  @Operation(operationId = "login", summary = "User login", description = "Authenticate user and return access token and user info")
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     AuthenticationResult result = authApplicationService.login(request.email(), request.password());
@@ -42,6 +46,7 @@ public class AuthController {
         .body(response);
   }
 
+  @Operation(operationId = "register", summary = "Register new user", description = "Create a new user account and return access token and user info")
   @PostMapping("/register")
   public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
     AuthenticationResult result = authApplicationService.register(
@@ -54,6 +59,7 @@ public class AuthController {
         .body(response);
   }
 
+  @Operation(operationId = "refreshToken", summary = "Refresh access token", description = "Get a new access token using refresh token from cookie")
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponse> refresh(@CookieValue(value = "refreshToken", required = false) String refreshTokenValue) {
     if (refreshTokenValue == null) {
@@ -68,6 +74,7 @@ public class AuthController {
         .body(response);
   }
 
+  @Operation(operationId = "logout", summary = "Logout user", description = "Invalidate refresh token and clear authentication cookies")
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String refreshTokenValue) {
     if (refreshTokenValue != null) {

@@ -7,6 +7,8 @@ import io.github.bohdanzhuvak.onlinestore.delivery.domain.DeliveryStatus;
 import io.github.bohdanzhuvak.onlinestore.delivery.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.delivery.infrastructure.adapter.in.rest.resource.DeliveryResponse;
 import io.github.bohdanzhuvak.onlinestore.delivery.infrastructure.adapter.in.rest.resource.UpdateDeliveryStatusRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "delivery-admin", description = "Delivery management operations for administrators")
 @RestController
 @RequestMapping("/api/v1/admin/deliveries")
 public class DeliveryAdminController {
@@ -27,6 +30,7 @@ public class DeliveryAdminController {
     this.webDeliveryOrchestrator = webDeliveryOrchestrator;
   }
 
+  @Operation(operationId = "getAllDeliveries", summary = "Get all deliveries", description = "Get all deliveries with optional filters (admin only)")
   @GetMapping
   public ResponseEntity<List<DeliveryResponse>> getAllDeliveries(
       @RequestParam(required = false) String userId,
@@ -45,6 +49,7 @@ public class DeliveryAdminController {
     }
   }
 
+  @Operation(operationId = "updateDeliveryStatus", summary = "Update delivery status", description = "Update the status of a delivery (admin only)")
   @PutMapping("/{deliveryId}/status")
   public ResponseEntity<DeliveryResponse> updateDeliveryStatus(@PathVariable String deliveryId,
                                                        @RequestBody UpdateDeliveryStatusRequest request) {

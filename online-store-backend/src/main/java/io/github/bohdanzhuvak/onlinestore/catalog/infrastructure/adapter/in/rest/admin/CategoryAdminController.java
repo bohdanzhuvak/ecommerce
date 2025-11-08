@@ -10,6 +10,8 @@ import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.CreateCategoryRequest;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.PagedResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.UpdateCategoryRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+@Tag(name = "categories-admin", description = "Category management operations for administrators")
 @RestController
 @RequestMapping("/api/v1/admin/categories")
 public class CategoryAdminController {
@@ -33,6 +36,7 @@ public class CategoryAdminController {
     this.catalogService = catalogService;
   }
 
+  @Operation(operationId = "getAllCategories", summary = "Get all categories", description = "Get paginated list of all categories (admin only)")
   @GetMapping
   public ResponseEntity<PagedResponse<CategoryResponse>> getAllCategories(
       @RequestParam(defaultValue = "0") int page,
@@ -42,6 +46,7 @@ public class CategoryAdminController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(operationId = "getCategoryById", summary = "Get category by ID", description = "Get a single category by its ID (admin only)")
   @GetMapping("/{id}")
   public ResponseEntity<CategoryResponse> getCategory(@PathVariable String id) {
     CategoryId categoryId = CategoryId.of(id);
@@ -50,6 +55,7 @@ public class CategoryAdminController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  @Operation(operationId = "createCategory", summary = "Create new category", description = "Create a new product category (admin only)")
   @PostMapping
   public ResponseEntity<CategoryResponse> createCategory(@RequestBody CreateCategoryRequest request) {
     try {
@@ -65,6 +71,7 @@ public class CategoryAdminController {
     }
   }
 
+  @Operation(operationId = "updateCategory", summary = "Update category", description = "Update an existing category (admin only)")
   @PutMapping("/{id}")
   public ResponseEntity<CategoryResponse> updateCategory(@PathVariable String id, @RequestBody UpdateCategoryRequest request) {
     try {
@@ -82,6 +89,7 @@ public class CategoryAdminController {
     }
   }
 
+  @Operation(operationId = "deleteCategory", summary = "Delete category", description = "Delete a category by its ID (admin only)")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
     try {

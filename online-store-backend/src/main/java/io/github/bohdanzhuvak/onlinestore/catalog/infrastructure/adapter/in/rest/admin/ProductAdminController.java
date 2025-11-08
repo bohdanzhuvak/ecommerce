@@ -12,6 +12,8 @@ import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.PagedResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.ProductResponse;
 import io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource.UpdateProductRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+@Tag(name = "products-admin", description = "Product management operations for administrators")
 @RestController
 @RequestMapping("/api/v1/admin/products")
 public class ProductAdminController {
@@ -35,6 +38,7 @@ public class ProductAdminController {
     this.internalCatalogService = internalCatalogService;
   }
 
+  @Operation(operationId = "getAllProducts", summary = "Get all products", description = "Get paginated list of all products (admin only)")
   @GetMapping
   public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
       @RequestParam(defaultValue = "1") int page,
@@ -44,6 +48,7 @@ public class ProductAdminController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(operationId = "getProductById", summary = "Get product by ID", description = "Get a single product by its ID (admin only)")
   @GetMapping("/{id}")
   public ResponseEntity<ProductResponse> getProduct(@PathVariable String id) {
     ProductId productId = ProductId.of(id);
@@ -52,6 +57,7 @@ public class ProductAdminController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  @Operation(operationId = "createProduct", summary = "Create new product", description = "Create a new product (admin only)")
   @PostMapping
   public ResponseEntity<ProductResponse> createProduct(@RequestBody CreateProductRequest request) {
     try {
@@ -71,6 +77,7 @@ public class ProductAdminController {
     }
   }
 
+  @Operation(operationId = "updateProduct", summary = "Update product", description = "Update an existing product (admin only)")
   @PutMapping("/{id}")
   public ResponseEntity<ProductResponse> updateProduct(@PathVariable String id, @RequestBody UpdateProductRequest request) {
     try {
@@ -91,6 +98,7 @@ public class ProductAdminController {
     }
   }
 
+  @Operation(operationId = "deleteProduct", summary = "Delete product", description = "Delete a product by its ID (admin only)")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
     try {

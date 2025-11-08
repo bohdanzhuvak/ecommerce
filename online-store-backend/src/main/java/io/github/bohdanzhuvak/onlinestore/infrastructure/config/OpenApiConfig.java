@@ -15,14 +15,18 @@ public class OpenApiConfig {
   @Bean
   public OpenAPI customOpenAPI() {
     return new OpenAPI()
-        .info(new Info().title("Online Store API").version("v1"))
+        .info(new Info()
+            .title("Online Store API")
+            .version("v1")
+            .description("RESTful API for the Online Store e-commerce platform. " +
+                "The API provides endpoints for both customers and administrators, " +
+                "supporting authentication, product catalog, shopping cart, orders, " +
+                "delivery tracking, and user management."))
         .components(new Components()
             .addSecuritySchemes(SECURITY_SCHEME, new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER)
-                .name("Authorization")
             )
         )
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME));

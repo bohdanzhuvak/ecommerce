@@ -7,6 +7,8 @@ import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserRole;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UserResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "users-admin", description = "User management operations for administrators")
 @RestController
 @RequestMapping("/api/v1/admin/users")
 public class UserAdminController {
@@ -24,6 +27,7 @@ public class UserAdminController {
     this.webUserOrchestratorService = webUserOrchestratorService;
   }
 
+  @Operation(operationId = "getAllUsers", summary = "Get all users", description = "Get all users with optional filters (admin only)")
   @GetMapping
   public ResponseEntity<PagedResponse<UserResponse>> getAllUsers(
       @RequestParam(required = false) String role,
@@ -40,6 +44,7 @@ public class UserAdminController {
     }
   }
 
+  @Operation(operationId = "activateUser", summary = "Activate user", description = "Activate a user account (admin only)")
   @PutMapping("/{userId}/activate")
   public ResponseEntity<UserResponse> activateUser(@PathVariable String userId) {
     try {
@@ -50,6 +55,7 @@ public class UserAdminController {
     }
   }
 
+  @Operation(operationId = "deactivateUser", summary = "Deactivate user", description = "Deactivate a user account (admin only)")
   @PutMapping("/{userId}/deactivate")
   public ResponseEntity<UserResponse> deactivateUser(@PathVariable String userId) {
     try {
