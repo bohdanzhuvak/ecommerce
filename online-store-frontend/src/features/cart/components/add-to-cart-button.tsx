@@ -51,9 +51,6 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     }
 
     addToCartMutation.mutate({
-      params: {
-        userId: String(state.user.id),
-      },
       data: {
         productId,
         quantity: 1,

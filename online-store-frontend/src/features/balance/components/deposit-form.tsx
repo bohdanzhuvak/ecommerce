@@ -1,17 +1,17 @@
 import React from 'react';
-import {useDepositToBalance} from '../api/deposit';
-import {Button} from '@/shared/components/ui/button';
-import {useNotifications} from "@/shared/components/ui/notifications";
-import {Form, FormDrawer, Input, Textarea} from "@/shared/components/ui/form";
-import {Plus} from "lucide-react";
-import {depositInputSchema} from "../api.types.ts";
+import { useDepositToBalance } from '../api/deposit';
+import { Button } from '@/shared/components/ui/button';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { Form, FormDrawer, Input, Textarea } from '@/shared/components/ui/form';
+import { Plus } from 'lucide-react';
+import { depositInputSchema } from '../api.types.ts';
 
 interface DepositFormProps {
   defaultAmount?: number;
 }
 
-export const DepositForm: React.FC<DepositFormProps> = ({defaultAmount}) => {
-  const {addNotification} = useNotifications();
+export const DepositForm: React.FC<DepositFormProps> = ({ defaultAmount }) => {
+  const { addNotification } = useNotifications();
 
   const depositMutation = useDepositToBalance({
     mutationConfig: {
@@ -34,7 +34,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({defaultAmount}) => {
     <FormDrawer
       isDone={depositMutation.isSuccess}
       triggerButton={
-        <Button icon={<Plus className="size-4"/>} size="sm" variant="outline">
+        <Button icon={<Plus className="size-4" />} size="sm" variant="outline">
           Deposit
         </Button>
       }
@@ -55,8 +55,11 @@ export const DepositForm: React.FC<DepositFormProps> = ({defaultAmount}) => {
         id="deposit-form"
         onSubmit={(values) => {
           depositMutation.mutate({
-            amount: parseFloat(values.amount),
-            description: values.description || undefined,
+            data: {
+              amount: parseFloat(values.amount),
+              description: values.description || undefined,
+              currency: 'USD',
+            },
           });
         }}
         options={{
@@ -67,7 +70,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({defaultAmount}) => {
         }}
         schema={depositInputSchema}
       >
-        {({register, formState}) => (
+        {({ register, formState }) => (
           <>
             <Input
               type="number"

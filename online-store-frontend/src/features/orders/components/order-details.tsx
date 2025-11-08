@@ -1,17 +1,17 @@
 import React from 'react';
-import {useOrder} from '../api/get-order';
-import {PayOrderButton} from './pay-order-button';
-import {useBalance} from '@/shared/hooks';
-import {Spinner} from '@/shared/components/ui/spinner';
-import {OrderItem} from '../api.types';
-import {DepositForm} from "@/features/balance";
+import { useOrder } from '../api/get-order';
+import { PayOrderButton } from './pay-order-button';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { OrderItem } from '../api.types';
+import { DepositForm } from '@/features/balance';
+import { useGetBalance } from '@/shared/api';
 
 interface OrderDetailsProps {
   orderId: number;
 }
 
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
-  const { data: balanceData } = useBalance();
+  const { data: balanceData } = useGetBalance();
 
   const orderQuery = useOrder(orderId);
 
@@ -33,7 +33,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -54,8 +54,9 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
     }
   };
 
-  const currentBalance = balanceData?.currentBalance || 0;
-  const canPay = order.status === 'PENDING' && currentBalance >= order.totalPrice;
+  const currentBalance = balanceData?.currentBalance?.amount || 0;
+  const canPay =
+    order.status === 'PENDING' && currentBalance >= order.totalPrice;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -63,14 +64,22 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Order #{order.id}</h1>
-            <p className="text-gray-600 mt-1">Placed on {formatDate(order.createdAt)}</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Order #{order.id}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Placed on {formatDate(order.createdAt)}
+            </p>
           </div>
           <div className="text-right">
-            <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+            <span
+              className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}
+            >
               {order.status}
             </span>
-            <p className="text-2xl font-bold text-blue-600 mt-2">${order.totalPrice.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-blue-600 mt-2">
+              ${order.totalPrice.toFixed(2)}
+            </p>
           </div>
         </div>
 
@@ -80,14 +89,20 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">
-                  Your balance: <span className="font-medium">${currentBalance.toFixed(2)}</span>
+                  Your balance:{' '}
+                  <span className="font-medium">
+                    ${currentBalance.toFixed(2)}
+                  </span>
                 </p>
                 {!canPay ? (
                   <>
                     <p className="text-sm text-red-600 mt-1">
-                      Insufficient funds. You need ${(order.totalPrice - currentBalance).toFixed(2)} more.
+                      Insufficient funds. You need $
+                      {(order.totalPrice - currentBalance).toFixed(2)} more.
                     </p>
-                    <DepositForm defaultAmount={order.totalPrice - currentBalance}/>
+                    <DepositForm
+                      defaultAmount={order.totalPrice - currentBalance}
+                    />
                   </>
                 ) : (
                   <PayOrderButton
@@ -104,17 +119,28 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
 
       {/* Order Items */}
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Order Items
+        </h2>
         <div className="space-y-4">
           {order.items.map((item: OrderItem, index: number) => (
-            <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+            <div
+              key={index}
+              className="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
+            >
               <div className="flex-1">
-                <h3 className="font-medium text-gray-900">{item.productName}</h3>
+                <h3 className="font-medium text-gray-900">
+                  {item.productName}
+                </h3>
                 <p className="text-sm text-gray-600">SKU: {item.productId}</p>
               </div>
               <div className="text-right">
-                <p className="font-medium text-gray-900">Quantity: {item.quantity}</p>
-                <p className="text-sm text-gray-600">${item.pricePerUnit.toFixed(2)} each</p>
+                <p className="font-medium text-gray-900">
+                  Quantity: {item.quantity}
+                </p>
+                <p className="text-sm text-gray-600">
+                  ${item.pricePerUnit.toFixed(2)} each
+                </p>
                 <p className="font-semibold text-blue-600">
                   ${(item.pricePerUnit * item.quantity).toFixed(2)}
                 </p>
@@ -127,18 +153,25 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
       {/* Delivery Address */}
       {order.deliveryAddress && (
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Delivery Address</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Delivery Address
+          </h2>
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="font-medium text-gray-900">{order.deliveryAddress.street}</p>
+                <p className="font-medium text-gray-900">
+                  {order.deliveryAddress.street}
+                </p>
                 <p className="text-gray-600">
-                  {order.deliveryAddress.city}, {order.deliveryAddress.postalCode}
+                  {order.deliveryAddress.city},{' '}
+                  {order.deliveryAddress.postalCode}
                 </p>
                 <p className="text-gray-600">{order.deliveryAddress.country}</p>
               </div>
               <div>
-                <p className="text-gray-600">Phone: {order.deliveryAddress.phone}</p>
+                <p className="text-gray-600">
+                  Phone: {order.deliveryAddress.phone}
+                </p>
                 {order.deliveryAddress.isDefault && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium mt-2">
                     Default Address
@@ -152,7 +185,9 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
 
       {/* Order Summary */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Order Summary
+        </h2>
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Subtotal:</span>
@@ -165,7 +200,9 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
           <div className="border-t pt-3">
             <div className="flex justify-between text-lg font-bold">
               <span>Total:</span>
-              <span className="text-blue-600">${order.totalPrice.toFixed(2)}</span>
+              <span className="text-blue-600">
+                ${order.totalPrice.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>

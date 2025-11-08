@@ -1,43 +1,37 @@
-import {Pen} from 'lucide-react';
-import {useState} from 'react';
+import { Pen } from 'lucide-react';
+import { useState } from 'react';
 
-import {Button} from '@/shared/components/ui/button';
-import {Form, FormDrawer, Input} from '@/shared/components/ui/form';
-import {useNotifications} from '@/shared/components/ui/notifications';
+import { Button } from '@/shared/components/ui/button';
+import { Form, FormDrawer, Input } from '@/shared/components/ui/form';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { useUpdateUserProfile } from '@/shared/api/generated/users-customer/users-customer';
+import { updateProfileInputSchema } from '../api/update-profile';
 
-import {updateProfileInputSchema, useUpdateProfile} from '../api/update-profile';
-import {useAuth} from "@/shared/lib/auth";
-
-export const UpdateProfile = () => {
-  const auth = useAuth();
-  const user = auth.state.user;
-  const {addNotification} = useNotifications();
+export const UpdateProfile = ({
+  currentFirstName,
+  currentLastName,
+}: {
+  currentFirstName?: string;
+  currentLastName?: string;
+}) => {
+  const { addNotification } = useNotifications();
   const [apiError, setApiError] = useState<string | null>(null);
-  const updateProfileMutation = useUpdateProfile({
-    mutationConfig: {
-      onSuccess: (_data, variables) => {
-        const prevEmail = user?.email;
-        const newEmail = variables.data.email;
-        if (prevEmail && newEmail && prevEmail !== newEmail) {
-          addNotification({
-            type: 'success',
-            title: 'Email changed',
-          });
-          auth.logout();
-        } else {
-          addNotification({
-            type: 'success',
-            title: 'Profile Updated',
-          });
-        }
+  const updateProfileMutation = useUpdateUserProfile({
+    mutation: {
+      onSuccess: () => {
+        addNotification({
+          type: 'success',
+          title: 'Profile Updated',
+        });
         setApiError(null);
       },
       onError: (error: any) => {
-        const message = error?.response?.data?.message || 'Failed to update profile';
+        const message =
+          error?.response?.data?.message || 'Failed to update profile';
         setApiError(message);
         addNotification({
           type: 'error',
-          title: 'Update failed'
+          title: 'Update failed',
         });
       },
     },
@@ -47,7 +41,7 @@ export const UpdateProfile = () => {
     <FormDrawer
       isDone={updateProfileMutation.isSuccess}
       triggerButton={
-        <Button icon={<Pen className="size-4"/>} size="sm">
+        <Button icon={<Pen className="size-4" />} size="sm">
           Update Profile
         </Button>
       }
@@ -66,31 +60,32 @@ export const UpdateProfile = () => {
       <Form
         id="update-profile"
         onSubmit={(values) => {
-          const data = {...values};
-          updateProfileMutation.mutate({data});
+          updateProfileMutation.mutate({
+            data: values,
+          });
         }}
         options={{
           defaultValues: {
-            email: user?.email?? '',
-            username: user?.username ?? '',
+            firstName: currentFirstName ?? '',
+            lastName: currentLastName ?? '',
           },
         }}
         schema={updateProfileInputSchema}
       >
-        {({register, formState}) => (
+        {({ register, formState }) => (
           <>
             {apiError && (
               <div className="text-red-500 text-sm mb-2">{apiError}</div>
             )}
             <Input
-              label="Email"
-              error={formState.errors['email']}
-              registration={register('email')}
+              label="First Name"
+              error={formState.errors['firstName']}
+              registration={register('firstName')}
             />
             <Input
-              label="Username"
-              error={formState.errors['username']}
-              registration={register('username')}
+              label="Last Name"
+              error={formState.errors['lastName']}
+              registration={register('lastName')}
             />
           </>
         )}

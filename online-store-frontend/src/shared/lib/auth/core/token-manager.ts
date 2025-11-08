@@ -1,5 +1,5 @@
-import {EventEmitter} from './event-emitter';
-import {env} from '@/config/env';
+import { EventEmitter } from './event-emitter';
+import { env } from '@/config/env';
 
 export interface TokenData {
   token: string;
@@ -46,11 +46,15 @@ export class TokenManager extends EventEmitter {
     return tokenData.token;
   }
 
-  public setToken(token: string, expiresAt: number, refreshExpiresAt: number): void {
+  public setToken(
+    token: string,
+    expiresAt: number,
+    refreshExpiresAt: number,
+  ): void {
     const tokenData: TokenData = {
       token,
       expiresAt,
-      refreshExpiresAt
+      refreshExpiresAt,
     };
     this.saveTokenToStorage(tokenData);
     this.emit('tokenSet', token);
@@ -79,7 +83,7 @@ export class TokenManager extends EventEmitter {
   private async performTokenRefresh(): Promise<string> {
     try {
       console.log('Starting token refresh...');
-      const response = await fetch(`${env.API_URL}/auth/refresh`, {
+      const response = await fetch(`${env.API_URL}/api/v1/auth/refresh`, {
         method: 'POST',
         credentials: 'include', // Include cookies
         headers: {
@@ -94,9 +98,10 @@ export class TokenManager extends EventEmitter {
       const data = await response.json();
       console.log('Token refresh response:', data);
 
-      const token = data.token || data.accessToken;
-      const expiresAt = data.tokenInfo?.expiresAt || data.expiresAt || (Date.now() + 3600000); // 1 час по умолчанию
-      const refreshExpiresAt = data.tokenInfo?.refreshExpiresAt || data.refreshExpiresAt || (Date.now() + 86400000); // 24 часа по умолчанию
+      const token = data.token;
+      const expiresAt = data.tokenInfo?.accessExpiresAt || Date.now() + 900000; // 15 min default
+      const refreshExpiresAt =
+        data.tokenInfo?.refreshExpiresAt || Date.now() + 604800000; // 7 days default
 
       if (!token) {
         throw new Error('Invalid token response format');

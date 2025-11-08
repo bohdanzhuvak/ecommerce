@@ -63,7 +63,7 @@ export class AuthManager extends EventEmitter {
 
       const token = await this.tokenManager.getToken();
       if (token) {
-        const user = await this.userManager.loadUser();
+        const user = this.userManager.getCachedUser();
         if (user) {
           if (user.role === 'ADMIN') {
             this.tokenManager.clearToken();
@@ -139,7 +139,8 @@ export class AuthManager extends EventEmitter {
   public async register(credentials: {
     email: string;
     password: string;
-    username: string;
+    firstName: string;
+    lastName: string;
   }): Promise<User> {
     try {
       this._state.isLoading = true;

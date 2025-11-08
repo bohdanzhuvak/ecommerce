@@ -1,16 +1,17 @@
-import {UpdateProfile} from '@/features/users/components/update-profile';
-import {ContentLayout} from '@/shared/components/layouts';
-import {DeleteUser} from "@/features/users/components/delete-user";
-import {useAuth} from "@/shared/lib/auth";
-import {BalanceHistory, DepositForm} from '@/features/balance';
-import {useBalance} from '@/shared/hooks';
-import {AddressForm, AddressList} from '@/features/delivery-addresses';
+import { UpdateProfile } from '@/features/users/components/update-profile';
+import { ContentLayout } from '@/shared/components/layouts';
+import { DeleteUser } from '@/features/users/components/delete-user';
+import { useAuth } from '@/shared/lib/auth';
+import { BalanceHistory, DepositForm } from '@/features/balance';
+import { AddressForm, AddressList } from '@/features/delivery-addresses';
+import { useGetUserProfile } from '@/shared/api/generated/users-customer/users-customer';
+import { useGetBalance } from '@/shared/api';
 
 type EntryProps = {
   label: string;
   value: string;
 };
-const Entry = ({label, value}: EntryProps) => (
+const Entry = ({ label, value }: EntryProps) => (
   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
     <dt className="text-sm font-medium text-gray-500">{label}</dt>
     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
@@ -20,10 +21,12 @@ const Entry = ({label, value}: EntryProps) => (
 );
 
 export const ProfileRoute = () => {
-  const user = useAuth().state.user;
-  const { data: balanceData } = useBalance();
+  const authUser = useAuth().state.user;
+  const { data: userProfile, isLoading: isLoadingProfile } =
+    useGetUserProfile();
+  const { data: balanceData } = useGetBalance();
 
-  if (!user) return null;
+  if (!authUser || isLoadingProfile) return null;
 
   return (
     <ContentLayout title="Profile">
@@ -35,7 +38,10 @@ export const ProfileRoute = () => {
               <h3 className="text-lg font-medium leading-6 text-gray-900">
                 User Information
               </h3>
-              <UpdateProfile/>
+              <UpdateProfile
+                currentFirstName={userProfile?.firstName}
+                currentLastName={userProfile?.lastName}
+              />
             </div>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
               Personal details of the user.
@@ -43,10 +49,17 @@ export const ProfileRoute = () => {
           </div>
           <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
             <dl className="sm:divide-y sm:divide-gray-200">
-              <Entry label="Email" value={user.email}/>
-              <Entry label="Username" value={user.username}/>
-              <Entry label="Balance" value={`$${balanceData?.currentBalance?.toFixed(2) || '0.00'}`}/>
-              <DeleteUser userEmail={user.email}/>
+              <Entry label="Email" value={authUser.email} />
+              <Entry
+                label="First Name"
+                value={userProfile?.firstName || 'N/A'}
+              />
+              <Entry label="Last Name" value={userProfile?.lastName || 'N/A'} />
+              <Entry
+                label="Balance"
+                value={`$${balanceData?.currentBalance?.amount?.toFixed(2) || '0.00'}`}
+              />
+              <DeleteUser userEmail={authUser.email} />
             </dl>
           </div>
         </div>

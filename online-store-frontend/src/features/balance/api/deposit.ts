@@ -1,26 +1,37 @@
-import { api } from '@/shared/lib/api-client';
-import {DepositRequest} from "../api.types.ts";
-import {MutationConfig} from "@/shared/lib/react-query.ts";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-
-export const depositToBalance = (request: DepositRequest): Promise<void> => {
-  return api.post('/users/balance/deposit', request);
-};
+import {
+  getGetBalanceQueryKey,
+  useDeposit,
+} from '@/shared/api/generated/balance-customer/balance-customer';
+import { useQueryClient } from '@tanstack/react-query';
 
 type UseDepositToBalanceOptions = {
-  mutationConfig?: MutationConfig<typeof depositToBalance>;
+  mutationConfig?: {
+    onSuccess?: () => void;
+    onError?: (error: unknown) => void;
+  };
 };
 
-export const useDepositToBalance = ({mutationConfig}: UseDepositToBalanceOptions) => {
+/**
+ * Hook to deposit funds to user's balance
+ * UserId is automatically extracted from JWT token on the backend
+ */
+export const useDepositToBalance = ({
+  mutationConfig,
+}: UseDepositToBalanceOptions = {}) => {
   const queryClient = useQueryClient();
-  const {onSuccess, ...restConfig} = mutationConfig || {};
 
-  return useMutation({
-    mutationFn: depositToBalance,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({queryKey: ['balance']});
-      onSuccess?.(...args);
+  return useDeposit({
+    mutation: {
+      onSuccess: () => {
+        // Invalidate balance query to refetch
+        queryClient.invalidateQueries({
+          queryKey: getGetBalanceQueryKey(),
+        });
+        mutationConfig?.onSuccess?.();
+      },
+      onError: (error) => {
+        mutationConfig?.onError?.(error);
+      },
     },
-    ...restConfig,
-  })
-}
+  });
+};

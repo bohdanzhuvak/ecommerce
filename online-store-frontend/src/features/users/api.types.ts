@@ -4,5 +4,6 @@ export interface DeleteUserRequest {
 
 export interface UpdateProfileRequest {
   email: string;
-  username: string;
+  firstName: string;
+  lastName: string;
 }

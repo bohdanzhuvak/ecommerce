@@ -1,14 +1,14 @@
-import {Link, useNavigate, useSearchParams} from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 
-import {paths} from '@/config/paths';
-import {Button} from '@/shared/components/ui/button';
-import {Form, Input} from '@/shared/components/ui/form';
-import {registerInputSchema} from '@/shared/types';
-import {useEffect, useState} from 'react';
-import {RegisterFormProps} from '../api.types';
-import {useAuth} from "@/shared/lib/auth";
+import { paths } from '@/config/paths';
+import { Button } from '@/shared/components/ui/button';
+import { Form, Input } from '@/shared/components/ui/form';
+import { registerInputSchema } from '@/shared/types';
+import { useEffect, useState } from 'react';
+import { RegisterFormProps } from '../api.types';
+import { useAuth } from '@/shared/lib/auth';
 
-export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
+export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const { register, state } = useAuth();
   const navigate = useNavigate();
@@ -36,18 +36,20 @@ export const RegisterForm = ({onSuccess}: RegisterFormProps) => {
 
   return (
     <div>
-      <Form
-        onSubmit={handleSubmit}
-        error={error}
-        schema={registerInputSchema}
-      >
-        {({register, formState}) => (
+      <Form onSubmit={handleSubmit} error={error} schema={registerInputSchema}>
+        {({ register, formState }) => (
           <>
             <Input
               type="text"
-              label="Name"
-              error={formState.errors['username']}
-              registration={register('username')}
+              label="First Name"
+              error={formState.errors['firstName']}
+              registration={register('firstName')}
+            />
+            <Input
+              type="text"
+              label="Last Name"
+              error={formState.errors['lastName']}
+              registration={register('lastName')}
             />
             <Input
               type="email"
