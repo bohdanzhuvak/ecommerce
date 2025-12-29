@@ -1,12 +1,12 @@
 import React from 'react';
-import {CartItem} from '../api.types';
-import {RemoveFromCart} from "@/features/cart/components/remove-from-cart";
+import { CartItem } from '../api.types';
+import { RemoveFromCart } from '@/features/cart/components/remove-from-cart';
 
 interface CartItemProps {
   item: CartItem;
 }
 
-export const CartItemComponent: React.FC<CartItemProps> = ({item}) => {
+export const CartItemComponent: React.FC<CartItemProps> = ({ item }) => {
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg">
       <div className="flex-1">
@@ -17,11 +17,11 @@ export const CartItemComponent: React.FC<CartItemProps> = ({item}) => {
         <div className="text-center">
           <p className="font-semibold">Quantity: {item.quantity}</p>
           <p className="text-lg font-bold text-blue-600">
-            ${(item.price * item.quantity).toFixed(2)}
+            ${item.totalPrice.amount + item.totalPrice.currency}
           </p>
         </div>
 
-        <RemoveFromCart productId={item.productId}/>
+        <RemoveFromCart productId={item.productId} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.catalog.infrastructure.adapter.in.rest.resource;
 
 import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 import java.util.function.Function;
@@ -11,7 +12,10 @@ import java.util.stream.Collectors;
  * Compatible with react-admin data provider format.
  */
 public record PagedResponse<T>(
+    @Schema(description = "List of items for current page", requiredMode = Schema.RequiredMode.REQUIRED)
     List<T> data,
+
+    @Schema(description = "Total number of items across all pages", requiredMode = Schema.RequiredMode.REQUIRED)
     long total
 ) {
   public static <T> PagedResponse<T> from(PageResult<T> pageResult) {

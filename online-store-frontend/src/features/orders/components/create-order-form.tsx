@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useDisclosure } from '@/shared/hooks/use-disclosure';
 import {
   Drawer,
@@ -10,11 +10,13 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { useCreateOrderFromCart } from '../api/create-order-from-cart';
 import { useNotifications } from '@/shared/components/ui/notifications';
-import { useCart } from '@/features/cart/api/get-cart';
-import { getDeliveryAddresses } from '@/features/delivery-addresses/api/get-addresses';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { DeliveryAddress } from '@/features/delivery-addresses/api.types.ts';
-import { useGetBalance } from '@/shared/api';
+import {
+  useGetBalance,
+  useGetCart,
+  useGetDeliveryAddresses,
+} from '@/shared/api';
 
 interface CreateOrderFormProps {
   className?: string;
@@ -26,7 +28,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
   disabled = false,
 }) => {
   const { isOpen, open, close } = useDisclosure();
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   );
   const { addNotification } = useNotifications();
@@ -34,12 +36,9 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
 
   const { data: balanceData } = useGetBalance();
 
-  const cartQuery = useCart({});
+  const cartQuery = useGetCart({});
 
-  const { data: addresses, isLoading: addressesLoading } = useQuery({
-    queryKey: ['delivery-addresses'],
-    queryFn: getDeliveryAddresses,
-  });
+  const deliveryAddressesQuery = useGetDeliveryAddresses();
 
   const createOrderMutation = useCreateOrderFromCart({
     mutationConfig: {
@@ -74,13 +73,18 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
       return;
     }
 
-    createOrderMutation.mutate(selectedAddressId);
+    createOrderMutation.mutate(Number(selectedAddressId));
   };
 
   const cart = cartQuery.data;
-  const totalPrice = cart?.totalPrice || 0;
+  const deliveryAddresses = deliveryAddressesQuery.data;
+
+  if (!cart || !deliveryAddresses) {
+    return null;
+  }
+  const totalPrice = cart.totalAmount || 0;
   const currentBalance = balanceData?.currentBalance?.amount || 0;
-  const hasSufficientFunds = currentBalance >= totalPrice;
+  const hasSufficientFunds = currentBalance >= totalPrice.amount;
 
   return (
     <>
@@ -114,7 +118,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Total Price:</span>
                   <span className="font-bold text-lg">
-                    ${totalPrice.toFixed(2)}
+                    ${totalPrice.amount + totalPrice.currency}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -144,9 +148,9 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                 Delivery Address
               </h3>
 
-              {addressesLoading ? (
+              {deliveryAddressesQuery.isLoading ? (
                 <Spinner />
-              ) : !addresses || addresses.length === 0 ? (
+              ) : !deliveryAddresses || deliveryAddresses.length === 0 ? (
                 <div className="text-center py-4">
                   <p className="text-gray-500 mb-2">
                     No delivery addresses found
@@ -157,7 +161,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {addresses.map((address: DeliveryAddress) => (
+                  {deliveryAddresses.map((address: DeliveryAddress) => (
                     <label
                       key={address.id}
                       className="flex items-center space-x-3 cursor-pointer"
@@ -167,9 +171,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                         name="address"
                         value={address.id}
                         checked={selectedAddressId === address.id}
-                        onChange={(e) =>
-                          setSelectedAddressId(Number(e.target.value))
-                        }
+                        onChange={(e) => setSelectedAddressId(e.target.value)}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                       />
                       <div
@@ -191,7 +193,6 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                         <p className="text-sm text-gray-600">
                           {address.country}
                         </p>
-                        <p className="text-sm text-gray-600">{address.phone}</p>
                       </div>
                     </label>
                   ))}
@@ -214,7 +215,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
                 disabled={
                   createOrderMutation.isPending ||
                   !selectedAddressId ||
-                  !addresses?.length
+                  !deliveryAddresses?.length
                 }
                 className="flex-1"
               >

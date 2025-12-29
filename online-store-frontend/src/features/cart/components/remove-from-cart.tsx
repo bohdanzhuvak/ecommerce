@@ -1,22 +1,22 @@
-import {Button} from '@/shared/components/ui/button';
-import {useNotifications} from '@/shared/components/ui/notifications';
-import {useRemoveFromCart} from "@/features/cart/api/remove-from-cart";
+import { Button } from '@/shared/components/ui/button';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { useRemoveItemFromCart } from '@/shared/api';
 
 type RemoveFromCartProps = {
-  productId: number;
+  productId: string;
 };
 
-export const RemoveFromCart = ({productId}: RemoveFromCartProps) => {
-  const {addNotification} = useNotifications();
-  const removeFromCartMutation = useRemoveFromCart({
-    mutationConfig: {
+export const RemoveFromCart = ({ productId }: RemoveFromCartProps) => {
+  const { addNotification } = useNotifications();
+  const removeFromCartMutation = useRemoveItemFromCart({
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
-          title: 'Book removed from cart successfully!',
+          title: 'Item removed from cart successfully!',
         });
-      }
-    }
+      },
+    },
   });
 
   return (
@@ -26,7 +26,7 @@ export const RemoveFromCart = ({productId}: RemoveFromCartProps) => {
       variant="outline"
       className="text-red-600 hover:text-red-700"
       size="sm"
-      onClick={() => removeFromCartMutation.mutate({productId: productId})}
+      onClick={() => removeFromCartMutation.mutate({ productId: productId })}
     >
       {removeFromCartMutation.isPending ? 'Removing...' : 'Remove'}
     </Button>

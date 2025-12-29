@@ -4,9 +4,11 @@ import io.github.bohdanzhuvak.onlinestore.user.application.port.in.ExternalUserO
 import io.github.bohdanzhuvak.onlinestore.user.application.service.ExternalUserOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.user.application.service.WebUserOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ActivateUserUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.AddDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ChangePasswordUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeactivateUserUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeleteDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetAllUsersUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressListUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressUseCase;
@@ -46,8 +48,8 @@ public class UserConfig {
       GetAllUsersUseCase getAllUsersUseCase,
       ActivateUserUseCase activateUserUseCase,
       DeactivateUserUseCase deactivateUserUseCase,
-      GetDeliveryAddressListUseCase getDeliveryAddressListUseCase
-  ) {
+      GetDeliveryAddressListUseCase getDeliveryAddressListUseCase,
+      DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase, AddDeliveryAddressUseCase addDeliveryAddressUseCase) {
     return new WebUserOrchestratorService(
         createUserUseCase,
         getUserProfileByIdUseCase,
@@ -56,7 +58,9 @@ public class UserConfig {
         getAllUsersUseCase,
         activateUserUseCase,
         deactivateUserUseCase,
-        getDeliveryAddressListUseCase
+        getDeliveryAddressListUseCase,
+        deleteDeliveryAddressUseCase,
+        addDeliveryAddressUseCase
     );
   }
 }

@@ -1,12 +1,14 @@
 import React from 'react';
-import { useDeleteDeliveryAddress } from '../api/delete-address';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 import { ConfirmationDialog } from '@/shared/components/ui/dialog';
 import { useNotifications } from '@/shared/components/ui/notifications';
 import { DeliveryAddress } from '../api.types.ts';
 import { AddressForm } from './address-form';
-import { useGetDeliveryAddresses } from '@/shared/api';
+import {
+  useDeleteDeliveryAddress,
+  useGetDeliveryAddresses,
+} from '@/shared/api';
 
 interface AddressCardProps {
   address: DeliveryAddress;
@@ -16,7 +18,7 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
   const { addNotification } = useNotifications();
 
   const deleteDeliveryAddressMutation = useDeleteDeliveryAddress({
-    mutationConfig: {
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',

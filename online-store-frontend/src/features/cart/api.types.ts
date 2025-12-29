@@ -1,8 +1,11 @@
+import type { MoneyResponse } from '@/shared/api';
+
 export interface CartItem {
-  productId: number;
+  productId: string;
   productName: string;
   quantity: number;
-  price: number;
+  productPrice: MoneyResponse;
+  totalPrice: MoneyResponse;
 }
 
 export interface Cart {

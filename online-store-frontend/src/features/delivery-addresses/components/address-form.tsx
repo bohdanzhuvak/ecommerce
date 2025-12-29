@@ -1,12 +1,24 @@
-import {Plus, Edit} from 'lucide-react';
+import { Edit, Plus } from 'lucide-react';
 
-import {Button} from '@/shared/components/ui/button';
-import {Controller, Form, FormDrawer, Input, Switch} from '@/shared/components/ui/form';
-import {useNotifications} from '@/shared/components/ui/notifications';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Controller,
+  Form,
+  FormDrawer,
+  Input,
+  Switch,
+} from '@/shared/components/ui/form';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
-import {useCreateDeliveryAddress} from '../api/create-address';
-import {useUpdateDeliveryAddress} from '../api/update-address';
-import {type AddressFormData, createAddressFormSchema, type UpdateAddressFormData, updateAddressFormSchema, type DeliveryAddress} from '../api.types';
+import { useUpdateDeliveryAddress } from '../api/update-address';
+import {
+  type AddressFormData,
+  createAddressFormSchema,
+  type DeliveryAddress,
+  type UpdateAddressFormData,
+  updateAddressFormSchema,
+} from '../api.types';
+import { useAddDeliveryAddress } from '@/shared/api';
 
 interface AddressFormProps {
   address?: DeliveryAddress;
@@ -14,11 +26,11 @@ interface AddressFormProps {
 }
 
 export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
-  const {addNotification} = useNotifications();
+  const { addNotification } = useNotifications();
   const isEditMode = mode === 'edit' && address;
-  
-  const createDeliveryAddressMutation = useCreateDeliveryAddress({
-    mutationConfig: {
+
+  const createDeliveryAddressMutation = useAddDeliveryAddress({
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
@@ -43,28 +55,32 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
     if (isEditMode && address) {
       updateDeliveryAddressMutation.mutate(values as UpdateAddressFormData);
     } else {
-      createDeliveryAddressMutation.mutate(values as AddressFormData);
+      createDeliveryAddressMutation.mutate({ data: values as AddressFormData });
     }
   };
 
-  const isSuccess = isEditMode ? updateDeliveryAddressMutation.isSuccess : createDeliveryAddressMutation.isSuccess;
-  const isLoading = isEditMode ? updateDeliveryAddressMutation.isPending : createDeliveryAddressMutation.isPending;
+  const isSuccess = isEditMode
+    ? updateDeliveryAddressMutation.isSuccess
+    : createDeliveryAddressMutation.isSuccess;
+  const isLoading = isEditMode
+    ? updateDeliveryAddressMutation.isPending
+    : createDeliveryAddressMutation.isPending;
 
   return (
     <FormDrawer
       isDone={isSuccess}
       triggerButton={
         isEditMode ? (
-          <Button size="sm" icon={<Edit className="size-4"/>}>
+          <Button size="sm" icon={<Edit className="size-4" />}>
             Edit
           </Button>
         ) : (
-          <Button size="sm" icon={<Plus className="size-4"/>}>
+          <Button size="sm" icon={<Plus className="size-4" />}>
             Add Address
           </Button>
         )
       }
-      title={isEditMode ? "Edit Address" : "Add Address"}
+      title={isEditMode ? 'Edit Address' : 'Add Address'}
       submitButton={
         <Button
           form="address-form"
@@ -72,7 +88,7 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
           size="sm"
           isLoading={isLoading}
         >
-          {isEditMode ? "Update" : "Submit"}
+          {isEditMode ? 'Update' : 'Submit'}
         </Button>
       }
     >
@@ -81,29 +97,30 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
         onSubmit={handleSubmit}
         schema={isEditMode ? updateAddressFormSchema : createAddressFormSchema}
         options={{
-          defaultValues: isEditMode && address ? {
-            id: address.id,
-            street: address.street,
-            city: address.city,
-            postalCode: address.postalCode,
-            country: address.country,
-            phone: address.phone,
-            isDefault: address.isDefault,
-          } : {
-            street: '',
-            city: '',
-            postalCode: '',
-            country: '',
-            phone: '',
-            isDefault: false,
-          },
+          defaultValues:
+            isEditMode && address
+              ? {
+                  id: address.id,
+                  street: address.street,
+                  city: address.city,
+                  postalCode: address.postalCode,
+                  country: address.country,
+                  isDefault: address.isDefault,
+                }
+              : {
+                  street: '',
+                  city: '',
+                  state: '',
+                  postalCode: '',
+                  country: '',
+                  recipientName: '',
+                  isDefault: false,
+                },
         }}
       >
-        {({register, formState, control}) => (
+        {({ register, formState, control }) => (
           <>
-            {isEditMode && (
-              <input type="hidden" {...register('id')} />
-            )}
+            {isEditMode && <input type="hidden" {...register('id')} />}
             <Input
               label="Street Address"
               placeholder="123 Main St"
@@ -117,6 +134,15 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
               error={formState.errors['city']}
               registration={register('city')}
             />
+
+            {!isEditMode && (
+              <Input
+                label="State"
+                placeholder="California"
+                error={formState.errors['state']}
+                registration={register('state')}
+              />
+            )}
 
             <Input
               label="Postal Code"
@@ -132,19 +158,20 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
               registration={register('country')}
             />
 
-            <Input
-              label="Phone"
-              type="tel"
-              placeholder="+1234567890"
-              error={formState.errors['phone']}
-              registration={register('phone')}
-            />
+            {!isEditMode && (
+              <Input
+                label="Recipient name"
+                placeholder="Thomas Shelby"
+                error={formState.errors['recipientName']}
+                registration={register('recipientName')}
+              />
+            )}
 
             <div className="flex items-center space-x-2">
               <Controller
                 name="isDefault"
                 control={control}
-                render={({field}) => (
+                render={({ field }) => (
                   <Switch
                     id="isDefault"
                     checked={field.value || false}

@@ -1,6 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.user.domain;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class DeliveryAddressId {
   private final String value;
@@ -10,6 +11,10 @@ public class DeliveryAddressId {
       throw new IllegalArgumentException("Delivery address id cannot be null or empty");
     }
     this.value = value;
+  }
+
+  public static DeliveryAddressId generate() {
+    return new DeliveryAddressId(UUID.randomUUID().toString());
   }
 
   public static DeliveryAddressId of(String value) {

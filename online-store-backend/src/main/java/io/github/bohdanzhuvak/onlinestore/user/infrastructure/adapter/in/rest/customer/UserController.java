@@ -2,15 +2,21 @@ package io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.c
 
 import io.github.bohdanzhuvak.onlinestore.architecture.CurrentUserId;
 import io.github.bohdanzhuvak.onlinestore.user.application.service.WebUserOrchestratorService;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddress;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
+import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.DeliveryAddressRequest;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.DeliveryAddressResponse;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UpdateProfileRequest;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +62,28 @@ public class UserController {
   public ResponseEntity<List<DeliveryAddressResponse>> getDeliveryAddresses(@CurrentUserId String userId) {
     User user = webUserOrchestratorService.getUserProfile(UserId.of(userId));
     return ResponseEntity.ok(DeliveryAddressResponse.from(user));
+  }
+
+  @Operation(operationId = "deleteDeliveryAddress", summary = "Delete delivery address", description = "Delete delivery address by id for the authenticated user")
+  @DeleteMapping("delivery-addresses/{id}")
+  public ResponseEntity<Void> deleteDeliveryAddress(@CurrentUserId String userId, @PathVariable String id) {
+    webUserOrchestratorService.deleteDeliveryAddress(UserId.of(userId), DeliveryAddressId.of(id));
+    return ResponseEntity.ok().build();
+  }
+
+  @Operation(operationId = "addDeliveryAddress", summary = "Add delivery address", description = "Add delivery address for the authenticated user")
+  @PostMapping("delivery-addresses")
+  public ResponseEntity<DeliveryAddressResponse> addDeliveryAddress(@CurrentUserId String userId, @RequestBody DeliveryAddressRequest deliveryAddressRequest) {
+    DeliveryAddress deliveryAddress = DeliveryAddress.create(
+        deliveryAddressRequest.street(),
+        deliveryAddressRequest.city(),
+        deliveryAddressRequest.state(),
+        deliveryAddressRequest.postalCode(),
+        deliveryAddressRequest.country(),
+        deliveryAddressRequest.recipientName()
+    );
+    DeliveryAddress deliveryAddressSaved = webUserOrchestratorService.addDeliveryAddress(UserId.of(userId), deliveryAddress, deliveryAddressRequest.isDefault());
+    return ResponseEntity.ok(DeliveryAddressResponse.from(deliveryAddressSaved, deliveryAddressRequest.isDefault()));
   }
 
 }

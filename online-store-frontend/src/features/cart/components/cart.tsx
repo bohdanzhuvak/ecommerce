@@ -1,13 +1,12 @@
 import React from 'react';
-import { CartItemComponent } from './cart-item-component.tsx';
-import { useCart } from '../api/get-cart';
+import { CartItemComponent } from '@/features/cart';
 import { ClearCart } from '@/features/cart/components/clear-cart';
 import { CreateOrderForm } from '@/features/orders/components/create-order-form';
 import { BalanceDisplay } from '@/features/balance';
-import { useGetBalance } from '@/shared/api';
+import { useGetBalance, useGetCart } from '@/shared/api';
 
 export const Cart: React.FC = () => {
-  const cartQuery = useCart({});
+  const cartQuery = useGetCart();
   const { data: balanceData } = useGetBalance();
 
   if (cartQuery.isLoading) {
@@ -15,7 +14,8 @@ export const Cart: React.FC = () => {
   }
 
   const cart = cartQuery.data;
-  if (!cart || cart.items.length === 0) {
+
+  if (!cart || !cart.items || cart.items.length === 0) {
     return (
       <div className="p-8 text-center">
         <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
@@ -25,7 +25,7 @@ export const Cart: React.FC = () => {
   }
 
   const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.totalPrice;
+  const totalPrice = cart.totalAmount.amount;
   const currentBalance = balanceData?.currentBalance?.amount || 0;
   const hasSufficientFunds = currentBalance >= totalPrice;
 

@@ -12,10 +12,11 @@ export interface DeliveryAddress {
 export interface CreateDeliveryAddressRequest {
   street: string;
   city: string;
+  state: string;
   postalCode: string;
   country: string;
-  phone: string;
-  isDefault?: boolean;
+  recipientName: string;
+  isDefault: boolean;
 }
 
 export interface UpdateDeliveryAddressRequest {
@@ -24,7 +25,6 @@ export interface UpdateDeliveryAddressRequest {
   city: string;
   postalCode: string;
   country: string;
-  phone: string;
   isDefault?: boolean;
 }
 
@@ -35,9 +35,10 @@ export interface DeleteDeliveryAddressRequest {
 export const createAddressFormSchema = z.object({
   street: z.string().min(1, 'Street address is required'),
   city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
   postalCode: z.string().min(1, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
-  phone: z.string().min(1, 'Phone number is required'),
+  recipientName: z.string().min(1, 'Recipient name is required'),
   isDefault: z.boolean().default(false),
 });
 
@@ -47,7 +48,6 @@ export const updateAddressFormSchema = z.object({
   city: z.string().min(1, 'City is required'),
   postalCode: z.string().min(1, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
-  phone: z.string().min(1, 'Phone number is required'),
   isDefault: z.boolean().default(false),
 });
 

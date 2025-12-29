@@ -2,14 +2,17 @@ package io.github.bohdanzhuvak.onlinestore.user.application.service;
 
 import io.github.bohdanzhuvak.onlinestore.architecture.PageResult;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ActivateUserUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.AddDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ChangePasswordUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeactivateUserUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeleteDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetAllUsersUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressListUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByIdUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.UpdateUserProfileUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddress;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
@@ -27,6 +30,8 @@ public class WebUserOrchestratorService {
   private final ActivateUserUseCase activateUserUseCase;
   private final DeactivateUserUseCase deactivateUserUseCase;
   private final GetDeliveryAddressListUseCase getDeliveryAddressListUseCase;
+  private final DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase;
+  private final AddDeliveryAddressUseCase addDeliveryAddressUseCase;
 
   public WebUserOrchestratorService(CreateUserUseCase createUserUseCase,
                                     GetUserProfileByIdUseCase getUserProfileByIdUseCase,
@@ -35,7 +40,9 @@ public class WebUserOrchestratorService {
                                     GetAllUsersUseCase getAllUsersUseCase,
                                     ActivateUserUseCase activateUserUseCase,
                                     DeactivateUserUseCase deactivateUserUseCase,
-                                    GetDeliveryAddressListUseCase getDeliveryAddressListUseCase) {
+                                    GetDeliveryAddressListUseCase getDeliveryAddressListUseCase,
+                                    DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase,
+                                    AddDeliveryAddressUseCase addDeliveryAddressUseCase) {
     this.getUserProfileByIdUseCase = getUserProfileByIdUseCase;
     this.updateUserProfileUseCase = updateUserProfileUseCase;
     this.changePasswordUseCase = changePasswordUseCase;
@@ -44,6 +51,8 @@ public class WebUserOrchestratorService {
     this.activateUserUseCase = activateUserUseCase;
     this.deactivateUserUseCase = deactivateUserUseCase;
     this.getDeliveryAddressListUseCase = getDeliveryAddressListUseCase;
+    this.deleteDeliveryAddressUseCase = deleteDeliveryAddressUseCase;
+    this.addDeliveryAddressUseCase = addDeliveryAddressUseCase;
   }
 
   // Customer operations
@@ -92,5 +101,15 @@ public class WebUserOrchestratorService {
 
   public List<DeliveryAddress> getDeliveryAddresses(UserId userId) {
     return getDeliveryAddressListUseCase.execute(userId);
+  }
+
+  public void deleteDeliveryAddress(UserId userId, DeliveryAddressId deliveryAddressId) {
+    DeleteDeliveryAddressUseCase.DeleteDeliveryAddressCommand command = new DeleteDeliveryAddressUseCase.DeleteDeliveryAddressCommand(userId, deliveryAddressId);
+    deleteDeliveryAddressUseCase.execute(command);
+  }
+
+  public DeliveryAddress addDeliveryAddress(UserId userId, DeliveryAddress deliveryAddress, boolean isDefault) {
+    AddDeliveryAddressUseCase.AddDeliveryAddressCommand command = new AddDeliveryAddressUseCase.AddDeliveryAddressCommand(userId, deliveryAddress, isDefault);
+    return addDeliveryAddressUseCase.execute(command);
   }
 }
