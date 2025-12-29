@@ -6,13 +6,17 @@ import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ChangePasswor
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeactivateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetAllUsersUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressListUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByIdUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.UpdateUserProfileUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.domain.DeliveryAddress;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Password;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserRole;
+
+import java.util.List;
 
 public class WebUserOrchestratorService {
   private final CreateUserUseCase createUserUseCase;
@@ -22,6 +26,7 @@ public class WebUserOrchestratorService {
   private final GetAllUsersUseCase getAllUsersUseCase;
   private final ActivateUserUseCase activateUserUseCase;
   private final DeactivateUserUseCase deactivateUserUseCase;
+  private final GetDeliveryAddressListUseCase getDeliveryAddressListUseCase;
 
   public WebUserOrchestratorService(CreateUserUseCase createUserUseCase,
                                     GetUserProfileByIdUseCase getUserProfileByIdUseCase,
@@ -29,7 +34,8 @@ public class WebUserOrchestratorService {
                                     ChangePasswordUseCase changePasswordUseCase,
                                     GetAllUsersUseCase getAllUsersUseCase,
                                     ActivateUserUseCase activateUserUseCase,
-                                    DeactivateUserUseCase deactivateUserUseCase) {
+                                    DeactivateUserUseCase deactivateUserUseCase,
+                                    GetDeliveryAddressListUseCase getDeliveryAddressListUseCase) {
     this.getUserProfileByIdUseCase = getUserProfileByIdUseCase;
     this.updateUserProfileUseCase = updateUserProfileUseCase;
     this.changePasswordUseCase = changePasswordUseCase;
@@ -37,6 +43,7 @@ public class WebUserOrchestratorService {
     this.getAllUsersUseCase = getAllUsersUseCase;
     this.activateUserUseCase = activateUserUseCase;
     this.deactivateUserUseCase = deactivateUserUseCase;
+    this.getDeliveryAddressListUseCase = getDeliveryAddressListUseCase;
   }
 
   // Customer operations
@@ -81,5 +88,9 @@ public class WebUserOrchestratorService {
 
   public User deactivateUser(UserId userId) {
     return deactivateUserUseCase.execute(userId);
+  }
+
+  public List<DeliveryAddress> getDeliveryAddresses(UserId userId) {
+    return getDeliveryAddressListUseCase.execute(userId);
   }
 }

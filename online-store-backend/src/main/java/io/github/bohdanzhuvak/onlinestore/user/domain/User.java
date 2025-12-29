@@ -51,7 +51,7 @@ public class User {
 
   // Constructor for restoring from database
   private User(UserId id, Email email, Password password, String firstName, String lastName,
-               UserRole role, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
+               UserRole role, boolean active, List<DeliveryAddress> deliveryAddresses, DeliveryAddressId defaultAddressId, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.email = email;
     this.password = password;
@@ -59,14 +59,16 @@ public class User {
     this.lastName = lastName;
     this.role = role;
     this.active = active;
+    this.addresses = deliveryAddresses;
+    this.defaultAddressId = defaultAddressId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
 
   // Factory method for restoring from database
   public static User restore(UserId id, Email email, Password password, String firstName, String lastName,
-                             UserRole role, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
-    return new User(id, email, password, firstName, lastName, role, active, createdAt, updatedAt);
+                             UserRole role, boolean active, List<DeliveryAddress> deliveryAddresses, DeliveryAddressId defaultAddressId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    return new User(id, email, password, firstName, lastName, role, active, deliveryAddresses, defaultAddressId, createdAt, updatedAt);
   }
 
   // Business methods

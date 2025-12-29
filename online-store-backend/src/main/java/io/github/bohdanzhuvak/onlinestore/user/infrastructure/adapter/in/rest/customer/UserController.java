@@ -4,6 +4,7 @@ import io.github.bohdanzhuvak.onlinestore.architecture.CurrentUserId;
 import io.github.bohdanzhuvak.onlinestore.user.application.service.WebUserOrchestratorService;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
+import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.DeliveryAddressResponse;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UpdateProfileRequest;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(name = "users-customer", description = "User profile management for customers")
 @RestController
@@ -46,6 +49,13 @@ public class UserController {
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
+  }
+
+  @Operation(operationId = "getDeliveryAddresses", summary = "Get saved delivery addresses", description = "Get delivery addresses for the authenticated user")
+  @GetMapping("delivery-addresses")
+  public ResponseEntity<List<DeliveryAddressResponse>> getDeliveryAddresses(@CurrentUserId String userId) {
+    User user = webUserOrchestratorService.getUserProfile(UserId.of(userId));
+    return ResponseEntity.ok(DeliveryAddressResponse.from(user));
   }
 
 }

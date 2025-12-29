@@ -35,3 +35,5 @@ security:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+  cache:
+    disabled: true

@@ -2,6 +2,8 @@ import { EventEmitter } from './event-emitter';
 import { TokenManager } from './token-manager';
 import { UserManager } from './user-manager';
 import { AuthEvents, AuthState, User } from '@/shared/types';
+import { getUserProfile } from '@/shared/api';
+import { AxiosError } from 'axios';
 
 export class AuthManager extends EventEmitter {
   private static instance: AuthManager;
@@ -63,23 +65,63 @@ export class AuthManager extends EventEmitter {
 
       const token = await this.tokenManager.getToken();
       if (token) {
-        const user = this.userManager.getCachedUser();
-        if (user) {
-          if (user.role === 'ADMIN') {
-            this.tokenManager.clearToken();
-            this._state.user = null;
-            this._state.isAuthenticated = false;
-            this._state.error =
-              'Administrators cannot log into the client application. Please use the control panel instead.';
-            this.emit(AuthEvents.STATE_CHANGED, this._state);
-            throw new Error(this._state.error);
-          }
+        let user = this.userManager.getCachedUser();
 
-          this._state.user = user;
-          this._state.isAuthenticated = true;
-        } else {
-          this.tokenManager.clearToken();
+        // If cache is empty but token exists, fetch user from server
+        // This happens after page refresh when memory cache is cleared
+        if (!user) {
+          try {
+            const userData = await getUserProfile();
+
+            // Convert UserResponse to User type
+            user = {
+              id: userData.id || '',
+              email: userData.email || '',
+              role: (userData.role || 'USER') as 'ADMIN' | 'USER',
+            };
+
+            // Cache the user for subsequent requests
+            this.userManager.setCachedUser(user);
+          } catch (error) {
+            // If fetching user fails, token is likely invalid or expired
+            if (error instanceof AxiosError) {
+              if (
+                error.response?.status === 401 ||
+                error.response?.status === 403
+              ) {
+                // Token is definitely invalid
+                this.tokenManager.clearToken();
+                this._state.error = 'Session expired. Please log in again.';
+              } else if (!error.response) {
+                // Network error - don't clear token immediately
+                this._state.error =
+                  'Failed to load user data. Please check your connection.';
+              } else {
+                // Other error - clear token to be safe
+                this.tokenManager.clearToken();
+                this._state.error = 'Failed to load user data.';
+              }
+            } else {
+              this.tokenManager.clearToken();
+              this._state.error = 'An unexpected error occurred.';
+            }
+            throw error;
+          }
         }
+
+        // Check if user is admin
+        if (user.role === 'ADMIN') {
+          this.tokenManager.clearToken();
+          this._state.user = null;
+          this._state.isAuthenticated = false;
+          this._state.error =
+            'Administrators cannot log into the client application. Please use the control panel instead.';
+          this.emit(AuthEvents.STATE_CHANGED, this._state);
+          throw new Error(this._state.error);
+        }
+
+        this._state.user = user;
+        this._state.isAuthenticated = true;
       }
     } catch (error) {
       this._state.error =

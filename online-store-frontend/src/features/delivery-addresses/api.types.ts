@@ -1,14 +1,12 @@
-import {z} from 'zod';
+import { z } from 'zod';
 
 export interface DeliveryAddress {
-  id: number;
+  id: string;
   street: string;
   city: string;
   postalCode: string;
   country: string;
-  phone: string;
   isDefault: boolean;
-  createdAt: string;
 }
 
 export interface CreateDeliveryAddressRequest {
@@ -31,7 +29,7 @@ export interface UpdateDeliveryAddressRequest {
 }
 
 export interface DeleteDeliveryAddressRequest {
-  id: number;
+  id: string;
 }
 
 export const createAddressFormSchema = z.object({

@@ -1,14 +1,18 @@
 package io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.out.persistence;
 
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserRole;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +39,16 @@ public class UserEntity {
   @Column(nullable = false)
   private boolean active;
 
+  @ElementCollection
+  @CollectionTable(
+      name = "user_delivery_addresses",
+      joinColumns = @JoinColumn(name = "user_id")
+  )
+  private List<DeliveryAddressEmbeddable> addresses;
+
+  @Column(nullable = true)
+  private String defaultAddressId;
+
   @Column(nullable = false)
   private LocalDateTime createdAt;
 
@@ -47,8 +61,8 @@ public class UserEntity {
 
   // Constructor for creating new entity
   public UserEntity(String id, String email, String passwordHash, String firstName,
-                    String lastName, UserRole role, boolean active,
-                    LocalDateTime createdAt, LocalDateTime updatedAt) {
+                    String lastName, UserRole role, boolean active, List<DeliveryAddressEmbeddable> addresses,
+                    String defaultAddressId, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.email = email;
     this.passwordHash = passwordHash;
@@ -56,6 +70,8 @@ public class UserEntity {
     this.lastName = lastName;
     this.role = role;
     this.active = active;
+    this.addresses = addresses;
+    this.defaultAddressId = defaultAddressId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -131,5 +147,21 @@ public class UserEntity {
 
   public void setUpdatedAt(LocalDateTime updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public List<DeliveryAddressEmbeddable> getAddresses() {
+    return addresses;
+  }
+
+  public void setAddresses(List<DeliveryAddressEmbeddable> addresses) {
+    this.addresses = addresses;
+  }
+
+  public String getDefaultAddressId() {
+    return defaultAddressId;
+  }
+
+  public void setDefaultAddressId(String defaultAddressId) {
+    this.defaultAddressId = defaultAddressId;
   }
 }

@@ -1,9 +1,11 @@
 package io.github.bohdanzhuvak.onlinestore.user.domain;
 
+import java.time.LocalDateTime;
+
 public record DeliveryAddress(DeliveryAddressId id, String street, String city, String state, String postalCode,
-                              String country, String recipientName) {
+                              String country, String recipientName, LocalDateTime createdAt) {
   public DeliveryAddress(DeliveryAddressId id, String street, String city, String state,
-                         String postalCode, String country, String recipientName) {
+                         String postalCode, String country, String recipientName, LocalDateTime createdAt) {
     if (id == null || id.getValue().trim().isEmpty()) {
       throw new IllegalArgumentException("ID cannot be null or empty");
     }
@@ -33,5 +35,6 @@ public record DeliveryAddress(DeliveryAddressId id, String street, String city, 
     this.postalCode = postalCode.trim();
     this.country = country.trim();
     this.recipientName = recipientName.trim();
+    this.createdAt = createdAt;
   }
 }

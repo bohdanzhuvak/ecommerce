@@ -1,19 +1,19 @@
 import React from 'react';
-import {useDeliveryAddresses} from '../api/get-addresses';
-import {useDeleteDeliveryAddress} from '../api/delete-address';
-import {Spinner} from '@/shared/components/ui/spinner';
-import {Button} from '@/shared/components/ui/button';
-import {ConfirmationDialog} from '@/shared/components/ui/dialog';
-import {useNotifications} from '@/shared/components/ui/notifications';
-import {DeliveryAddress} from "../api.types.ts";
-import {AddressForm} from './address-form';
+import { useDeleteDeliveryAddress } from '../api/delete-address';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { Button } from '@/shared/components/ui/button';
+import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { DeliveryAddress } from '../api.types.ts';
+import { AddressForm } from './address-form';
+import { useGetDeliveryAddresses } from '@/shared/api';
 
 interface AddressCardProps {
   address: DeliveryAddress;
 }
 
 const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
-  const {addNotification} = useNotifications();
+  const { addNotification } = useNotifications();
 
   const deleteDeliveryAddressMutation = useDeleteDeliveryAddress({
     mutationConfig: {
@@ -27,7 +27,9 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
   });
 
   return (
-    <div className={`p-4 border rounded-lg ${address.isDefault ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
+    <div
+      className={`p-4 border rounded-lg ${address.isDefault ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
+    >
       {address.isDefault && (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2">
           Default
@@ -40,7 +42,6 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
           {address.city}, {address.postalCode}
         </p>
         <p className="text-sm text-gray-600">{address.country}</p>
-        <p className="text-sm text-gray-600">{address.phone}</p>
       </div>
 
       <div className="mt-3 flex space-x-2">
@@ -50,7 +51,11 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
           title="Delete Address"
           body="Are you sure you want to delete this address? This action cannot be undone."
           triggerButton={
-            <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-red-600 border-red-300 hover:bg-red-50"
+            >
               Delete
             </Button>
           }
@@ -59,7 +64,9 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
               isLoading={deleteDeliveryAddressMutation.isPending}
               type="button"
               variant="destructive"
-              onClick={() => deleteDeliveryAddressMutation.mutate({ id: address.id })}
+              onClick={() =>
+                deleteDeliveryAddressMutation.mutate({ id: address.id })
+              }
             >
               Delete Address
             </Button>
@@ -71,13 +78,12 @@ const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
 };
 
 export const AddressList: React.FC = () => {
-
-  const addressesQuery = useDeliveryAddresses({});
+  const addressesQuery = useGetDeliveryAddresses();
 
   if (addressesQuery.isLoading) {
     return (
       <div className="flex h-48 w-full items-center justify-center">
-        <Spinner size="lg"/>
+        <Spinner size="lg" />
       </div>
     );
   }
