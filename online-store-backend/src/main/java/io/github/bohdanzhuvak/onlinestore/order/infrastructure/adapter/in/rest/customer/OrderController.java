@@ -6,8 +6,8 @@ import io.github.bohdanzhuvak.onlinestore.order.domain.DeliveryAddressId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.UserId;
-import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.CreateOrderRequest;
-import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderResponse;
+import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.CreateOrderCustomerRequest;
+import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +34,13 @@ public class OrderController {
 
   @Operation(operationId = "createOrder", summary = "Create order", description = "Create a new order from the user's cart")
   @PostMapping
-  public ResponseEntity<OrderResponse> createOrder(@CurrentUserId String userId, @RequestBody CreateOrderRequest request) {
+  public ResponseEntity<OrderCustomerResponse> createOrder(@CurrentUserId String userId, @RequestBody CreateOrderCustomerRequest request) {
     try {
       Order order = webOrderOrchestrator.createOrder(
           UserId.of(userId),
           DeliveryAddressId.of(request.deliveryAddressId())
       );
-      return ResponseEntity.ok(OrderResponse.from(order));
+      return ResponseEntity.ok(OrderCustomerResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
@@ -48,25 +48,25 @@ public class OrderController {
 
   @Operation(operationId = "getOrders", summary = "Get user orders", description = "Get all orders for the authenticated user")
   @GetMapping
-  public ResponseEntity<List<OrderResponse>> getOrders(@CurrentUserId String userId) {
+  public ResponseEntity<List<OrderCustomerResponse>> getOrders(@CurrentUserId String userId) {
     List<Order> orders = webOrderOrchestrator.getOrders(UserId.of(userId));
-    return ResponseEntity.ok(OrderResponse.from(orders));
+    return ResponseEntity.ok(OrderCustomerResponse.from(orders));
   }
 
   @Operation(operationId = "getOrder", summary = "Get order by ID", description = "Get a specific order by its ID")
   @GetMapping("/{orderId}")
-  public ResponseEntity<OrderResponse> getOrder(@PathVariable String orderId, @CurrentUserId String userId) {
+  public ResponseEntity<OrderCustomerResponse> getOrder(@PathVariable String orderId, @CurrentUserId String userId) {
     Optional<Order> order = webOrderOrchestrator.getOrder(OrderId.of(orderId), UserId.of(userId));
-    return order.map(o -> ResponseEntity.ok(OrderResponse.from(o)))
+    return order.map(o -> ResponseEntity.ok(OrderCustomerResponse.from(o)))
         .orElse(ResponseEntity.notFound().build());
   }
 
   @Operation(operationId = "payOrder", summary = "Pay for order", description = "Process payment for an order using user balance")
   @PostMapping("/{orderId}/pay")
-  public ResponseEntity<OrderResponse> payOrder(@PathVariable String orderId, @CurrentUserId String userId) {
+  public ResponseEntity<OrderCustomerResponse> payOrder(@PathVariable String orderId, @CurrentUserId String userId) {
     try {
       Order order = webOrderOrchestrator.payOrder(OrderId.of(orderId), UserId.of(userId));
-      return ResponseEntity.ok(OrderResponse.from(order));
+      return ResponseEntity.ok(OrderCustomerResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
@@ -74,10 +74,10 @@ public class OrderController {
 
   @Operation(operationId = "cancelOrder", summary = "Cancel order", description = "Cancel an existing order")
   @PutMapping("/{orderId}/cancel")
-  public ResponseEntity<OrderResponse> cancelOrder(@PathVariable String orderId, @CurrentUserId String userId) {
+  public ResponseEntity<OrderCustomerResponse> cancelOrder(@PathVariable String orderId, @CurrentUserId String userId) {
     try {
       Order order = webOrderOrchestrator.cancelOrder(OrderId.of(orderId), UserId.of(userId));
-      return ResponseEntity.ok(OrderResponse.from(order));
+      return ResponseEntity.ok(OrderCustomerResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

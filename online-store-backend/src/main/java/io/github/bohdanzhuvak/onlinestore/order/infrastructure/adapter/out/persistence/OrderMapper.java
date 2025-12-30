@@ -47,7 +47,7 @@ public class OrderMapper {
         order.getUpdatedAt()
     );
 
-    entity.setDeliveryAddressSnapshot(entity.new DeliveryAddressSnapshotEmbeddable(
+    entity.setDeliveryAddressSnapshot(new OrderEntity.DeliveryAddressSnapshotEmbeddable(
         order.getDeliveryAddressSnapshot().id().getValue(),
         order.getDeliveryAddressSnapshot().street(),
         order.getDeliveryAddressSnapshot().city(),

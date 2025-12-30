@@ -8,11 +8,11 @@ import {
   DrawerTitle,
 } from '@/shared/components/ui/drawer';
 import { Button } from '@/shared/components/ui/button';
-import { useCreateOrderFromCart } from '../api/create-order-from-cart';
 import { useNotifications } from '@/shared/components/ui/notifications';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { DeliveryAddress } from '@/features/delivery-addresses/api.types.ts';
 import {
+  useCreateOrder,
   useGetBalance,
   useGetCart,
   useGetDeliveryAddresses,
@@ -40,8 +40,8 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
 
   const deliveryAddressesQuery = useGetDeliveryAddresses();
 
-  const createOrderMutation = useCreateOrderFromCart({
-    mutationConfig: {
+  const createOrderMutation = useCreateOrder({
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
@@ -52,7 +52,7 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
         queryClient.invalidateQueries({ queryKey: ['orders'] });
         close();
       },
-      onError: (error) => {
+      onError: (error: any) => {
         addNotification({
           type: 'error',
           title: 'Failed to create order',
@@ -73,7 +73,9 @@ export const CreateOrderForm: React.FC<CreateOrderFormProps> = ({
       return;
     }
 
-    createOrderMutation.mutate(Number(selectedAddressId));
+    createOrderMutation.mutate({
+      data: { deliveryAddressId: selectedAddressId },
+    });
   };
 
   const cart = cartQuery.data;

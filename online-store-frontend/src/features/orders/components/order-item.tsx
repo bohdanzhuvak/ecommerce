@@ -1,20 +1,20 @@
 import React from 'react';
-import {Order} from '../api.types';
-import {Link} from "@/shared/components/ui/link";
-import {paths} from "@/config/paths.ts";
+import { Order } from '../api.types';
+import { Link } from '@/shared/components/ui/link';
+import { paths } from '@/config/paths.ts';
 
 interface OrderItemProps {
   order: Order;
 }
 
-export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
+export const OrderItem: React.FC<OrderItemProps> = ({ order }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -51,16 +51,23 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           <p className="text-sm text-gray-600">{formatDate(order.createdAt)}</p>
         </div>
         <div className="text-right">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}
+          >
             {order.status}
           </span>
-          <p className="text-lg font-bold text-blue-600 mt-1">${order.totalPrice.toFixed(2)}</p>
+          <p className="text-lg font-bold text-blue-600 mt-1">
+            ${order.totalPrice.amount.toFixed(2) + order.totalPrice.currency}
+          </p>
         </div>
       </div>
 
       <div className="space-y-3">
         {order.items.map((item) => (
-          <div key={`${item.productId}-${item.productName}`} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+          <div
+            key={`${item.productId}-${item.productName}`}
+            className="flex justify-between items-center p-3 bg-gray-50 rounded"
+          >
             <div className="flex-1">
               <h4 className="font-medium">{item.productName}</h4>
             </div>
@@ -78,7 +85,6 @@ export const OrderItem: React.FC<OrderItemProps> = ({order}) => {
           Go to order details &rarr;
         </Link>
       </div>
-
     </div>
   );
 };

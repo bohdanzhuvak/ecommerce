@@ -1,7 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.user.application.usecase;
 
+import io.github.bohdanzhuvak.onlinestore.architecture.ResourceNotFoundException;
 import io.github.bohdanzhuvak.onlinestore.architecture.UseCase;
-import io.github.bohdanzhuvak.onlinestore.user.application.exception.NotFoundException;
 import io.github.bohdanzhuvak.onlinestore.user.application.port.out.UserRepository;
 import io.github.bohdanzhuvak.onlinestore.user.domain.Email;
 import io.github.bohdanzhuvak.onlinestore.user.domain.User;
@@ -15,6 +15,6 @@ public class GetUserProfileByEmailUseCase {
   }
 
   public User execute(Email userEmail) {
-    return userRepository.findByEmail(userEmail).orElseThrow(() -> new NotFoundException("User not found"));
+    return userRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("User not found"));
   }
 }

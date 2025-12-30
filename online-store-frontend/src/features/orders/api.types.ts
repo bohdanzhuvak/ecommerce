@@ -1,16 +1,25 @@
-import {DeliveryAddress} from "@/features/delivery-addresses/api.types.ts";
+import { MoneyResponse } from '@/shared/api';
 
 export interface OrderItem {
-  productId: number;
+  productId: string;
   productName: string;
   quantity: number;
-  pricePerUnit: number;
+  productPrice: MoneyResponse;
+  totalPrice: MoneyResponse;
+}
+
+export interface DeliveryAddress {
+  id: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
 }
 
 export interface Order {
-  id: number;
+  id: string;
   createdAt: string;
-  totalPrice: number;
+  totalPrice: MoneyResponse;
   status: string;
   items: OrderItem[];
   deliveryAddress: DeliveryAddress;
@@ -24,5 +33,4 @@ export const ORDER_STATUSES = {
   CANCELLED: 'CANCELLED',
 } as const;
 
-export type OrderStatus = typeof ORDER_STATUSES[keyof typeof ORDER_STATUSES];
-
+export type OrderStatus = (typeof ORDER_STATUSES)[keyof typeof ORDER_STATUSES];

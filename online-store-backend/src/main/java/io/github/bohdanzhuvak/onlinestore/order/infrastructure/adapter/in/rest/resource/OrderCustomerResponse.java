@@ -11,18 +11,15 @@ import java.util.List;
 /**
  * DTO for order response
  */
-public record OrderResponse(
+public record OrderCustomerResponse(
     @Schema(description = "Order ID", requiredMode = Schema.RequiredMode.REQUIRED)
     String id,
-
-    @Schema(description = "User ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    String userId,
 
     @Schema(description = "List of order items", requiredMode = Schema.RequiredMode.REQUIRED)
     List<OrderItemResponse> items,
 
-    @Schema(description = "Total order amount", requiredMode = Schema.RequiredMode.REQUIRED)
-    MoneyResponse totalAmount,
+    @Schema(description = "Total order price", requiredMode = Schema.RequiredMode.REQUIRED)
+    MoneyResponse totalPrice,
 
     @Schema(description = "Order status", requiredMode = Schema.RequiredMode.REQUIRED)
     String status,
@@ -31,30 +28,25 @@ public record OrderResponse(
     DeliveryAddressResponse deliveryAddress,
 
     @Schema(description = "Creation timestamp", requiredMode = Schema.RequiredMode.REQUIRED)
-    LocalDateTime createdAt,
-
-    @Schema(description = "Last update timestamp", requiredMode = Schema.RequiredMode.REQUIRED)
-    LocalDateTime updatedAt
+    LocalDateTime createdAt
 ) {
 
-  public static OrderResponse from(Order order) {
-    return new OrderResponse(
+  public static OrderCustomerResponse from(Order order) {
+    return new OrderCustomerResponse(
         order.getId().getValue(),
-        order.getUserId().getValue(),
         order.getItems().stream()
             .map(OrderItemResponse::from)
             .toList(),
         MoneyResponse.from(order.getTotalPrice()),
         order.getStatus().getValue(),
         DeliveryAddressResponse.from(order.getDeliveryAddressSnapshot()),
-        order.getCreatedAt(),
-        order.getUpdatedAt()
+        order.getCreatedAt()
     );
   }
 
-  public static List<OrderResponse> from(List<Order> orders) {
+  public static List<OrderCustomerResponse> from(List<Order> orders) {
     return orders.stream()
-        .map(OrderResponse::from)
+        .map(OrderCustomerResponse::from)
         .toList();
   }
 

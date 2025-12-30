@@ -1,10 +1,10 @@
 import React from 'react';
-import { useDepositToBalance } from '../api/deposit';
 import { Button } from '@/shared/components/ui/button';
 import { useNotifications } from '@/shared/components/ui/notifications';
 import { Form, FormDrawer, Input, Textarea } from '@/shared/components/ui/form';
 import { Plus } from 'lucide-react';
 import { depositInputSchema } from '../api.types.ts';
+import { useDeposit } from '@/shared/api';
 
 interface DepositFormProps {
   defaultAmount?: number;
@@ -13,8 +13,8 @@ interface DepositFormProps {
 export const DepositForm: React.FC<DepositFormProps> = ({ defaultAmount }) => {
   const { addNotification } = useNotifications();
 
-  const depositMutation = useDepositToBalance({
-    mutationConfig: {
+  const depositMutation = useDeposit({
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',

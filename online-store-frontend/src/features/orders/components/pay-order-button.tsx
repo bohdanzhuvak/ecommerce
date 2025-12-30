@@ -1,11 +1,11 @@
 import React from 'react';
-import {Button} from '@/shared/components/ui/button';
-import {usePayOrder} from '../api/pay-order';
-import {useNotifications} from '@/shared/components/ui/notifications';
-import {ConfirmationDialog} from '@/shared/components/ui/dialog';
+import { Button } from '@/shared/components/ui/button';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import { usePayOrder } from '@/shared/api';
 
 interface PayOrderButtonProps {
-  orderId: number;
+  orderId: string;
   orderTotal: number;
   userBalance: number;
   className?: string;
@@ -15,14 +15,13 @@ export const PayOrderButton: React.FC<PayOrderButtonProps> = ({
   orderId,
   orderTotal,
   userBalance,
-  className
+  className,
 }) => {
   const { addNotification } = useNotifications();
   const hasSufficientFunds = userBalance >= orderTotal;
 
   const payOrderMutation = usePayOrder({
-    orderId,
-    mutationConfig: {
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
@@ -30,13 +29,13 @@ export const PayOrderButton: React.FC<PayOrderButtonProps> = ({
           message: `Order #${orderId} has been paid with your balance.`,
         });
       },
-      onError: (error) => {
+      onError: (error: any) => {
         addNotification({
           type: 'error',
           title: 'Payment failed',
           message: error.message,
         });
-      }
+      },
     },
   });
 
@@ -61,11 +60,7 @@ export const PayOrderButton: React.FC<PayOrderButtonProps> = ({
       title="Confirm Payment"
       body={`Are you sure you want to pay $${orderTotal.toFixed(2)} for order #${orderId}? This will be deducted from your balance.`}
       triggerButton={
-        <Button
-          variant="outline"
-          size="sm"
-          className={className}
-        >
+        <Button variant="outline" size="sm" className={className}>
           Pay with Balance
         </Button>
       }
@@ -74,7 +69,7 @@ export const PayOrderButton: React.FC<PayOrderButtonProps> = ({
           isLoading={payOrderMutation.isPending}
           type="button"
           variant="default"
-          onClick={() => payOrderMutation.mutate(orderId)}
+          onClick={() => payOrderMutation.mutate({ orderId })}
         >
           {payOrderMutation.isPending ? 'Processing...' : 'Confirm Payment'}
         </Button>

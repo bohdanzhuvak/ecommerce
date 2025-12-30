@@ -1,19 +1,19 @@
 import React from 'react';
-import {useOrders} from '../api/get-orders';
-import {OrderItem} from './order-item';
-import {Spinner} from "@/shared/components/ui/spinner";
+import { OrderItem } from './order-item';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { useGetOrders } from '@/shared/api';
 
 interface OrdersProps {
   clientEmail: string;
 }
 
 export const Orders: React.FC<OrdersProps> = () => {
-  const ordersQuery = useOrders({});
+  const ordersQuery = useGetOrders();
 
   if (ordersQuery.isLoading) {
     return (
       <div className="flex h-48 w-full items-center justify-center">
-        <Spinner size="lg"/>
+        <Spinner size="lg" />
       </div>
     );
   }
@@ -32,7 +32,7 @@ export const Orders: React.FC<OrdersProps> = () => {
     <div className="p-6">
       <div className="space-y-6">
         {orders.map((order) => (
-          <OrderItem key={order.id} order={order}/>
+          <OrderItem key={order.id} order={order} />
         ))}
       </div>
     </div>

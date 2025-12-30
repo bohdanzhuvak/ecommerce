@@ -6,8 +6,8 @@ import io.github.bohdanzhuvak.onlinestore.order.application.ports.in.WebOrderOrc
 import io.github.bohdanzhuvak.onlinestore.order.domain.Order;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderId;
 import io.github.bohdanzhuvak.onlinestore.order.domain.OrderStatus;
-import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderResponse;
-import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.UpdateOrderStatusRequest;
+import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.OrderAdminResponse;
+import io.github.bohdanzhuvak.onlinestore.order.infrastructure.adapter.in.rest.resource.UpdateOrderStatusAdminRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +31,14 @@ public class OrderAdminController {
 
   @Operation(operationId = "getAllOrders", summary = "Get all orders", description = "Get all orders with optional status filter (admin only)")
   @GetMapping
-  public ResponseEntity<PagedResponse<OrderResponse>> getAllOrders(
+  public ResponseEntity<PagedResponse<OrderAdminResponse>> getAllOrders(
       @RequestParam(required = false) String status,
       @RequestParam(defaultValue = "1") int page,
       @RequestParam(defaultValue = "20") int perPage) {
     try {
       OrderStatus orderStatus = status != null ? OrderStatus.fromString(status) : null;
       PageResult<Order> pageResult = webOrderOrchestrator.getAllOrders(orderStatus, page, perPage);
-      PagedResponse<OrderResponse> response = PagedResponse.from(pageResult, OrderResponse::from);
+      PagedResponse<OrderAdminResponse> response = PagedResponse.from(pageResult, OrderAdminResponse::from);
       return ResponseEntity.ok(response);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
@@ -47,14 +47,14 @@ public class OrderAdminController {
 
   @Operation(operationId = "updateOrderStatus", summary = "Update order status", description = "Update the status of an order (admin only)")
   @PutMapping("/{orderId}/status")
-  public ResponseEntity<OrderResponse> updateOrderStatus(@PathVariable String orderId,
-                                                 @RequestBody UpdateOrderStatusRequest request) {
+  public ResponseEntity<OrderAdminResponse> updateOrderStatus(@PathVariable String orderId,
+                                                              @RequestBody UpdateOrderStatusAdminRequest request) {
     try {
       Order order = webOrderOrchestrator.updateOrderStatus(
           OrderId.of(orderId),
           OrderStatus.fromString(request.status())
       );
-      return ResponseEntity.ok(OrderResponse.from(order));
+      return ResponseEntity.ok(OrderAdminResponse.from(order));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }

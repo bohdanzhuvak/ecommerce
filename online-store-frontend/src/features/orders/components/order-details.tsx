@@ -1,19 +1,18 @@
 import React from 'react';
-import { useOrder } from '../api/get-order';
 import { PayOrderButton } from './pay-order-button';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { OrderItem } from '../api.types';
 import { DepositForm } from '@/features/balance';
-import { useGetBalance } from '@/shared/api';
+import { useGetBalance, useGetOrder } from '@/shared/api';
 
 interface OrderDetailsProps {
-  orderId: number;
+  orderId: string;
 }
 
 export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
   const { data: balanceData } = useGetBalance();
 
-  const orderQuery = useOrder(orderId);
+  const orderQuery = useGetOrder(orderId);
 
   if (orderQuery.isLoading) {
     return (
@@ -56,7 +55,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
 
   const currentBalance = balanceData?.currentBalance?.amount || 0;
   const canPay =
-    order.status === 'PENDING' && currentBalance >= order.totalPrice;
+    order.status === 'PENDING' && currentBalance >= order.totalPrice.amount;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -78,7 +77,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
               {order.status}
             </span>
             <p className="text-2xl font-bold text-blue-600 mt-2">
-              ${order.totalPrice.toFixed(2)}
+              ${order.totalPrice.amount.toFixed(2)}
             </p>
           </div>
         </div>
@@ -98,16 +97,17 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                   <>
                     <p className="text-sm text-red-600 mt-1">
                       Insufficient funds. You need $
-                      {(order.totalPrice - currentBalance).toFixed(2)} more.
+                      {(order.totalPrice.amount - currentBalance).toFixed(2)}{' '}
+                      more.
                     </p>
                     <DepositForm
-                      defaultAmount={order.totalPrice - currentBalance}
+                      defaultAmount={order.totalPrice.amount - currentBalance}
                     />
                   </>
                 ) : (
                   <PayOrderButton
                     orderId={order.id}
-                    orderTotal={order.totalPrice}
+                    orderTotal={order.totalPrice.amount}
                     userBalance={currentBalance}
                   />
                 )}
@@ -139,10 +139,10 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                   Quantity: {item.quantity}
                 </p>
                 <p className="text-sm text-gray-600">
-                  ${item.pricePerUnit.toFixed(2)} each
+                  ${item.productPrice.amount.toFixed(2)} each
                 </p>
                 <p className="font-semibold text-blue-600">
-                  ${(item.pricePerUnit * item.quantity).toFixed(2)}
+                  ${item.totalPrice.amount.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -168,16 +168,6 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                 </p>
                 <p className="text-gray-600">{order.deliveryAddress.country}</p>
               </div>
-              <div>
-                <p className="text-gray-600">
-                  Phone: {order.deliveryAddress.phone}
-                </p>
-                {order.deliveryAddress.isDefault && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium mt-2">
-                    Default Address
-                  </span>
-                )}
-              </div>
             </div>
           </div>
         </div>
@@ -191,7 +181,9 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Subtotal:</span>
-            <span className="font-medium">${order.totalPrice.toFixed(2)}</span>
+            <span className="font-medium">
+              ${order.totalPrice.amount.toFixed(2)}
+            </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Shipping:</span>
@@ -201,7 +193,7 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
             <div className="flex justify-between text-lg font-bold">
               <span>Total:</span>
               <span className="text-blue-600">
-                ${order.totalPrice.toFixed(2)}
+                ${order.totalPrice.amount.toFixed(2)}
               </span>
             </div>
           </div>

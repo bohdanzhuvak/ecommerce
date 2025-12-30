@@ -1,15 +1,14 @@
-import {Trash} from 'lucide-react';
+import { Trash } from 'lucide-react';
 
-import {Button} from '@/shared/components/ui/button';
-import {ConfirmationDialog} from '@/shared/components/ui/dialog';
-import {useNotifications} from '@/shared/components/ui/notifications';
-import {useClearCart} from "@/features/cart/api/clear-cart";
-
+import { Button } from '@/shared/components/ui/button';
+import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { useClearCart } from '@/shared/api';
 
 export const ClearCart = () => {
-  const {addNotification} = useNotifications();
+  const { addNotification } = useNotifications();
   const clearCartMutation = useClearCart({
-    mutationConfig: {
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
@@ -29,7 +28,7 @@ export const ClearCart = () => {
         <Button
           variant="destructive"
           size="sm"
-          icon={<Trash className="size-4"/>}
+          icon={<Trash className="size-4" />}
         >
           Clear cart
         </Button>

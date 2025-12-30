@@ -1,24 +1,22 @@
-import {QueryClient} from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 
-import {ContentLayout} from '@/shared/components/layouts';
-import {getOrdersQueryOptions} from '@/features/orders/api/get-orders';
-import {Orders} from '@/features/orders/components/orders';
-import {ErrorBoundary} from 'react-error-boundary';
-import {useAuth} from "@/shared/lib/auth";
+import { ContentLayout } from '@/shared/components/layouts';
+import { Orders } from '@/features/orders/components/orders';
+import { ErrorBoundary } from 'react-error-boundary';
+import { useAuth } from '@/shared/lib/auth';
+import { getGetOrdersQueryOptions } from '@/shared/api';
 
-export const ordersLoader =
-  (queryClient: QueryClient) =>
-    async () => {
-      const ordersQuery = getOrdersQueryOptions();
+export const ordersLoader = (queryClient: QueryClient) => async () => {
+  const ordersQuery = getGetOrdersQueryOptions();
 
-      return (
-        queryClient.getQueryData(ordersQuery.queryKey) ??
-        (await queryClient.fetchQuery(ordersQuery))
-      );
-    };
+  return (
+    queryClient.getQueryData(ordersQuery.queryKey) ??
+    (await queryClient.fetchQuery(ordersQuery))
+  );
+};
 
 export const OrdersRoute = () => {
-  const user = useAuth().state.user
+  const user = useAuth().state.user;
 
   if (!user) {
     return null;
@@ -28,11 +26,9 @@ export const OrdersRoute = () => {
     <ContentLayout title="Your Orders">
       <div className="mt-8">
         <ErrorBoundary
-          fallback={
-            <div>Failed to load orders. Try to refresh the page.</div>
-          }
+          fallback={<div>Failed to load orders. Try to refresh the page.</div>}
         >
-          <Orders clientEmail={user.email}/>
+          <Orders clientEmail={user.email} />
         </ErrorBoundary>
       </div>
     </ContentLayout>
