@@ -10,7 +10,6 @@ import {
 } from '@/shared/components/ui/form';
 import { useNotifications } from '@/shared/components/ui/notifications';
 
-import { useUpdateDeliveryAddress } from '../api/update-address';
 import {
   type AddressFormData,
   createAddressFormSchema,
@@ -18,7 +17,12 @@ import {
   type UpdateAddressFormData,
   updateAddressFormSchema,
 } from '../api.types';
-import { useAddDeliveryAddress } from '@/shared/api';
+import {
+  getGetDeliveryAddressesQueryKey,
+  useAddDeliveryAddress,
+  useUpdateDeliveryAddress,
+} from '@/shared/api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface AddressFormProps {
   address?: DeliveryAddress;
@@ -29,6 +33,8 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
   const { addNotification } = useNotifications();
   const isEditMode = mode === 'edit' && address;
 
+  const queryClient = useQueryClient();
+
   const createDeliveryAddressMutation = useAddDeliveryAddress({
     mutation: {
       onSuccess: () => {
@@ -36,16 +42,22 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
           type: 'success',
           title: 'Address added successfully!',
         });
+        queryClient.invalidateQueries({
+          queryKey: getGetDeliveryAddressesQueryKey(),
+        });
       },
     },
   });
 
   const updateDeliveryAddressMutation = useUpdateDeliveryAddress({
-    mutationConfig: {
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
           title: 'Address updated successfully!',
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetDeliveryAddressesQueryKey(),
         });
       },
     },
@@ -53,7 +65,9 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
 
   const handleSubmit = (values: AddressFormData | UpdateAddressFormData) => {
     if (isEditMode && address) {
-      updateDeliveryAddressMutation.mutate(values as UpdateAddressFormData);
+      updateDeliveryAddressMutation.mutate({
+        data: values as UpdateAddressFormData,
+      });
     } else {
       createDeliveryAddressMutation.mutate({ data: values as AddressFormData });
     }
@@ -103,8 +117,10 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
                   id: address.id,
                   street: address.street,
                   city: address.city,
+                  state: address.state,
                   postalCode: address.postalCode,
                   country: address.country,
+                  recipientName: address.recipientName,
                   isDefault: address.isDefault,
                 }
               : {
@@ -135,14 +151,12 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
               registration={register('city')}
             />
 
-            {!isEditMode && (
-              <Input
-                label="State"
-                placeholder="California"
-                error={formState.errors['state']}
-                registration={register('state')}
-              />
-            )}
+            <Input
+              label="State"
+              placeholder="California"
+              error={formState.errors['state']}
+              registration={register('state')}
+            />
 
             <Input
               label="Postal Code"
@@ -158,14 +172,12 @@ export const AddressForm = ({ address, mode = 'create' }: AddressFormProps) => {
               registration={register('country')}
             />
 
-            {!isEditMode && (
-              <Input
-                label="Recipient name"
-                placeholder="Thomas Shelby"
-                error={formState.errors['recipientName']}
-                registration={register('recipientName')}
-              />
-            )}
+            <Input
+              label="Recipient name"
+              placeholder="Thomas Shelby"
+              error={formState.errors['recipientName']}
+              registration={register('recipientName')}
+            />
 
             <div className="flex items-center space-x-2">
               <Controller

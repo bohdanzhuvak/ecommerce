@@ -6,9 +6,11 @@ import { useNotifications } from '@/shared/components/ui/notifications';
 import { DeliveryAddress } from '../api.types.ts';
 import { AddressForm } from './address-form';
 import {
+  getGetDeliveryAddressesQueryKey,
   useDeleteDeliveryAddress,
   useGetDeliveryAddresses,
 } from '@/shared/api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface AddressCardProps {
   address: DeliveryAddress;
@@ -17,12 +19,17 @@ interface AddressCardProps {
 const AddressCard: React.FC<AddressCardProps> = ({ address }) => {
   const { addNotification } = useNotifications();
 
+  const queryClient = useQueryClient();
+
   const deleteDeliveryAddressMutation = useDeleteDeliveryAddress({
     mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
           title: 'Address deleted successfully!',
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetDeliveryAddressesQueryKey(),
         });
       },
     },

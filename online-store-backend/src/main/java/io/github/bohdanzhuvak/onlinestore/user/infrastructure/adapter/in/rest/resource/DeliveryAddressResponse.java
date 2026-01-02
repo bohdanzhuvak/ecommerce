@@ -47,6 +47,6 @@ public record DeliveryAddressResponse(
 
   public static List<DeliveryAddressResponse> from(User user) {
     List<DeliveryAddress> deliveryAddresses = user.getAddresses();
-    return deliveryAddresses.stream().map(deliveryAddress -> from(deliveryAddress, deliveryAddress.id() == user.getDefaultAddressId())).toList();
+    return deliveryAddresses.stream().map(deliveryAddress -> from(deliveryAddress, deliveryAddress.id().equals(user.getDefaultAddressId()))).toList();
   }
 }

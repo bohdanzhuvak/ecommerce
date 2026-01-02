@@ -8,6 +8,7 @@ import io.github.bohdanzhuvak.onlinestore.user.domain.User;
 import io.github.bohdanzhuvak.onlinestore.user.domain.UserId;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.DeliveryAddressRequest;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.DeliveryAddressResponse;
+import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UpdateDeliveryAddressRequest;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UpdateProfileRequest;
 import io.github.bohdanzhuvak.onlinestore.user.infrastructure.adapter.in.rest.resource.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,6 +84,22 @@ public class UserController {
         deliveryAddressRequest.recipientName()
     );
     DeliveryAddress deliveryAddressSaved = webUserOrchestratorService.addDeliveryAddress(UserId.of(userId), deliveryAddress, deliveryAddressRequest.isDefault());
+    return ResponseEntity.ok(DeliveryAddressResponse.from(deliveryAddressSaved, deliveryAddressRequest.isDefault()));
+  }
+
+  @Operation(operationId = "updateDeliveryAddress", summary = "Update delivery address", description = "Update delivery address for the authenticated user")
+  @PutMapping("delivery-addresses")
+  public ResponseEntity<DeliveryAddressResponse> updateDeliveryAddress(@CurrentUserId String userId, @RequestBody UpdateDeliveryAddressRequest deliveryAddressRequest) {
+    DeliveryAddress deliveryAddress = DeliveryAddress.restore(
+        DeliveryAddressId.of(deliveryAddressRequest.id()),
+        deliveryAddressRequest.street(),
+        deliveryAddressRequest.city(),
+        deliveryAddressRequest.state(),
+        deliveryAddressRequest.postalCode(),
+        deliveryAddressRequest.country(),
+        deliveryAddressRequest.recipientName()
+    );
+    DeliveryAddress deliveryAddressSaved = webUserOrchestratorService.updateDeliveryAddress(UserId.of(userId), deliveryAddress, deliveryAddressRequest.isDefault());
     return ResponseEntity.ok(DeliveryAddressResponse.from(deliveryAddressSaved, deliveryAddressRequest.isDefault()));
   }
 

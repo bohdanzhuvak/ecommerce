@@ -1,6 +1,7 @@
 package io.github.bohdanzhuvak.onlinestore.user.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,6 +104,33 @@ public class User {
       // In a real implementation, this would set active to false and update updatedAt
       // For now, we'll just validate the state
     }
+  }
+
+  public void updateAddress(DeliveryAddress newAddress) {
+    if (newAddress == null) {
+      throw new IllegalArgumentException("Address cannot be null");
+    }
+
+    List<DeliveryAddress> updatedAddresses = new ArrayList<>();
+    for (DeliveryAddress address : addresses) {
+      if (address.id().equals(newAddress.id())) {
+        DeliveryAddress updated = new DeliveryAddress(
+            address.id(),
+            newAddress.street(),
+            newAddress.city(),
+            newAddress.state(),
+            newAddress.postalCode(),
+            newAddress.country(),
+            newAddress.recipientName(),
+            address.createdAt()
+        );
+        updatedAddresses.add(updated);
+      } else {
+        updatedAddresses.add(address);
+      }
+    }
+
+    this.addresses = updatedAddresses;
   }
 
   public void addAddress(DeliveryAddress address) {

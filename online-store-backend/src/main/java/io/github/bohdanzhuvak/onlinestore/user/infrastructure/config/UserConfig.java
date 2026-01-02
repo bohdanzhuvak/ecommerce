@@ -14,6 +14,7 @@ import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAd
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByEmailUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByIdUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.UpdateDeliveryAddressUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.UpdateUserProfileUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ValidateCredentialsUseCase;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,9 @@ public class UserConfig {
       ActivateUserUseCase activateUserUseCase,
       DeactivateUserUseCase deactivateUserUseCase,
       GetDeliveryAddressListUseCase getDeliveryAddressListUseCase,
-      DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase, AddDeliveryAddressUseCase addDeliveryAddressUseCase) {
+      DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase,
+      AddDeliveryAddressUseCase addDeliveryAddressUseCase,
+      UpdateDeliveryAddressUseCase updateDeliveryAddressUseCase) {
     return new WebUserOrchestratorService(
         createUserUseCase,
         getUserProfileByIdUseCase,
@@ -60,7 +63,8 @@ public class UserConfig {
         deactivateUserUseCase,
         getDeliveryAddressListUseCase,
         deleteDeliveryAddressUseCase,
-        addDeliveryAddressUseCase
+        addDeliveryAddressUseCase,
+        updateDeliveryAddressUseCase
     );
   }
 }

@@ -42,4 +42,9 @@ public record DeliveryAddress(DeliveryAddressId id, String street, String city, 
                                        String country, String recipientName) {
     return new DeliveryAddress(DeliveryAddressId.generate(), street, city, state, postalCode, country, recipientName, LocalDateTime.now());
   }
+
+  public static DeliveryAddress restore(DeliveryAddressId id, String street, String city, String state, String postalCode,
+                                        String country, String recipientName) {
+    return new DeliveryAddress(id, street, city, state, postalCode, country, recipientName, null);
+  }
 }

@@ -18,7 +18,7 @@ public class DeleteDeliveryAddressUseCase {
   public void execute(DeleteDeliveryAddressCommand command) {
     User user = userRepository.findById(command.userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-    user.getAddresses().removeIf(deliveryAddress -> deliveryAddress.id().equals(command.deliveryAddressId));
+    user.removeAddress(command.deliveryAddressId);
 
     userRepository.save(user);
   }
