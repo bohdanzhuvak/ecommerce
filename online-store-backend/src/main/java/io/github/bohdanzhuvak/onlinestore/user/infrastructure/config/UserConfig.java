@@ -9,6 +9,7 @@ import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ChangePasswor
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeactivateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeleteDeliveryAddressUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeleteUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetAllUsersUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressListUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressUseCase;
@@ -52,7 +53,8 @@ public class UserConfig {
       GetDeliveryAddressListUseCase getDeliveryAddressListUseCase,
       DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase,
       AddDeliveryAddressUseCase addDeliveryAddressUseCase,
-      UpdateDeliveryAddressUseCase updateDeliveryAddressUseCase) {
+      UpdateDeliveryAddressUseCase updateDeliveryAddressUseCase,
+      DeleteUserUseCase deleteUserUseCase) {
     return new WebUserOrchestratorService(
         createUserUseCase,
         getUserProfileByIdUseCase,
@@ -64,7 +66,8 @@ public class UserConfig {
         getDeliveryAddressListUseCase,
         deleteDeliveryAddressUseCase,
         addDeliveryAddressUseCase,
-        updateDeliveryAddressUseCase
+        updateDeliveryAddressUseCase,
+        deleteUserUseCase
     );
   }
 }

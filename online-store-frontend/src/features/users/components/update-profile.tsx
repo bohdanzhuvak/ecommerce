@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Form, FormDrawer, Input } from '@/shared/components/ui/form';
 import { useNotifications } from '@/shared/components/ui/notifications';
 import { useUpdateUserProfile } from '@/shared/api/generated/users-customer/users-customer';
-import { updateProfileInputSchema } from '../api/update-profile';
+import { updateProfileInputSchema } from '@/features/users/api.types.ts';
 
 export const UpdateProfile = ({
   currentFirstName,

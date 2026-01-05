@@ -9,8 +9,8 @@ public class User {
   private final UserId id;
   private final Email email;
   private final Password password;
-  private final String firstName;
-  private final String lastName;
+  private String firstName;
+  private String lastName;
   private List<DeliveryAddress> addresses;
   private DeliveryAddressId defaultAddressId;
   private final UserRole role;
@@ -46,6 +46,7 @@ public class User {
     this.lastName = lastName.trim();
     this.role = role;
     this.active = true;
+    this.addresses = new ArrayList<>();
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
   }
@@ -80,8 +81,9 @@ public class User {
     if (lastName == null || lastName.trim().isEmpty()) {
       throw new IllegalArgumentException("Last name cannot be null or empty");
     }
-    // In a real implementation, this would update the fields and set updatedAt
-    // For now, we'll just validate the input
+
+    this.firstName = firstName;
+    this.lastName = lastName;
   }
 
   public void changePassword(Password newPassword) {

@@ -1,26 +1,22 @@
-import {Button} from '@/shared/components/ui/button';
-import {ConfirmationDialog} from '@/shared/components/ui/dialog';
-import {useNotifications} from '@/shared/components/ui/notifications';
+import { Button } from '@/shared/components/ui/button';
+import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
-import {useDeleteUser} from '../api/delete-user';
-import {useAuth} from "@/shared/lib/auth";
+import { useAuth } from '@/shared/lib/auth';
+import { useDeleteUserProfile } from '@/shared/api';
 
-type DeleteUserProps = {
-  userEmail: string;
-};
-
-export const DeleteUser = ({userEmail}: DeleteUserProps) => {
+export const DeleteUser = () => {
   const auth = useAuth();
   const user = auth.state.user;
-  const {addNotification} = useNotifications();
-  const deleteUserMutation = useDeleteUser({
-    mutationConfig: {
+  const { addNotification } = useNotifications();
+  const deleteUserMutation = useDeleteUserProfile({
+    mutation: {
       onSuccess: () => {
         addNotification({
           type: 'success',
           title: 'User Deleted',
         });
-        auth.logout()
+        auth.logout();
       },
     },
   });
@@ -38,7 +34,7 @@ export const DeleteUser = ({userEmail}: DeleteUserProps) => {
           isLoading={deleteUserMutation.isPending}
           type="button"
           variant="destructive"
-          onClick={() => deleteUserMutation.mutate({userEmail: userEmail})}
+          onClick={() => deleteUserMutation.mutate()}
         >
           Delete User
         </Button>

@@ -45,7 +45,7 @@ public class UserController {
   @Operation(operationId = "updateUserProfile", summary = "Update user profile", description = "Update profile information for the authenticated user")
   @PutMapping("profile")
   public ResponseEntity<UserResponse> updateProfile(@CurrentUserId String userId,
-                                            @RequestBody UpdateProfileRequest request) {
+                                                    @RequestBody UpdateProfileRequest request) {
     try {
       User user = webUserOrchestratorService.updateUserProfile(
           UserId.of(userId),
@@ -101,6 +101,13 @@ public class UserController {
     );
     DeliveryAddress deliveryAddressSaved = webUserOrchestratorService.updateDeliveryAddress(UserId.of(userId), deliveryAddress, deliveryAddressRequest.isDefault());
     return ResponseEntity.ok(DeliveryAddressResponse.from(deliveryAddressSaved, deliveryAddressRequest.isDefault()));
+  }
+
+  @Operation(operationId = "deleteUserProfile", summary = "Delete user profile", description = "Delete user profile for current user")
+  @DeleteMapping
+  public ResponseEntity<Void> deleteUserProfile(@CurrentUserId String userId) {
+    webUserOrchestratorService.deleteUserProfile(UserId.of(userId));
+    return ResponseEntity.ok().build();
   }
 
 }

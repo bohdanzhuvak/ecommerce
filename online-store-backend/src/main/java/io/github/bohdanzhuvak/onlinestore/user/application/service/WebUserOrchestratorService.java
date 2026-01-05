@@ -7,6 +7,7 @@ import io.github.bohdanzhuvak.onlinestore.user.application.usecase.ChangePasswor
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.CreateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeactivateUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeleteDeliveryAddressUseCase;
+import io.github.bohdanzhuvak.onlinestore.user.application.usecase.DeleteUserUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetAllUsersUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetDeliveryAddressListUseCase;
 import io.github.bohdanzhuvak.onlinestore.user.application.usecase.GetUserProfileByIdUseCase;
@@ -34,6 +35,7 @@ public class WebUserOrchestratorService {
   private final DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase;
   private final AddDeliveryAddressUseCase addDeliveryAddressUseCase;
   private final UpdateDeliveryAddressUseCase updateDeliveryAddressUseCase;
+  private final DeleteUserUseCase deleteUserUseCase;
 
   public WebUserOrchestratorService(CreateUserUseCase createUserUseCase,
                                     GetUserProfileByIdUseCase getUserProfileByIdUseCase,
@@ -45,7 +47,8 @@ public class WebUserOrchestratorService {
                                     GetDeliveryAddressListUseCase getDeliveryAddressListUseCase,
                                     DeleteDeliveryAddressUseCase deleteDeliveryAddressUseCase,
                                     AddDeliveryAddressUseCase addDeliveryAddressUseCase,
-                                    UpdateDeliveryAddressUseCase updateDeliveryAddressUseCase) {
+                                    UpdateDeliveryAddressUseCase updateDeliveryAddressUseCase,
+                                    DeleteUserUseCase deleteUserUseCase) {
     this.getUserProfileByIdUseCase = getUserProfileByIdUseCase;
     this.updateUserProfileUseCase = updateUserProfileUseCase;
     this.changePasswordUseCase = changePasswordUseCase;
@@ -57,6 +60,7 @@ public class WebUserOrchestratorService {
     this.deleteDeliveryAddressUseCase = deleteDeliveryAddressUseCase;
     this.addDeliveryAddressUseCase = addDeliveryAddressUseCase;
     this.updateDeliveryAddressUseCase = updateDeliveryAddressUseCase;
+    this.deleteUserUseCase = deleteUserUseCase;
   }
 
   // Customer operations
@@ -120,5 +124,9 @@ public class WebUserOrchestratorService {
   public DeliveryAddress updateDeliveryAddress(UserId userId, DeliveryAddress deliveryAddress, boolean isDefault) {
     UpdateDeliveryAddressUseCase.UpdateDeliveryAddressCommand command = new UpdateDeliveryAddressUseCase.UpdateDeliveryAddressCommand(userId, deliveryAddress, isDefault);
     return updateDeliveryAddressUseCase.execute(command);
+  }
+
+  public void deleteUserProfile(UserId userId) {
+    deleteUserUseCase.execute(userId);
   }
 }
